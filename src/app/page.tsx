@@ -19,7 +19,8 @@ export default function Home() {
           Trading Intelligence Meets AI
         </h2>
         <p className="mt-4 text-gray-400 max-w-xl mx-auto">
-          Cardic Nexus is where trading intelligence, AI, and advanced tools merge to create next-level strategies, indicators, and automation.
+          Cardic Nexus is where trading intelligence, AI, and advanced tools
+          merge to create next-level strategies, indicators, and automation.
         </p>
         <Link
           href="/projects"
