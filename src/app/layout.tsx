@@ -1,9 +1,10 @@
 import { Metadata } from 'next';
 import * as React from 'react';
 
-import '@/styles/globals.css';
-// !STARTERCONF This is for demo purposes, remove @/styles/colors.css import immediately
 import '@/styles/colors.css';
+import '@/styles/globals.css';
+
+import NavBar from '@/components/NavBar';
 
 import { siteConfig } from '@/constant/config';
 
@@ -56,7 +57,10 @@ export default function RootLayout({
 }) {
   return (
     <html>
-      <body>{children}</body>
+      <body>
+        <NavBar />
+        {children}
+      </body>
     </html>
   );
 }
