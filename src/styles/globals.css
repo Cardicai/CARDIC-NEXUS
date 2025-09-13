@@ -149,3 +149,8 @@
     background-size: 0 2px, 100% 2px;
   }
 }
+@layer base {
+  body {
+    @apply bg-gradient-to-br from-[#0B0A0A] to-[#1A0D0F] text-white;
+  }
+}

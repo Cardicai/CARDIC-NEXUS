@@ -1,0 +1,56 @@
+[
+  {
+    "id": "oracle-1",
+    "slug": "cardic-oracle-1-0",
+    "title": "CARDIC Oracle 1.0",
+    "type": "Indicator",
+    "status": "Soon",
+    "tags": ["Psychology", "Liquidity", "Predictive Zones", "AI"],
+    "price": 129,
+    "summary": "Visualizes real-time trader psychology, liquidity battles, and predictive zones.",
+    "images": ["/images/oracle/cover.png"],
+    "features": [
+      "Greed/Fear meter overlay",
+      "Liquidity pool heatmap",
+      "Predictive zones from pattern/RSI/DR-IDR",
+      "Alerts + MTF support"
+    ],
+    "changelog": [{ "v": "0.1", "text": "Spec draft and teaser ready." }]
+  },
+  {
+    "id": "heat-zones",
+    "slug": "cardic-heat-zones",
+    "title": "Cardic Heat Zones™",
+    "type": "Indicator",
+    "status": "Live",
+    "tags": ["SMC", "Zones", "Alerts"],
+    "price": 99,
+    "summary": "Smart money zones (liquidity, demand, discount) with alerts.",
+    "images": ["/images/heat/cover.png"],
+    "features": ["Auto zones", "Alert conditions", "Session filters"]
+  },
+  {
+    "id": "spider-web",
+    "slug": "cardic-spider-web",
+    "title": "Cardic Spider Web™",
+    "type": "Indicator",
+    "status": "In Development",
+    "tags": ["Fib", "OB", "Dynamic SR"],
+    "price": 119,
+    "summary": "Dynamic support/resistance + Fibonacci + order blocks in one web.",
+    "images": ["/images/spider/cover.png"],
+    "features": ["Dynamic grid", "OB highlight", "Fib confluence"]
+  },
+  {
+    "id": "premium",
+    "slug": "premium-signals",
+    "title": "Premium Signals",
+    "type": "Membership",
+    "status": "Live",
+    "tags": ["Gold", "Forex", "Crypto"],
+    "price": 49,
+    "summary": "Daily curated signals with risk guidance.",
+    "images": ["/images/premium/cover.png"],
+    "features": ["Daily updates", "Risk mgmt notes", "Telegram access"]
+  }
+]
