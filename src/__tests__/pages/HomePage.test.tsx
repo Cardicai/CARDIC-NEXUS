@@ -1,15 +1,12 @@
-// !STARTERCONF You should delete this page
-
 import { render, screen } from '@testing-library/react';
 
 import HomePage from '@/app/page';
 
 describe('Homepage', () => {
-  it('renders the Components', () => {
+  it('renders the Cardic Nexus heading', () => {
     render(<HomePage />);
 
-    const heading = screen.getByText(/A starter for Next.js/i);
-
-    expect(heading).toBeInTheDocument();
+    expect(screen.getAllByText(/CARDIC/i)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(/NEXUS/i)[0]).toBeInTheDocument();
   });
 });
