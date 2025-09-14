@@ -1,8 +1,10 @@
 'use client';
 import Image from 'next/image';
-import React, { useState } from 'react';
+// prettier-ignore
+import React, { useState } from "react";
 
 export default function CardicNexusLanding() {
+  const [navOpen, setNavOpen] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
   const openCheckout = (e) => {
     e.preventDefault();
@@ -82,22 +84,55 @@ export default function CardicNexusLanding() {
       {/* NAV */}
       <header className='cnx-nav'>
         <div className='cnx-nav-inner'>
-          <nav className='cnx-links'>
-            <a href='#projects'>Projects</a>
-            <a href='#heat'>CARDIC Heat</a>
-            <a href='#pricing'>Pricing</a>
-            <a href='#contact'>Contact</a>
-          </nav>
-          <a
-            href='https://t.me/REALCARDIC'
-            target='_blank'
-            rel='noreferrer'
-            className='cnx-btn cnx-btn-blue'
-          >
-            Join Premium
+          <a className='cnx-logo' href='#'>
+            <span className='cnx-text-gold'>CARDIC</span>{' '}
+            <span className='cnx-text-blue'>NEXUS</span>
+            <div className='cnx-sub'>AI • TRADING</div>
           </a>
+
+          {/* Mobile burger */}
+          <button
+            className='cnx-burger'
+            aria-label='Toggle menu'
+            aria-expanded={navOpen}
+            onClick={() => setNavOpen((v) => !v)}
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+
+          {/* Links: row on desktop, panel on mobile */}
+          <nav className={`cnx-links ${navOpen ? 'is-open' : ''}`}>
+            <a href='#projects' onClick={() => setNavOpen(false)}>
+              Projects
+            </a>
+            <a href='#heat' onClick={() => setNavOpen(false)}>
+              CARDIC Heat
+            </a>
+            <a href='#pricing' onClick={() => setNavOpen(false)}>
+              Pricing
+            </a>
+            <a href='#contact' onClick={() => setNavOpen(false)}>
+              Contact
+            </a>
+            <a
+              href='https://t.me/REALCARDIC'
+              target='_blank'
+              rel='noreferrer'
+              className='cnx-btn cnx-btn-blue nav-cta'
+              onClick={() => setNavOpen(false)}
+            >
+              Join Premium
+            </a>
+          </nav>
         </div>
       </header>
+
+      {/* Scrim to close menu on tap outside (mobile) */}
+      {navOpen && (
+        <div className='cnx-scrim' onClick={() => setNavOpen(false)} />
+      )}
 
       {/* HERO */}
       <section className='cnx-hero'>
@@ -551,6 +586,47 @@ export default function CardicNexusLanding() {
         .cnx-form button{background:#000; color:#fff; border:none; padding:10px; border-radius:6px; cursor:pointer}
 
         @media (max-width:480px){ .cnx-hero h1{font-size:40px} }
+
+        /* Desktop default */
+        .cnx-links{
+          display:flex; align-items:center; gap:12px;
+        }
+
+        /* Burger (hidden on desktop) */
+        .cnx-burger{
+          display:none; width:40px; height:36px;
+          align-items:center; justify-content:center; gap:4px;
+          border:1px solid rgba(245,199,107,.35);
+          border-radius:10px; background:rgba(0,0,0,.25);
+        }
+        .cnx-burger span{
+          display:block; width:18px; height:2px; background:#fff; border-radius:2px;
+          box-shadow:0 0 10px rgba(245,199,107,.35);
+        }
+
+        /* Dim behind mobile menu */
+        .cnx-scrim{ position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:100; }
+
+        /* Mobile */
+        @media (max-width: 860px){
+          .cnx-nav-inner{ gap:10px; }
+          .cnx-burger{ display:inline-flex; }
+
+          /* Links become a floating panel */
+          .cnx-links{
+            position:fixed; top:60px; left:12px; right:12px;
+            background:rgba(10,11,13,.96); backdrop-filter:blur(12px);
+            border:1px solid rgba(245,199,107,.25); border-radius:16px;
+            padding:12px; flex-direction:column; gap:8px; z-index:101;
+            display:none;
+          }
+          .cnx-links a{ padding:10px 12px; border-radius:12px; }
+          .cnx-links a:hover{ background:rgba(255,255,255,.06); }
+          .cnx-links.is-open{ display:flex; }
+
+          /* CTA full width inside panel */
+          .cnx-links .nav-cta{ width:100%; text-align:center; }
+        }
       `}</style>
     </div>
   );
