@@ -3,7 +3,15 @@ import Image from 'next/image';
 import React, { useState } from 'react';
 
 export default function CardicNexusLanding() {
+  const [navOpen, setNavOpen] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
+
+  const handleJump = (e, sel) => {
+    e.preventDefault();
+    setNavOpen(false);
+    const el = document.querySelector(sel);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
   const openCheckout = (e) => {
     e.preventDefault();
     setShowCheckout(true);
@@ -82,20 +90,29 @@ export default function CardicNexusLanding() {
       {/* NAV */}
       <header className='cnx-nav'>
         <div className='cnx-nav-inner'>
-          <nav className='cnx-links'>
-            <a href='#projects'>Projects</a>
-            <a href='#heat'>CARDIC Heat</a>
-            <a href='#pricing'>Pricing</a>
-            <a href='#contact'>Contact</a>
+          <nav className={`cnx-links ${navOpen ? 'is-open' : ''}`}>
+            <a href='#projects' onClick={(e) => handleJump(e, '#projects')}>
+              Projects
+            </a>
+            <a href='#heat' onClick={(e) => handleJump(e, '#heat')}>
+              CARDIC Heat
+            </a>
+            <a href='#pricing' onClick={(e) => handleJump(e, '#pricing')}>
+              Pricing
+            </a>
+            <a href='#contact' onClick={(e) => handleJump(e, '#contact')}>
+              Contact
+            </a>
+            <a
+              href='https://t.me/REALCARDIC'
+              target='_blank'
+              rel='noreferrer'
+              className='cnx-btn cnx-btn-blue nav-cta'
+              onClick={() => setNavOpen(false)}
+            >
+              Join Premium
+            </a>
           </nav>
-          <a
-            href='https://t.me/REALCARDIC'
-            target='_blank'
-            rel='noreferrer'
-            className='cnx-btn cnx-btn-blue'
-          >
-            Join Premium
-          </a>
         </div>
       </header>
 
@@ -109,16 +126,22 @@ export default function CardicNexusLanding() {
           AI • Trading • Innovation — for retail traders.
         </p>
         <div className='cnx-row'>
-          <a className='cnx-btn cnx-btn-ghost' href='#projects'>
+          <a
+            className='cnx-btn cnx-btn-ghost'
+            href='#projects'
+            onClick={(e) => handleJump(e, '#projects')}
+          >
             Explore Projects
           </a>
-          <a className='cnx-btn cnx-btn-blue' href='#pricing'>
+          <a
+            className='cnx-btn cnx-btn-blue'
+            href='#pricing'
+            onClick={(e) => handleJump(e, '#pricing')}
+          >
             Join Premium
           </a>
         </div>
-        <div className='cnx-note'>
-          ✨ Wishing You a Great Weekend — stay golden and disciplined.
-        </div>
+        <div className='cnx-note'>💫 Happy trading — love to see you win.</div>
       </section>
 
       {/* PROJECTS */}
@@ -551,6 +574,13 @@ export default function CardicNexusLanding() {
         .cnx-form button{background:#000; color:#fff; border:none; padding:10px; border-radius:6px; cursor:pointer}
 
         @media (max-width:480px){ .cnx-hero h1{font-size:40px} }
+
+        /* Keep anchor targets visible below the sticky header */
+        #projects, #heat, #pricing, #contact { scroll-margin-top: 80px; }
+
+        /* Ensure the mobile panel is above the scrim/content so taps register */
+        .cnx-links{ z-index: 1001; }
+        .cnx-scrim{ z-index: 1000; }
       `}</style>
     </div>
   );
