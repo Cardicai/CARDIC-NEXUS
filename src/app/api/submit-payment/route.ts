@@ -5,15 +5,36 @@ export const runtime = 'nodejs';
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
+
+    const token = String(formData.get('g-recaptcha-response') || '');
+    if (!token) {
+      return new NextResponse('Captcha missing.', { status: 400 });
+    }
+
+    const verify = await fetch(
+      'https://www.google.com/recaptcha/api/siteverify',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `secret=${encodeURIComponent(
+          process.env.RECAPTCHA_SECRET || ''
+        )}&response=${encodeURIComponent(token)}`,
+      }
+    );
+    const result = await verify.json();
+    if (!result.success) {
+      return new NextResponse('Captcha failed.', { status: 400 });
+    }
+
     const name = String(formData.get('name') || '');
     const email = String(formData.get('email') || '');
     const tradingview = String(formData.get('tradingview') || '');
     const contact = String(formData.get('contact') || '');
-    const txHash = String(formData.get('txHash') || '');
+    const productType = String(formData.get('productType') || '');
     const notes = String(formData.get('notes') || '');
     const file = formData.get('proof') as File | null;
 
-    const fieldsText = `Name: ${name}\nEmail: ${email}\nTradingView: ${tradingview}\nContact: ${contact}\nTxHash: ${txHash}\nNotes: ${notes}`;
+    const fieldsText = `Name: ${name}\nEmail: ${email}\nTradingView: ${tradingview}\nContact: ${contact}\nProduct Type: ${productType}\nNotes: ${notes}`;
 
     const attachments: { filename: string; content: string }[] = [];
     if (file) {
@@ -44,7 +65,8 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ success: true });
-  } catch (err) {
-    return NextResponse.json({ success: false }, { status: 500 });
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : 'Server error';
+    return new NextResponse(message, { status: 500 });
   }
 }

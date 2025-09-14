@@ -1,14 +1,20 @@
 'use client';
 import Image from 'next/image';
+import Script from 'next/script';
 import React, { useState } from 'react';
 
 export default function CardicNexusLanding() {
   const [showCheckout, setShowCheckout] = useState(false);
-  const openCheckout = (e) => {
+  const [productType, setProductType] = useState('');
+  const openCheckout = (e, type) => {
     e.preventDefault();
+    setProductType(type);
     setShowCheckout(true);
   };
-  const closeCheckout = () => setShowCheckout(false);
+  const closeCheckout = () => {
+    setShowCheckout(false);
+    setProductType('');
+  };
   const copy = async (text) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -19,21 +25,32 @@ export default function CardicNexusLanding() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
+    const form = e.currentTarget;
+    const token =
+      typeof window !== 'undefined' && window.grecaptcha
+        ? window.grecaptcha.getResponse()
+        : '';
+    if (!token) {
+      alert('Please complete the reCAPTCHA.');
+      return;
+    }
+    const formData = new FormData(form);
     try {
       const res = await fetch('/api/submit-payment', {
         method: 'POST',
         body: formData,
       });
       if (res.ok) {
-        alert('Success!');
-        e.target.reset();
+        alert('Submitted! We will confirm shortly.');
+        form.reset();
+        if (window.grecaptcha) window.grecaptcha.reset();
         setShowCheckout(false);
       } else {
-        alert('Error submitting form');
+        const t = await res.text();
+        alert('Submission failed: ' + t);
       }
-    } catch (err) {
-      alert('Error submitting form');
+    } catch {
+      alert('Network error. Try again.');
     }
   };
 
@@ -74,6 +91,11 @@ export default function CardicNexusLanding() {
 
   return (
     <div className='cnx-root'>
+      {/* Load reCAPTCHA once on the page */}
+      <Script
+        src='https://www.google.com/recaptcha/api.js'
+        strategy='afterInteractive'
+      />
       {/* Galaxy background layers */}
       <div className='cnx-stars' />
       <div className='cnx-glow cnx-glow-gold' />
@@ -142,7 +164,7 @@ export default function CardicNexusLanding() {
                 <a
                   className='cnx-btn cnx-btn-ghost'
                   href='#'
-                  onClick={openCheckout}
+                  onClick={(e) => openCheckout(e, p.title)}
                 >
                   Buy
                 </a>
@@ -182,7 +204,7 @@ export default function CardicNexusLanding() {
               <a
                 className='cnx-btn cnx-btn-blue'
                 href='#'
-                onClick={openCheckout}
+                onClick={(e) => openCheckout(e, 'CARDIC Heat 2.0')}
               >
                 Get 2.0
               </a>
@@ -202,7 +224,7 @@ export default function CardicNexusLanding() {
               <a
                 className='cnx-btn cnx-btn-blue'
                 href='#'
-                onClick={openCheckout}
+                onClick={(e) => openCheckout(e, 'CARDIC Heat 2.1')}
               >
                 Get 2.1
               </a>
@@ -222,7 +244,7 @@ export default function CardicNexusLanding() {
               <a
                 className='cnx-btn cnx-btn-blue'
                 href='#'
-                onClick={openCheckout}
+                onClick={(e) => openCheckout(e, 'CARDIC Heat 2.3')}
               >
                 Get 2.3
               </a>
@@ -251,7 +273,7 @@ export default function CardicNexusLanding() {
             <a
               className='cnx-btn cnx-btn-ghost'
               href='#'
-              onClick={openCheckout}
+              onClick={(e) => openCheckout(e, 'Premium Signals')}
             >
               Subscribe
             </a>
@@ -276,7 +298,11 @@ export default function CardicNexusLanding() {
               <li>Premium signals</li>
               <li>Priority support</li>
             </ul>
-            <a className='cnx-btn cnx-btn-blue' href='#' onClick={openCheckout}>
+            <a
+              className='cnx-btn cnx-btn-blue'
+              href='#'
+              onClick={(e) => openCheckout(e, 'All-Access')}
+            >
               Join
             </a>
           </article>
@@ -413,6 +439,7 @@ export default function CardicNexusLanding() {
               </div>
             </div>
             <form className='cnx-form' onSubmit={handleSubmit}>
+              <input type='hidden' name='productType' value={productType} />
               <input type='text' name='name' placeholder='Full Name' required />
               <input type='email' name='email' placeholder='Email' required />
               <input
@@ -438,7 +465,19 @@ export default function CardicNexusLanding() {
                 accept='image/*,application/pdf'
                 required
               />
-              <button type='submit'>Submit</button>
+              <div
+                className='g-recaptcha'
+                data-sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+                data-theme='dark'
+              ></div>
+              <div className='cnx-row' style={{ marginTop: 12 }}>
+                <button className='cnx-btn cnx-btn-blue' type='submit'>
+                  Send for Confirmation
+                </button>
+                <span className='cnx-text'>
+                  We’ll verify on-chain and reply by email/DM.
+                </span>
+              </div>
             </form>
           </div>
         </div>
