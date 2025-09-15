@@ -1,9 +1,10 @@
 'use client';
 import Image from 'next/image';
+import Link from 'next/link';
 import React, { useState } from 'react';
 
 export default function CardicNexusLanding() {
-  const [navOpen, setNavOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
   const openCheckout = (e) => {
     e.preventDefault();
@@ -89,38 +90,28 @@ export default function CardicNexusLanding() {
             <div className='cnx-sub'>AI • TRADING</div>
           </a>
 
-          {/* Mobile burger */}
           <button
-            className='cnx-burger'
+            className='cnx-menu-toggle'
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-expanded={menuOpen}
+            aria-controls='mobileMenu'
             aria-label='Toggle menu'
-            aria-expanded={navOpen}
-            onClick={() => setNavOpen((v) => !v)}
           >
             <span></span>
             <span></span>
             <span></span>
           </button>
 
-          {/* Links: row on desktop, panel on mobile */}
-          <nav className={`cnx-links ${navOpen ? 'is-open' : ''}`}>
-            <a href='#projects' onClick={() => setNavOpen(false)}>
-              Projects
-            </a>
-            <a href='#heat' onClick={() => setNavOpen(false)}>
-              CARDIC Heat
-            </a>
-            <a href='#pricing' onClick={() => setNavOpen(false)}>
-              Pricing
-            </a>
-            <a href='#contact' onClick={() => setNavOpen(false)}>
-              Contact
-            </a>
+          <nav className='cnx-links'>
+            <Link href='/projects'>Projects</Link>
+            <Link href='/projects/heat'>CARDIC Heat</Link>
+            <Link href='/pricing'>Pricing</Link>
+            <Link href='/contact'>Contact</Link>
             <a
               href='https://t.me/REALCARDIC'
               target='_blank'
               rel='noreferrer'
               className='cnx-btn cnx-btn-blue nav-cta'
-              onClick={() => setNavOpen(false)}
             >
               Join Premium
             </a>
@@ -128,10 +119,30 @@ export default function CardicNexusLanding() {
         </div>
       </header>
 
-      {/* Scrim to close menu on tap outside (mobile) */}
-      {navOpen && (
-        <div className='cnx-scrim' onClick={() => setNavOpen(false)} />
-      )}
+      <div
+        id='mobileMenu'
+        className={`cnx-sheet ${menuOpen ? 'open' : ''}`}
+        role='dialog'
+        aria-modal='true'
+        onClick={(e) => {
+          if (e.target === e.currentTarget) setMenuOpen(false);
+        }}
+      >
+        <nav className='cnx-sheet-nav'>
+          <Link href='/projects' onClick={() => setMenuOpen(false)}>
+            Projects
+          </Link>
+          <Link href='/projects/heat' onClick={() => setMenuOpen(false)}>
+            CARDIC Heat
+          </Link>
+          <Link href='/pricing' onClick={() => setMenuOpen(false)}>
+            Pricing
+          </Link>
+          <Link href='/contact' onClick={() => setMenuOpen(false)}>
+            Contact
+          </Link>
+        </nav>
+      </div>
 
       {/* HERO */}
       <section className='cnx-hero'>
@@ -589,40 +600,54 @@ export default function CardicNexusLanding() {
           display:flex; align-items:center; gap:12px;
         }
 
-        /* Burger (hidden on desktop) */
-        .cnx-burger{
+        /* Menu toggle (hidden on desktop) */
+        .cnx-menu-toggle{
           display:none; width:40px; height:36px;
           align-items:center; justify-content:center; gap:4px;
           border:1px solid rgba(245,199,107,.35);
           border-radius:10px; background:rgba(0,0,0,.25);
+          -webkit-tap-highlight-color:transparent; touch-action:manipulation;
         }
-        .cnx-burger span{
+        .cnx-menu-toggle span{
           display:block; width:18px; height:2px; background:#fff; border-radius:2px;
           box-shadow:0 0 10px rgba(245,199,107,.35);
         }
 
-        /* Dim behind mobile menu */
-        .cnx-scrim{ position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:100; }
+        .cnx-sheet{
+          position:fixed; inset:0; z-index:9999;
+          background:rgba(0,0,0,.55);
+          opacity:0; pointer-events:none;
+          transition:opacity .2s ease;
+        }
+        .cnx-sheet.open{ opacity:1; pointer-events:auto; }
+
+        .cnx-sheet-nav{
+          position:absolute; top:76px; left:50%; transform:translateX(-50%);
+          width:86%; max-width:440px;
+          background:rgba(15,15,19,.92);
+          border:1px solid rgba(255,255,255,.14);
+          border-radius:20px; padding:14px;
+          display:flex; flex-direction:column; gap:14px;
+        }
+        .cnx-sheet-nav a{
+          display:block; text-align:center;
+          padding:14px 16px; border-radius:14px;
+          color:#e7ecf5; text-decoration:none;
+          background:rgba(255,255,255,.04);
+          border:1px solid rgba(255,255,255,.12);
+          -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+        }
+        .cnx-sheet-nav a:active{
+          transform:scale(.98);
+          background:rgba(16,165,255,.12);
+          border-color:rgba(16,165,255,.35);
+        }
 
         /* Mobile */
         @media (max-width: 860px){
           .cnx-nav-inner{ gap:10px; }
-          .cnx-burger{ display:inline-flex; }
-
-          /* Links become a floating panel */
-          .cnx-links{
-            position:fixed; top:60px; left:12px; right:12px;
-            background:rgba(10,11,13,.96); backdrop-filter:blur(12px);
-            border:1px solid rgba(245,199,107,.25); border-radius:16px;
-            padding:12px; flex-direction:column; gap:8px; z-index:101;
-            display:none;
-          }
-          .cnx-links a{ padding:10px 12px; border-radius:12px; }
-          .cnx-links a:hover{ background:rgba(255,255,255,.06); }
-          .cnx-links.is-open{ display:flex; }
-
-          /* CTA full width inside panel */
-          .cnx-links .nav-cta{ width:100%; text-align:center; }
+          .cnx-menu-toggle{ display:inline-flex; }
+          .cnx-links{ display:none; }
         }
 
         @media (max-width:480px){ .cnx-hero h1{font-size:40px} }
