@@ -1,6 +1,7 @@
 'use client';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import Link from 'next/link';
+import { useState } from 'react';
 
 export default function CardicNexusLanding() {
   const [navOpen, setNavOpen] = useState(false);
@@ -83,11 +84,11 @@ export default function CardicNexusLanding() {
       {/* NAV */}
       <header className='cnx-nav'>
         <div className='cnx-nav-inner'>
-          <a className='cnx-logo' href='#'>
+          <Link href='/' className='cnx-logo'>
             <span className='cnx-text-gold'>CARDIC</span>{' '}
             <span className='cnx-text-blue'>NEXUS</span>
             <div className='cnx-sub'>AI • TRADING</div>
-          </a>
+          </Link>
 
           {/* Mobile burger */}
           <button
@@ -103,18 +104,18 @@ export default function CardicNexusLanding() {
 
           {/* Links: row on desktop, panel on mobile */}
           <nav className={`cnx-links ${navOpen ? 'is-open' : ''}`}>
-            <a href='#projects' onClick={() => setNavOpen(false)}>
+            <Link href='/projects' onClick={() => setNavOpen(false)}>
               Projects
-            </a>
-            <a href='#heat' onClick={() => setNavOpen(false)}>
+            </Link>
+            <Link href='/projects/heat' onClick={() => setNavOpen(false)}>
               CARDIC Heat
-            </a>
-            <a href='#pricing' onClick={() => setNavOpen(false)}>
+            </Link>
+            <Link href='/pricing' onClick={() => setNavOpen(false)}>
               Pricing
-            </a>
-            <a href='#contact' onClick={() => setNavOpen(false)}>
+            </Link>
+            <Link href='/contact' onClick={() => setNavOpen(false)}>
               Contact
-            </a>
+            </Link>
             <a
               href='https://t.me/REALCARDIC'
               target='_blank'
@@ -143,12 +144,12 @@ export default function CardicNexusLanding() {
           AI • Trading • Innovation — for retail traders.
         </p>
         <div className='cnx-row'>
-          <a className='cnx-btn cnx-btn-ghost' href='#projects'>
+          <Link href='/projects' className='cnx-btn cnx-btn-ghost'>
             Explore Projects
-          </a>
-          <a className='cnx-btn cnx-btn-blue' href='#pricing'>
+          </Link>
+          <Link href='/pricing' className='cnx-btn cnx-btn-blue'>
             Join Premium
-          </a>
+          </Link>
         </div>
         <div className='cnx-note'>
           ✨ Wishing You a Great Weekend — stay golden and disciplined.
@@ -180,9 +181,16 @@ export default function CardicNexusLanding() {
                 >
                   Buy
                 </a>
-                <a className='cnx-btn cnx-btn-blue' href='#contact'>
+                <Link
+                  href={
+                    p.title === 'Cardic Heat Zones™'
+                      ? '/projects/heat'
+                      : '/projects'
+                  }
+                  className='cnx-btn cnx-btn-blue'
+                >
                   Details
-                </a>
+                </Link>
               </div>
             </article>
           ))}
@@ -298,9 +306,9 @@ export default function CardicNexusLanding() {
               <li>Spider Web™</li>
               <li>Oracle 1.0 (Soon)</li>
             </ul>
-            <a className='cnx-btn cnx-btn-ghost' href='#projects'>
+            <Link href='/projects' className='cnx-btn cnx-btn-ghost'>
               Browse
-            </a>
+            </Link>
           </article>
           <article className='cnx-price'>
             <h3>All-Access</h3>
