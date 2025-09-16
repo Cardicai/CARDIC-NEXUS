@@ -31,7 +31,7 @@ export default function NavBar() {
     <header className='cnx-nav'>
       <div className='cnx-nav-inner'>
         <Link href='/' className='brand' aria-label='Cardic Nexus – Home'>
-          <BrandLogo size='md' />
+          <BrandLogo size='sm' />
         </Link>
 
         <nav className='cnx-links'>
