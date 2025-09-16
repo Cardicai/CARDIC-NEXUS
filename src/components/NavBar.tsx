@@ -1,9 +1,8 @@
 'use client';
 
-import Link from 'next/link';
 import { type MouseEvent, useState } from 'react';
 
-import BrandLogo from './BrandLogo';
+import BrandLogo from '@/components/BrandLogo';
 
 const TELEGRAM_CHANNEL = 'https://t.me/cardicnexus';
 const TELEGRAM_DM = 'https://t.me/realcardic1';
@@ -30,9 +29,12 @@ export default function NavBar() {
   return (
     <header className='cnx-nav'>
       <div className='cnx-nav-inner'>
-        <Link href='/' className='brand' aria-label='Cardic Nexus – Home'>
-          <BrandLogo size='md' />
-        </Link>
+        <a href='/' className='brand' aria-label='Cardic Nexus — Home'>
+          <BrandLogo
+            size='sm'
+            className='rounded-full overflow-hidden ring-1 ring-white/10 shadow-[0_0_18px_rgba(245,199,107,0.25)]'
+          />
+        </a>
 
         <nav className='cnx-links'>
           <a href={TELEGRAM_CHANNEL} target='_blank' rel='noreferrer'>
