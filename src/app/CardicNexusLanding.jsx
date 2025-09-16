@@ -99,7 +99,7 @@ export default function CardicNexusLanding() {
           </a>
         </div>
         <div className='cnx-note'>
-          ✨ Wishing You a Great Weekend — stay golden and disciplined.
+          💙 GOODLUCK ON YOUR TRADING JOURNEY — WE WANT TO SEE YOU WIN
         </div>
       </section>
 
@@ -480,7 +480,7 @@ export default function CardicNexusLanding() {
         .cnx-hero{max-width:1100px; margin:0 auto; padding:64px 16px 32px; text-align:center}
         .cnx-tag{color:#b6beca; margin:12px 0 18px}
         .cnx-row{display:flex; gap:12px; justify-content:center; flex-wrap:wrap}
-        .cnx-note{color:#aeb7c6; font-size:14px; margin-top:12px}
+        .cnx-note{color:#cfe0ff; font-size:14px; margin-top:12px; font-weight:700; letter-spacing:.02em}
 
         .cnx-section{max-width:1100px; margin:0 auto; padding:34px 16px}
         .cnx-section h2{margin:0 0 14px; font-size:24px}
