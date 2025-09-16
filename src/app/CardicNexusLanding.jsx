@@ -1,8 +1,6 @@
 'use client';
 import Image from 'next/image';
 
-import BrandLogo from '@/components/BrandLogo';
-
 export default function CardicNexusLanding() {
   const copy = async (text) => {
     try {
@@ -82,11 +80,6 @@ export default function CardicNexusLanding() {
 
       {/* HERO */}
       <section className='cnx-hero'>
-        <div
-          style={{ display: 'flex', justifyContent: 'center', marginTop: 8 }}
-        >
-          <BrandLogo size='lg' />
-        </div>
         <p className='cnx-tag'>
           AI • Trading • Innovation — for retail traders.
         </p>
@@ -99,7 +92,7 @@ export default function CardicNexusLanding() {
           </a>
         </div>
         <div className='cnx-note'>
-          💙 GOODLUCK ON YOUR TRADING JOURNEY — WE WANT TO SEE YOU WIN
+          💙 GOODLUCK ON YOUR TRADING JOURNEY — WE WANT TO SEE YOU WIN.
         </div>
       </section>
 
