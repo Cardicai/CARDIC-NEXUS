@@ -43,8 +43,9 @@ export const metadata: Metadata = {
     canonical: 'https://www.cardicnex.us',
   },
   icons: {
-    icon: '/favicon/favicon.ico',
-    apple: '/favicon/apple-touch-icon.png',
+    icon: '/favicon/favicon.png',
+    shortcut: '/favicon/favicon.png',
+    apple: '/favicon/favicon.png',
   },
 };
 
