@@ -1,7 +1,16 @@
 'use client';
 import Image from 'next/image';
+import { useState } from 'react';
+
+import PaymentSheet from '@/components/PaymentSheet';
 
 export default function CardicNexusLanding() {
+  const [payOpen, setPayOpen] = useState(false);
+  const [plan, setPlan] = useState(null);
+  const openPay = (p) => {
+    setPlan(p);
+    setPayOpen(true);
+  };
   const copy = async (text) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -43,6 +52,11 @@ export default function CardicNexusLanding() {
       status: 'Soon',
       text: 'Real-time psychology, liquidity battles, predictive zones.',
       tags: ['Psychology', 'Liquidity', 'AI'],
+      plan: {
+        id: 'oracle-1',
+        title: 'CARDIC Oracle 1.0',
+        price: 'Coming Soon',
+      },
     },
     {
       title: 'Cardic Heat Zones™',
@@ -50,6 +64,11 @@ export default function CardicNexusLanding() {
       status: 'Live',
       text: 'Smart money zones with alerts.',
       tags: ['SMC', 'Zones', 'Alerts'],
+      plan: {
+        id: 'heat-zones',
+        title: 'CARDIC Heat Zones™',
+        price: 'From $99',
+      },
     },
     {
       title: 'Cardic Spider Web™',
@@ -57,6 +76,11 @@ export default function CardicNexusLanding() {
       status: 'In Dev',
       text: 'Dynamic SR + Fibonacci + Order Blocks.',
       tags: ['Fib', 'OB', 'Grid'],
+      plan: {
+        id: 'spider-web',
+        title: 'Cardic Spider Web™',
+        price: 'Coming Soon',
+      },
     },
     {
       title: 'Premium Signals',
@@ -64,6 +88,11 @@ export default function CardicNexusLanding() {
       status: 'Live',
       text: 'Daily gold/FX/crypto signals with risk notes.',
       tags: ['Gold', 'Forex', 'Crypto'],
+      plan: {
+        id: 'premium-signals',
+        title: 'Premium Signals',
+        price: '$49/mo',
+      },
     },
   ];
 
@@ -81,8 +110,8 @@ export default function CardicNexusLanding() {
       {/* HERO */}
       <section className='cnx-hero'>
         <h1 className='heroTitle'>
-          <span className='heroGold'>CARDIC</span>{' '}
-          <span className='heroBlue'>NEXUS</span>
+          <span className='cnx-text-gold heroGold'>CARDIC</span>{' '}
+          <span className='cnx-text-blue heroBlue'>NEXUS</span>
         </h1>
         <p className='cnx-tag'>
           AI • Trading • Innovation — for retail traders.
@@ -91,9 +120,19 @@ export default function CardicNexusLanding() {
           <a className='cnx-btn cnx-btn-ghost' href='#projects'>
             Explore Projects
           </a>
-          <a className='cnx-btn cnx-btn-blue' href='#pay' onClick={scrollToPay}>
+          <button
+            className='cnx-btn cnx-btn-blue'
+            type='button'
+            onClick={() =>
+              openPay({
+                id: 'all-access',
+                title: 'All-Access',
+                price: '$179/mo',
+              })
+            }
+          >
             Join Premium
-          </a>
+          </button>
         </div>
         <div className='cnx-note'>
           💙 GOODLUCK ON YOUR TRADING JOURNEY — WE WANT TO SEE YOU WIN
@@ -118,13 +157,17 @@ export default function CardicNexusLanding() {
                 ))}
               </div>
               <div className='cnx-card-actions'>
-                <a
+                <button
+                  type='button'
                   className='cnx-btn cnx-btn-ghost'
-                  href='#pay'
-                  onClick={scrollToPay}
+                  onClick={() =>
+                    openPay({
+                      ...(p.plan ?? { id: p.title, title: p.title, price: '' }),
+                    })
+                  }
                 >
                   Buy
-                </a>
+                </button>
                 <a className='cnx-btn cnx-btn-blue' href='#contact'>
                   Details
                 </a>
@@ -435,6 +478,12 @@ export default function CardicNexusLanding() {
         All rights reserved.
       </footer>
 
+      <PaymentSheet
+        open={payOpen}
+        onClose={() => setPayOpen(false)}
+        plan={plan}
+      />
+
       {/* Scoped CSS (no Tailwind) */}
       <style>{`
         :root{
@@ -478,6 +527,8 @@ export default function CardicNexusLanding() {
         .cnx-tag{color:#b6beca; margin:12px 0 18px}
         .cnx-row{display:flex; gap:12px; justify-content:center; flex-wrap:wrap}
         .cnx-note{color:#cfe0ff; font-size:14px; margin-top:12px; font-weight:700; letter-spacing:.02em}
+        .cnx-text-gold{color:var(--gold)}
+        .cnx-text-blue{color:var(--blue)}
 
         .cnx-section{max-width:1100px; margin:0 auto; padding:34px 16px}
         .cnx-section h2{margin:0 0 14px; font-size:24px}
