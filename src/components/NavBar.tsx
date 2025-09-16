@@ -1,31 +1,58 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { type MouseEvent, useState } from 'react';
 
 import BrandLogo from './BrandLogo';
+
+const TELEGRAM_CHANNEL = 'https://t.me/cardicnexus';
+const TELEGRAM_DM = 'https://t.me/realcardic1';
 
 export default function NavBar() {
   const [open, setOpen] = useState(false);
 
+  const onNavClick = (e: MouseEvent<HTMLAnchorElement>) => {
+    const href = (e.currentTarget.getAttribute('href') || '').trim();
+    if (href.startsWith('#')) {
+      e.preventDefault();
+      const el = document.querySelector(href);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
+
+  const onMobileNavClick = (e: MouseEvent<HTMLAnchorElement>) => {
+    onNavClick(e);
+    setOpen(false);
+  };
+
   return (
     <header className='cnx-nav'>
-      <div className='inner'>
-        <Link href='/' className='logo' aria-label='Cardic Nexus home'>
+      <div className='cnx-nav-inner'>
+        <Link href='/' className='brand' aria-label='Cardic Nexus – Home'>
           <BrandLogo size='md' />
         </Link>
 
-        <nav className='links'>
-          <Link href='/projects'>Projects</Link>
-          <Link href='/projects/heat'>CARDIC Heat</Link>
-          <Link href='/pricing'>Pricing</Link>
-          <Link href='/contact'>Contact</Link>
+        <nav className='cnx-links'>
+          <a href={TELEGRAM_CHANNEL} target='_blank' rel='noreferrer'>
+            Projects
+          </a>
+          <a href='#heat' onClick={onNavClick}>
+            CARDIC Heat
+          </a>
+          <a href='#pricing' onClick={onNavClick}>
+            Pricing
+          </a>
+          <a href={TELEGRAM_DM} target='_blank' rel='noreferrer'>
+            Contact
+          </a>
         </nav>
 
-        <div className='actions'>
-          <Link href='/pricing' className='btn blue'>
+        <div className='cnx-nav-actions'>
+          <a href='#pay' onClick={onNavClick} className='cnx-btn cnx-btn-blue'>
             Join Premium
-          </Link>
+          </a>
           <button
             className='burger'
             aria-label='Open menu'
@@ -46,18 +73,35 @@ export default function NavBar() {
         }}
       >
         <nav className='sheetNav'>
-          <Link href='/projects' onClick={() => setOpen(false)}>
+          <a
+            href={TELEGRAM_CHANNEL}
+            target='_blank'
+            rel='noreferrer'
+            onClick={() => setOpen(false)}
+          >
             Projects
-          </Link>
-          <Link href='/projects/heat' onClick={() => setOpen(false)}>
+          </a>
+          <a href='#heat' onClick={onMobileNavClick}>
             CARDIC Heat
-          </Link>
-          <Link href='/pricing' onClick={() => setOpen(false)}>
+          </a>
+          <a href='#pricing' onClick={onMobileNavClick}>
             Pricing
-          </Link>
-          <Link href='/contact' onClick={() => setOpen(false)}>
+          </a>
+          <a
+            href={TELEGRAM_DM}
+            target='_blank'
+            rel='noreferrer'
+            onClick={() => setOpen(false)}
+          >
             Contact
-          </Link>
+          </a>
+          <a
+            href='#pay'
+            onClick={onMobileNavClick}
+            className='cnx-btn cnx-btn-blue'
+          >
+            Join Premium
+          </a>
         </nav>
       </div>
 
@@ -70,7 +114,7 @@ export default function NavBar() {
           background: rgba(0, 0, 0, 0.35);
           border-bottom: 1px solid rgba(245, 199, 107, 0.18);
         }
-        .inner {
+        .cnx-nav-inner {
           max-width: 1100px;
           margin: 0 auto;
           padding: 12px 16px;
@@ -79,26 +123,26 @@ export default function NavBar() {
           justify-content: space-between;
           gap: 16px;
         }
-        .links {
+        .cnx-links {
           display: flex;
           gap: 16px;
           align-items: center;
         }
-        .links a {
+        .cnx-links a {
           color: #cfd3dc;
           text-decoration: none;
           font-size: 14px;
         }
-        .links a:hover {
+        .cnx-links a:hover {
           color: #fff;
         }
 
-        .actions {
+        .cnx-nav-actions {
           display: flex;
           gap: 10px;
           align-items: center;
         }
-        .btn {
+        .cnx-btn {
           display: inline-block;
           padding: 10px 14px;
           border-radius: 14px;
@@ -106,14 +150,14 @@ export default function NavBar() {
           color: #fff;
           text-decoration: none;
         }
-        .btn.blue {
+        .cnx-btn.cnx-btn-blue {
           background: #10a5ff;
           color: #000;
           font-weight: 800;
           border-color: transparent;
           box-shadow: 0 0 24px rgba(16, 165, 255, 0.35);
         }
-        .btn.blue:hover {
+        .cnx-btn.cnx-btn-blue:hover {
           filter: brightness(1.08);
         }
 
@@ -135,7 +179,7 @@ export default function NavBar() {
         }
 
         @media (max-width: 900px) {
-          .links {
+          .cnx-links {
             display: none;
           }
           .burger {
@@ -185,6 +229,10 @@ export default function NavBar() {
           transform: scale(0.98);
           background: rgba(16, 165, 255, 0.12);
           border-color: rgba(16, 165, 255, 0.35);
+        }
+
+        :global(section[id]) {
+          scroll-margin-top: 84px;
         }
       `}</style>
     </header>
