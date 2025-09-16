@@ -1,39 +1,42 @@
 'use client';
-import Image from 'next/image';
+
+import { useState } from 'react';
+
+import PaymentSheet from '@/components/PaymentSheet';
 
 export default function CardicNexusLanding() {
-  const copy = async (text) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      alert('Copied');
-    } catch {
-      /* ignore */
-    }
+  const [payOpen, setPayOpen] = useState(false);
+  const [plan, setPlan] = useState(null);
+
+  const openPay = (p) => {
+    setPlan(p);
+    setPayOpen(true);
   };
-  const scrollToPay = (e) => {
-    e.preventDefault();
-    const el = document.querySelector('#pay');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+
+  const premiumSignalsPlan = {
+    id: 'premium-signals',
+    title: 'Premium Signals',
+    price: '$49/mo',
   };
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    try {
-      const res = await fetch('/api/submit-payment', {
-        method: 'POST',
-        body: formData,
-      });
-      if (res.ok) {
-        alert('Success!');
-        e.target.reset();
-      } else {
-        alert('Error submitting form');
-      }
-    } catch (err) {
-      alert('Error submitting form');
-    }
+  const allAccessPlan = {
+    id: 'all-access',
+    title: 'All-Access',
+    price: '$179/mo',
+  };
+  const heatZonesPlan = {
+    id: 'heat-zones',
+    title: 'CARDIC Heat Zones™',
+    price: 'From $99',
+  };
+  const spiderWebPlan = {
+    id: 'spider-web',
+    title: 'Cardic Spider Web™',
+    price: 'TBA',
+  };
+  const oraclePlan = {
+    id: 'oracle-1',
+    title: 'CARDIC Oracle 1.0',
+    price: 'TBA',
   };
 
   const projects = [
@@ -43,6 +46,7 @@ export default function CardicNexusLanding() {
       status: 'Soon',
       text: 'Real-time psychology, liquidity battles, predictive zones.',
       tags: ['Psychology', 'Liquidity', 'AI'],
+      plan: oraclePlan,
     },
     {
       title: 'Cardic Heat Zones™',
@@ -50,6 +54,7 @@ export default function CardicNexusLanding() {
       status: 'Live',
       text: 'Smart money zones with alerts.',
       tags: ['SMC', 'Zones', 'Alerts'],
+      plan: heatZonesPlan,
     },
     {
       title: 'Cardic Spider Web™',
@@ -57,6 +62,7 @@ export default function CardicNexusLanding() {
       status: 'In Dev',
       text: 'Dynamic SR + Fibonacci + Order Blocks.',
       tags: ['Fib', 'OB', 'Grid'],
+      plan: spiderWebPlan,
     },
     {
       title: 'Premium Signals',
@@ -64,12 +70,9 @@ export default function CardicNexusLanding() {
       status: 'Live',
       text: 'Daily gold/FX/crypto signals with risk notes.',
       tags: ['Gold', 'Forex', 'Crypto'],
+      plan: premiumSignalsPlan,
     },
   ];
-
-  const usdt = '0x713598879a14D07013d3154b225D2fa838bb0a54';
-  const eth = '0x713598879a14D07013d3154b225D2fa838bb0a54';
-  const btc = 'bc1qm034jk98v7yzdy5yedyvwave96ujqjgnqyytm3';
 
   return (
     <div className='cnx-root'>
@@ -91,9 +94,13 @@ export default function CardicNexusLanding() {
           <a className='cnx-btn cnx-btn-ghost' href='#projects'>
             Explore Projects
           </a>
-          <a className='cnx-btn cnx-btn-blue' href='#pay' onClick={scrollToPay}>
+          <button
+            className='cnx-btn cnx-btn-blue'
+            type='button'
+            onClick={() => openPay(allAccessPlan)}
+          >
             Join Premium
-          </a>
+          </button>
         </div>
         <div className='cnx-note'>
           💙 GOODLUCK ON YOUR TRADING JOURNEY — WE WANT TO SEE YOU WIN
@@ -118,13 +125,13 @@ export default function CardicNexusLanding() {
                 ))}
               </div>
               <div className='cnx-card-actions'>
-                <a
+                <button
                   className='cnx-btn cnx-btn-ghost'
-                  href='#pay'
-                  onClick={scrollToPay}
+                  type='button'
+                  onClick={() => openPay(p.plan)}
                 >
                   Buy
-                </a>
+                </button>
                 <a className='cnx-btn cnx-btn-blue' href='#contact'>
                   Details
                 </a>
@@ -158,13 +165,19 @@ export default function CardicNexusLanding() {
             <div className='cnx-amount'>$25</div>
             <div className='cnx-note'>2 months</div>
             <div className='cnx-card-actions' style={{ marginTop: 12 }}>
-              <a
+              <button
                 className='cnx-btn cnx-btn-blue'
-                href='#pay'
-                onClick={scrollToPay}
+                type='button'
+                onClick={() =>
+                  openPay({
+                    id: 'cardic-heat-20',
+                    title: 'CARDIC Heat 2.0',
+                    price: '$25 (2 months)',
+                  })
+                }
               >
                 Get 2.0
-              </a>
+              </button>
             </div>
           </article>
 
@@ -178,13 +191,19 @@ export default function CardicNexusLanding() {
             <div className='cnx-amount'>$35</div>
             <div className='cnx-note'>2 months</div>
             <div className='cnx-card-actions' style={{ marginTop: 12 }}>
-              <a
+              <button
                 className='cnx-btn cnx-btn-blue'
-                href='#pay'
-                onClick={scrollToPay}
+                type='button'
+                onClick={() =>
+                  openPay({
+                    id: 'cardic-heat-21',
+                    title: 'CARDIC Heat 2.1',
+                    price: '$35 (2 months)',
+                  })
+                }
               >
                 Get 2.1
-              </a>
+              </button>
             </div>
           </article>
 
@@ -198,13 +217,19 @@ export default function CardicNexusLanding() {
             <div className='cnx-amount'>$50</div>
             <div className='cnx-note'>Early Access — 1 month</div>
             <div className='cnx-card-actions' style={{ marginTop: 12 }}>
-              <a
+              <button
                 className='cnx-btn cnx-btn-blue'
-                href='#pay'
-                onClick={scrollToPay}
+                type='button'
+                onClick={() =>
+                  openPay({
+                    id: 'cardic-heat-23',
+                    title: 'CARDIC Heat 2.3',
+                    price: '$50 (early access)',
+                  })
+                }
               >
                 Get 2.3
-              </a>
+              </button>
             </div>
           </article>
         </div>
@@ -227,13 +252,13 @@ export default function CardicNexusLanding() {
               <li>Risk management notes</li>
               <li>Telegram access</li>
             </ul>
-            <a
+            <button
               className='cnx-btn cnx-btn-ghost'
-              href='#pay'
-              onClick={scrollToPay}
+              type='button'
+              onClick={() => openPay(premiumSignalsPlan)}
             >
               Subscribe
-            </a>
+            </button>
           </article>
           <article className='cnx-price'>
             <h3>Indicators</h3>
@@ -255,127 +280,14 @@ export default function CardicNexusLanding() {
               <li>Premium signals</li>
               <li>Priority support</li>
             </ul>
-            <a
+            <button
               className='cnx-btn cnx-btn-blue'
-              href='#pay'
-              onClick={scrollToPay}
+              type='button'
+              onClick={() => openPay(allAccessPlan)}
             >
               Join
-            </a>
+            </button>
           </article>
-        </div>
-      </section>
-
-      {/* PAYMENT DETAILS */}
-      <section id='pay' className='cnx-section'>
-        <div className='cnx-pay-panel'>
-          <h2>Join Premium</h2>
-          <p className='cnx-text'>
-            Crypto payments (USDT / ETH / BTC). Pick any address, make payment,
-            then submit your details + proof.
-          </p>
-
-          <div className='cnx-pay-grid'>
-            <div className='cnx-pay-card'>
-              <h3>USDT (ERC-20)</h3>
-              <div className='cnx-address-row'>
-                <span className='cnx-address'>{usdt}</span>
-                <button
-                  className='cnx-copy'
-                  type='button'
-                  onClick={() => copy(usdt)}
-                >
-                  Copy
-                </button>
-              </div>
-              <div className='cnx-note'>Network: ERC-20 only.</div>
-              <div className='cnx-qr'>
-                <Image
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${usdt}`}
-                  width={120}
-                  height={120}
-                  alt='usdt'
-                  unoptimized
-                />
-              </div>
-            </div>
-            <div className='cnx-pay-card'>
-              <h3>ETH (ERC-20)</h3>
-              <div className='cnx-address-row'>
-                <span className='cnx-address'>{eth}</span>
-                <button
-                  className='cnx-copy'
-                  type='button'
-                  onClick={() => copy(eth)}
-                >
-                  Copy
-                </button>
-              </div>
-              <div className='cnx-note'>Network: ERC-20 only.</div>
-              <div className='cnx-qr'>
-                <Image
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${eth}`}
-                  width={120}
-                  height={120}
-                  alt='eth'
-                  unoptimized
-                />
-              </div>
-            </div>
-            <div className='cnx-pay-card'>
-              <h3>BTC</h3>
-              <div className='cnx-address-row'>
-                <span className='cnx-address'>{btc}</span>
-                <button
-                  className='cnx-copy'
-                  type='button'
-                  onClick={() => copy(btc)}
-                >
-                  Copy
-                </button>
-              </div>
-              <div className='cnx-note'>Network: BTC (SegWit).</div>
-              <div className='cnx-qr'>
-                <Image
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${btc}`}
-                  width={120}
-                  height={120}
-                  alt='btc'
-                  unoptimized
-                />
-              </div>
-            </div>
-          </div>
-
-          <form className='cnx-form' onSubmit={handleSubmit}>
-            <h3 className='cnx-pay-form-title'>Submit Payment Proof</h3>
-            <input type='text' name='name' placeholder='Full Name' required />
-            <input type='email' name='email' placeholder='Email' required />
-            <input
-              type='text'
-              name='tradingview'
-              placeholder='TradingView Username'
-              required
-            />
-            <input
-              type='text'
-              name='contact'
-              placeholder='Contact (Telegram @ or WhatsApp)'
-            />
-            <input
-              type='text'
-              name='txHash'
-              placeholder='Transaction Hash/ID (optional)'
-            />
-            <textarea name='notes' placeholder='Notes (optional)' rows={3} />
-            <input
-              type='file'
-              name='proof'
-              accept='image/*,application/pdf'
-              required
-            />
-            <button type='submit'>Submit</button>
-          </form>
         </div>
       </section>
 
@@ -435,6 +347,12 @@ export default function CardicNexusLanding() {
         All rights reserved.
       </footer>
 
+      <PaymentSheet
+        open={payOpen}
+        onClose={() => setPayOpen(false)}
+        plan={plan}
+      />
+
       {/* Scoped CSS (no Tailwind) */}
       <style>{`
         :root{
@@ -469,7 +387,20 @@ export default function CardicNexusLanding() {
         .cnx-glow-blue{bottom:-120px; right:-120px; width:300px; height:300px; background: radial-gradient(circle, var(--blue), transparent 60%)}
         @keyframes twinkle { 0%,100%{opacity:.65} 50%{opacity:1} }
 
-        .cnx-btn{display:inline-block; padding:10px 14px; border-radius:14px; text-decoration:none; transition:.2s; border:1px solid rgba(245,199,107,.45); color:#fff}
+        .cnx-btn{
+          display:inline-flex;
+          align-items:center;
+          justify-content:center;
+          padding:10px 14px;
+          border-radius:14px;
+          text-decoration:none;
+          transition:.2s;
+          border:1px solid rgba(245,199,107,.45);
+          color:#fff;
+          background:transparent;
+          cursor:pointer;
+          font:inherit;
+        }
         .cnx-btn-ghost:hover{background:rgba(255,255,255,.08)}
         .cnx-btn-blue{background:var(--blue); color:#000; font-weight:800; border-color:transparent; box-shadow:0 0 24px rgba(16,165,255,.35)}
         .cnx-btn-blue:hover{filter:brightness(1.08)}
@@ -506,75 +437,6 @@ export default function CardicNexusLanding() {
         .cnx-line{height:1px; background:linear-gradient(90deg, transparent, rgba(255,255,255,.15), transparent); margin:18px 0}
 
         .cnx-tagline{color:var(--muted); margin-top:12px; text-align:center}
-
-        .cnx-pay-panel{
-          background:rgba(255,255,255,.04);
-          border:1px solid rgba(255,255,255,.12);
-          border-radius:22px;
-          padding:24px;
-          box-shadow:0 0 0 1px rgba(245,199,107,.25), 0 0 28px rgba(16,165,255,.12);
-        }
-        .cnx-pay-panel h2{margin:0 0 10px}
-        .cnx-pay-panel .cnx-text{margin:0 0 20px}
-        .cnx-pay-grid{
-          display:grid;
-          gap:16px;
-          grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
-          margin-bottom:24px;
-        }
-        .cnx-pay-card{
-          background:rgba(255,255,255,.05);
-          border:1px solid rgba(255,255,255,.14);
-          border-radius:16px;
-          padding:16px;
-          display:flex;
-          flex-direction:column;
-          gap:10px;
-        }
-        .cnx-pay-card h3{margin:0}
-        .cnx-address-row{
-          display:flex;
-          justify-content:space-between;
-          align-items:center;
-          font-size:13px;
-          gap:8px;
-        }
-        .cnx-address{word-break:break-all; font-family:monospace; color:#f3f5ff}
-        .cnx-copy{
-          background:rgba(16,165,255,.15);
-          color:#fff;
-          border:1px solid rgba(16,165,255,.4);
-          padding:4px 10px;
-          border-radius:8px;
-          cursor:pointer;
-          transition:.2s;
-        }
-        .cnx-copy:hover{background:rgba(16,165,255,.28)}
-        .cnx-qr{margin-top:4px; display:flex; justify-content:center}
-        .cnx-pay-form-title{margin:0; font-size:18px; font-weight:700}
-        .cnx-form{display:grid; gap:12px}
-        .cnx-form input, .cnx-form textarea{
-          width:100%;
-          border:1px solid rgba(255,255,255,.18);
-          background:rgba(255,255,255,.05);
-          color:#fff;
-          padding:10px;
-          border-radius:12px;
-          font-family:inherit;
-        }
-        .cnx-form input::placeholder, .cnx-form textarea::placeholder{color:rgba(255,255,255,.55)}
-        .cnx-form textarea{resize:vertical; min-height:120px}
-        .cnx-form button{
-          background:var(--blue);
-          color:#000;
-          border:none;
-          padding:12px;
-          border-radius:12px;
-          font-weight:700;
-          cursor:pointer;
-          transition:.2s;
-        }
-        .cnx-form button:hover{filter:brightness(1.08)}
 
       `}</style>
     </div>
