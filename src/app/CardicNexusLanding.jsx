@@ -1,10 +1,12 @@
 'use client';
 import Image from 'next/image';
+import Link from 'next/link';
 import React, { useState } from 'react';
 
 export default function CardicNexusLanding() {
   const [navOpen, setNavOpen] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
+  const [logoSrc, setLogoSrc] = useState('/images/cardic-nexus-header.webp');
   const openCheckout = (e) => {
     e.preventDefault();
     setShowCheckout(true);
@@ -83,11 +85,21 @@ export default function CardicNexusLanding() {
       {/* NAV */}
       <header className='cnx-nav'>
         <div className='cnx-nav-inner'>
-          <a className='cnx-logo' href='#'>
-            <span className='cnx-text-gold'>CARDIC</span>{' '}
-            <span className='cnx-text-blue'>NEXUS</span>
-            <div className='cnx-sub'>AI • TRADING</div>
-          </a>
+          <Link href='/' className='cnx-logo' aria-label='Cardic Nexus – Home'>
+            <Image
+              src={logoSrc}
+              alt='Cardic Nexus'
+              width={220}
+              height={64}
+              priority
+              className='cnx-logo-img'
+              onError={() => {
+                if (logoSrc !== '/images/cardic-nexus-header.png') {
+                  setLogoSrc('/images/cardic-nexus-header.png');
+                }
+              }}
+            />
+          </Link>
 
           {/* Mobile burger */}
           <button
@@ -514,6 +526,9 @@ export default function CardicNexusLanding() {
 
         .cnx-nav{position:sticky; top:0; backdrop-filter: blur(8px); border-bottom:1px solid rgba(245,199,107,.18); background:rgba(0,0,0,.35)}
         .cnx-nav-inner{max-width:1100px; margin:0 auto; padding:12px 16px; display:flex; align-items:center; justify-content:space-between}
+        .cnx-logo{display:inline-flex; align-items:center}
+        .cnx-logo-img{height:42px; width:auto; object-fit:contain; filter:drop-shadow(0 0 10px rgba(16,165,255,.18))}
+        @media (max-width: 640px){.cnx-logo-img{height:34px}}
         .cnx-links a{color:#cfd3dc; margin:0 10px; font-size:14px}
         .cnx-links a:hover{color:#fff}
 
