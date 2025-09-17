@@ -1,4 +1,6 @@
 import type { ReactNode } from 'react';
+import { siteConfig } from '@/constant/config';
+import Head from 'next/head';
 
 import './globals.css';
 
@@ -40,6 +42,16 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang='en'>
+    <Head>
+        <title>{siteConfig.title}</title>
+        <meta name="description" content={siteConfig.description} />
+        <meta property="og:title" content={siteConfig.title} />
+        <meta property="og:description" content={siteConfig.description} />
+        <meta property="og:image" content={siteConfig.ogImage} />
+        <meta property="og:url" content={siteConfig.url} />
+        <meta property="og:type" content={siteConfig.ogType} />
+        <meta name="twitter:card" content={siteConfig.twitterCard} />
+      </Head>
       <body
         style={{
           margin: 0,
