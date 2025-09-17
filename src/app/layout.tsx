@@ -1,51 +1,39 @@
-import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 
 import './globals.css';
 
 import NavBar from '@/components/NavBar';
 
-export const metadata: Metadata = {
+export const metadata = {
   metadataBase: new URL('https://www.cardicnex.us'),
-  title: {
-    default: 'CARDIC NEXUS — AI • Trading',
-    template: '%s | CARDIC NEXUS',
-  },
+  title: 'CARDIC NEXUS — AI • Trading',
   description:
     'AI • Trading • Innovation for retail traders. Precision indicators, EAs, and premium signals.',
   openGraph: {
     type: 'website',
-    url: '/',
-    siteName: 'CARDIC NEXUS',
     title: 'CARDIC NEXUS — AI • Trading',
     description:
       'AI • Trading • Innovation for retail traders. Precision indicators, EAs, and premium signals.',
+    url: 'https://www.cardicnex.us',
     images: [
       {
-        url: '/images/og.jpg',
+        url: '/og-cardic.png',
         width: 1200,
         height: 630,
-        alt: 'CARDIC NEXUS gold/blue logo',
+        alt: 'CARDIC NEXUS',
       },
     ],
-    locale: 'en_US',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'CARDIC NEXUS — AI • Trading',
     description:
       'AI • Trading • Innovation for retail traders. Precision indicators, EAs, and premium signals.',
-    images: ['/images/og.jpg'],
-    site: '@CARDICNEXUS',
+    images: ['/og-cardic.png'],
     creator: '@CARDICNEXUS',
   },
   alternates: {
     canonical: 'https://www.cardicnex.us',
-  },
-  icons: {
-    icon: '/favicon/favicon.png',
-    shortcut: '/favicon/favicon.png',
-    apple: '/favicon/favicon.png',
   },
 };
 
