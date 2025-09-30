@@ -3,10 +3,12 @@
 import { useState } from 'react';
 
 import PaymentSheet from '@/components/PaymentSheet';
+import RedeemSheet from '@/components/RedeemSheet';
 
 export default function CardicNexusLanding() {
   const [payOpen, setPayOpen] = useState(false);
   const [plan, setPlan] = useState(null);
+  const [redeemOpen, setRedeemOpen] = useState(false);
   const openPay = (p) => {
     setPlan(p);
     setPayOpen(true);
@@ -83,6 +85,13 @@ export default function CardicNexusLanding() {
           <a className='cnx-btn cnx-btn-ghost' href='#projects'>
             Explore Projects
           </a>
+          <button
+            type='button'
+            className='cnx-btn cnx-btn-ghost'
+            onClick={() => setRedeemOpen(true)}
+          >
+            Redeem
+          </button>
           <button
             type='button'
             className='cnx-btn cnx-btn-blue'
@@ -353,6 +362,8 @@ export default function CardicNexusLanding() {
         <div className='cnx-line' />© {new Date().getFullYear()} Cardic Nexus.
         All rights reserved.
       </footer>
+
+      <RedeemSheet open={redeemOpen} onClose={() => setRedeemOpen(false)} />
 
       <PaymentSheet
         open={payOpen}
