@@ -90,7 +90,7 @@ export default function CardicNexusLanding() {
             className='cnx-btn cnx-btn-ghost'
             onClick={() => setRedeemOpen(true)}
           >
-            Redeemed
+            Redeem
           </button>
           <button
             type='button'

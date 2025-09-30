@@ -9,6 +9,8 @@ interface RedeemSheetProps {
 
 export default function RedeemSheet({ open, onClose }: RedeemSheetProps) {
   const [mode, setMode] = useState<'form' | 'success'>('form');
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open) {
@@ -16,6 +18,8 @@ export default function RedeemSheet({ open, onClose }: RedeemSheetProps) {
     }
 
     setMode('form');
+    setSubmitting(false);
+    setError(null);
 
     const handleKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -33,9 +37,31 @@ export default function RedeemSheet({ open, onClose }: RedeemSheetProps) {
     };
   }, [open, onClose]);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setMode('success');
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    setSubmitting(true);
+    setError(null);
+
+    try {
+      const res = await fetch('/api/redeem', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error('Request failed');
+      }
+
+      form.reset();
+      setMode('success');
+    } catch (err) {
+      setError('We could not submit your redemption. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (!open) {
@@ -86,8 +112,17 @@ export default function RedeemSheet({ open, onClose }: RedeemSheetProps) {
                 required
               />
             </label>
-            <button type='submit' className='cnx-redeem-submit'>
-              Redeem
+            {error ? (
+              <p role='alert' className='cnx-redeem-error'>
+                {error}
+              </p>
+            ) : null}
+            <button
+              type='submit'
+              className='cnx-redeem-submit'
+              disabled={submitting}
+            >
+              {submitting ? 'Sending…' : 'Redeem'}
             </button>
           </form>
         ) : (
@@ -98,7 +133,7 @@ export default function RedeemSheet({ open, onClose }: RedeemSheetProps) {
             <h2>Success!</h2>
             <p>
               Your code was submitted. Our team will activate your TradingView
-              access shortly.
+              access shortly and confirm via email.
             </p>
             <button
               type='button'
@@ -193,6 +228,15 @@ export default function RedeemSheet({ open, onClose }: RedeemSheetProps) {
         .cnx-redeem-field input::placeholder {
           color: rgba(255, 255, 255, 0.55);
         }
+        .cnx-redeem-error {
+          margin: 0;
+          font-size: 13px;
+          color: #ffb4b4;
+          background: rgba(255, 80, 80, 0.16);
+          border: 1px solid rgba(255, 80, 80, 0.35);
+          padding: 8px 10px;
+          border-radius: 10px;
+        }
         .cnx-redeem-submit {
           background: var(--blue, #10a5ff);
           color: #000;
@@ -205,6 +249,11 @@ export default function RedeemSheet({ open, onClose }: RedeemSheetProps) {
         }
         .cnx-redeem-submit:hover {
           filter: brightness(1.08);
+        }
+        .cnx-redeem-submit:disabled {
+          opacity: 0.65;
+          cursor: not-allowed;
+          filter: none;
         }
         .cnx-redeem-success {
           display: grid;
