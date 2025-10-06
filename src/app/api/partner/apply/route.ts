@@ -93,9 +93,9 @@ export async function POST(request: Request) {
       throw new EmailError('Missing ADMIN_EMAIL environment variable');
     }
 
-    const adminSubject = `New IB application — ${legalName}`;
+    const adminSubject = `New NP application — ${legalName}`;
     const adminText = [
-      'A new introducer (IB) application has been submitted.',
+      'A new Nexus Partner (NP) application has been submitted.',
       `Legal name: ${legalName}`,
       `Email: ${email}`,
       `Country: ${country}`,
@@ -119,11 +119,11 @@ export async function POST(request: Request) {
       attachments: attachments.length ? attachments : undefined,
     });
 
-    const userSubject = 'We received your Cardic Nexus IB application';
+    const userSubject = 'We received your Cardic Nexus NP application';
     const userText = [
       `Hi ${legalName},`,
       '',
-      'Thanks for applying to become an Introducer (IB) with Cardic Nexus.',
+      'Thanks for applying to become a Nexus Partner (NP) with Cardic Nexus.',
       'Our partnerships team is reviewing your submission and will follow up shortly.',
       '',
       'What we received:',

@@ -1,42 +1,11 @@
 @import '../styles/globals.css';
 @import '../styles/colors.css';
 
-/* ===== CARDIC NEXUS center title ===== */
-.heroTitle {
-  margin: 0 auto 8px;
-  text-align: center;
-  font-size: 56px; /* tweak if you want it bigger/smaller */
-  line-height: 1.05;
-  font-weight: 900;
-  letter-spacing: 0.02em;
+/* subtle text glows */
+.text-glow-blue {
+  text-shadow: 0 0 14px rgba(22, 177, 255, 0.65);
 }
 
-/* metallic gold “CARDIC” */
-.heroGold {
-  background: linear-gradient(
-    180deg,
-    #ffd27a 0%,
-    #f5c76b 45%,
-    #c98e3a 70%,
-    #b77a2b 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: 0 0 18px rgba(245, 199, 107, 0.35);
-}
-
-/* neon blue “NEXUS” */
-.heroBlue {
-  color: #10a5ff;
-  text-shadow: 0 0 10px rgba(16, 165, 255, 0.55),
-    0 0 22px rgba(16, 165, 255, 0.35);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
-@media (max-width: 480px) {
-  .heroTitle {
-    font-size: 38px;
-  }
+.text-glow-gold {
+  text-shadow: 0 0 14px rgba(241, 179, 76, 0.55);
 }
