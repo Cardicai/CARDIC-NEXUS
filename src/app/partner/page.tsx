@@ -151,7 +151,10 @@ export default function PartnerPage() {
       <section className='hero'>
         <div className='hero-inner'>
           <p className='eyebrow'>Cardic Nexus Partner Hub</p>
-          <h1>Mint your referral link. Apply as an IB. Earn 35% for life.</h1>
+          <h1>
+            Mint your referral link. Apply as an NP (NEXUS PARTNER). Earn 35%
+            for life.
+          </h1>
           <p className='subcopy'>
             Secure a 35% lifetime revenue share on every active subscription you
             introduce. Transparent dashboards, bank-grade tracking, and weekly
@@ -162,7 +165,7 @@ export default function PartnerPage() {
               Mint referral code
             </a>
             <a href='#ib' className='cta secondary'>
-              Submit IB application
+              Submit NP application
             </a>
           </div>
         </div>
@@ -261,7 +264,7 @@ export default function PartnerPage() {
 
         <article id='ib' className='card ib-card'>
           <header>
-            <h2>Introducer (IB) Application</h2>
+            <h2>Nexus Partner (NP) Application</h2>
             <p>
               Tell us about your reach and how you’ll represent Cardic Nexus. We
               review every partner manually to protect brand integrity.
@@ -405,7 +408,7 @@ export default function PartnerPage() {
               </p>
             ) : null}
             <button type='submit' className='submit' disabled={ibLoading}>
-              {ibLoading ? 'Submitting…' : 'Submit IB application'}
+              {ibLoading ? 'Submitting…' : 'Submit NP application'}
             </button>
           </form>
         </article>
@@ -482,7 +485,7 @@ export default function PartnerPage() {
           Mint my referral code
         </a>
         <a href='#ib' className='cta secondary'>
-          Submit IB application
+          Submit NP application
         </a>
         <a
           href='https://t.me/realcardic1'

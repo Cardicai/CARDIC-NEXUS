@@ -51,7 +51,7 @@ export default function NavBar() {
 
         <div className='cnx-nav-actions'>
           <Link href='/partner' className='cnx-btn cnx-btn-amber'>
-            Refer &amp; Earn (IB Program)
+            NP (NEXUS PARTNER)
           </Link>
           <a href='#pay' onClick={onNavClick} className='cnx-btn cnx-btn-blue'>
             Join Premium
@@ -103,7 +103,7 @@ export default function NavBar() {
             className='cnx-btn cnx-btn-amber'
             onClick={() => setOpen(false)}
           >
-            Refer &amp; Earn (IB Program)
+            NP (NEXUS PARTNER)
           </Link>
           <a
             href='#pay'
