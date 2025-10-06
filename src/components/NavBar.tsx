@@ -50,6 +50,9 @@ export default function NavBar() {
         </nav>
 
         <div className='cnx-nav-actions'>
+          <Link href='/partner' className='cnx-btn cnx-btn-amber'>
+            Refer &amp; Earn (Nexus Partner (NP) Program)
+          </Link>
           <a href='#pay' onClick={onNavClick} className='cnx-btn cnx-btn-blue'>
             Join Premium
           </a>
@@ -95,6 +98,13 @@ export default function NavBar() {
           >
             Contact
           </a>
+          <Link
+            href='/partner'
+            className='cnx-btn cnx-btn-amber'
+            onClick={() => setOpen(false)}
+          >
+            Refer &amp; Earn (Nexus Partner (NP) Program)
+          </Link>
           <a
             href='#pay'
             onClick={onMobileNavClick}
@@ -156,6 +166,16 @@ export default function NavBar() {
           font-weight: 800;
           border-color: transparent;
           box-shadow: 0 0 24px rgba(16, 165, 255, 0.35);
+        }
+        .cnx-btn.cnx-btn-amber {
+          background: linear-gradient(135deg, #f5c76b, #ff8a3c);
+          color: #0f1014;
+          font-weight: 700;
+          border-color: rgba(245, 199, 107, 0.55);
+          box-shadow: 0 0 22px rgba(245, 199, 107, 0.35);
+        }
+        .cnx-btn.cnx-btn-amber:hover {
+          filter: brightness(1.05);
         }
         .cnx-btn.cnx-btn-blue:hover {
           filter: brightness(1.08);
