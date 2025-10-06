@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 
+import NexusHero from '@/components/NexusHero';
 import PaymentSheet from '@/components/PaymentSheet';
 import RedeemSheet from '@/components/RedeemSheet';
 
@@ -72,44 +73,17 @@ export default function CardicNexusLanding() {
       <div className='cnx-glow cnx-glow-gold' />
       <div className='cnx-glow cnx-glow-blue' />
 
-      {/* HERO */}
-      <section className='cnx-hero'>
-        <h1 className='heroTitle'>
-          <span className='heroGold'>CARDIC</span>{' '}
-          <span className='heroBlue'>NEXUS</span>
-        </h1>
-        <p className='cnx-tag'>
-          AI • Trading • Innovation — for retail traders.
-        </p>
-        <div className='cnx-row'>
-          <a className='cnx-btn cnx-btn-ghost' href='#projects'>
-            Explore Projects
-          </a>
-          <button
-            type='button'
-            className='cnx-btn cnx-btn-ghost'
-            onClick={() => setRedeemOpen(true)}
-          >
-            Redeem
-          </button>
-          <button
-            type='button'
-            className='cnx-btn cnx-btn-blue'
-            onClick={() =>
-              openPay({
-                id: 'all-access',
-                title: 'All-Access',
-                price: '$179/mo',
-              })
-            }
-          >
-            Join Premium
-          </button>
-        </div>
-        <div className='cnx-note'>
-          💙 GOODLUCK ON YOUR TRADING JOURNEY — WE WANT TO SEE YOU WIN
-        </div>
-      </section>
+      <NexusHero
+        exploreHref='#projects'
+        onRedeemClick={() => setRedeemOpen(true)}
+        onJoinClick={() =>
+          openPay({
+            id: 'all-access',
+            title: 'All-Access',
+            price: '$179/mo',
+          })
+        }
+      />
 
       {/* PROJECTS */}
       <section id='projects' className='cnx-section'>
@@ -410,8 +384,6 @@ export default function CardicNexusLanding() {
         .cnx-btn-blue{background:var(--blue); color:#000; font-weight:800; border-color:transparent; box-shadow:0 0 24px rgba(16,165,255,.35)}
         .cnx-btn-blue:hover{filter:brightness(1.08)}
 
-        .cnx-hero{max-width:1100px; margin:0 auto; padding:64px 16px 32px; text-align:center}
-        .cnx-tag{color:#b6beca; margin:12px 0 18px}
         .cnx-row{display:flex; gap:12px; justify-content:center; flex-wrap:wrap}
         .cnx-note{color:#cfe0ff; font-size:14px; margin-top:12px; font-weight:700; letter-spacing:.02em}
 
