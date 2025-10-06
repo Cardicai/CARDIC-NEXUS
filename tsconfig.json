@@ -16,7 +16,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "~/*": ["./public/*"]
+      "~/*": ["./public/*"],
+      "framer-motion": ["./src/lib/framer-motion"]
     },
     "incremental": true,
     "plugins": [

@@ -44,12 +44,16 @@ export default function NavBar() {
           <a href='#pricing' onClick={onNavClick}>
             Pricing
           </a>
+          <Link href='/affiliate'>Earn 35%</Link>
           <a href={TELEGRAM_DM} target='_blank' rel='noreferrer'>
             Contact
           </a>
         </nav>
 
         <div className='cnx-nav-actions'>
+          <Link href='/affiliate' className='cnx-btn cnx-btn-ghost'>
+            Affiliate Program
+          </Link>
           <a href='#pay' onClick={onNavClick} className='cnx-btn cnx-btn-blue'>
             Join Premium
           </a>
@@ -87,6 +91,9 @@ export default function NavBar() {
           <a href='#pricing' onClick={onMobileNavClick}>
             Pricing
           </a>
+          <Link href='/affiliate' onClick={() => setOpen(false)}>
+            Earn 35%
+          </Link>
           <a
             href={TELEGRAM_DM}
             target='_blank'
@@ -102,6 +109,13 @@ export default function NavBar() {
           >
             Join Premium
           </a>
+          <Link
+            href='/affiliate'
+            className='cnx-btn cnx-btn-ghost'
+            onClick={() => setOpen(false)}
+          >
+            Affiliate Program
+          </Link>
         </nav>
       </div>
 
@@ -149,6 +163,13 @@ export default function NavBar() {
           border: 1px solid rgba(245, 199, 107, 0.45);
           color: #fff;
           text-decoration: none;
+        }
+        .cnx-btn.cnx-btn-ghost {
+          background: rgba(245, 199, 107, 0.1);
+          color: #f5c76b;
+        }
+        .cnx-btn.cnx-btn-ghost:hover {
+          background: rgba(245, 199, 107, 0.2);
         }
         .cnx-btn.cnx-btn-blue {
           background: #10a5ff;
