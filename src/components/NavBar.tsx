@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { type MouseEvent, useState } from 'react';
+import { type MouseEvent, useEffect, useRef, useState } from 'react';
 
 import BrandLogo from './BrandLogo';
 
@@ -10,6 +10,10 @@ const TELEGRAM_DM = 'https://t.me/realcardic1';
 
 export default function NavBar() {
   const [open, setOpen] = useState(false);
+  const [welcomeVisible, setWelcomeVisible] = useState(false);
+  const welcomeUrl = useRef<string | null>(null);
+  const welcomeWin = useRef<Window | null>(null);
+  const welcomeTimer = useRef<number | null>(null);
 
   const onNavClick = (e: MouseEvent<HTMLAnchorElement>) => {
     const href = (e.currentTarget.getAttribute('href') || '').trim();
@@ -27,6 +31,64 @@ export default function NavBar() {
     setOpen(false);
   };
 
+  const onWebLinkClick = (e: MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const href = e.currentTarget.getAttribute('href');
+    if (!href || welcomeVisible) {
+      return;
+    }
+
+    welcomeUrl.current = href;
+    try {
+      welcomeWin.current = window.open('', '_blank');
+    } catch (err) {
+      welcomeWin.current = null;
+    }
+    setWelcomeVisible(true);
+  };
+
+  useEffect(() => {
+    if (welcomeVisible && welcomeUrl.current) {
+      if (welcomeTimer.current) {
+        window.clearTimeout(welcomeTimer.current);
+      }
+      welcomeTimer.current = window.setTimeout(() => {
+        const target = welcomeUrl.current;
+        const nextWindow = welcomeWin.current;
+        if (nextWindow) {
+          nextWindow.location.href = target;
+        } else {
+          window.open(target, '_blank', 'noopener,noreferrer');
+        }
+        welcomeUrl.current = null;
+        welcomeWin.current = null;
+        setWelcomeVisible(false);
+      }, 1600);
+    }
+
+    return () => {
+      if (welcomeTimer.current) {
+        window.clearTimeout(welcomeTimer.current);
+        welcomeTimer.current = null;
+      }
+    };
+  }, [welcomeVisible]);
+
+  useEffect(() => {
+    return () => {
+      if (welcomeTimer.current) {
+        window.clearTimeout(welcomeTimer.current);
+      }
+      if (welcomeWin.current && !welcomeUrl.current) {
+        try {
+          welcomeWin.current.close();
+        } catch (err) {
+          // no-op
+        }
+      }
+    };
+  }, []);
+
   return (
     <header className='cnx-nav'>
       <div className='cnx-nav-inner'>
@@ -35,7 +97,12 @@ export default function NavBar() {
         </Link>
 
         <nav className='cnx-links'>
-          <a href={TELEGRAM_CHANNEL} target='_blank' rel='noreferrer'>
+          <a
+            href={TELEGRAM_CHANNEL}
+            target='_blank'
+            rel='noreferrer'
+            onClick={onWebLinkClick}
+          >
             Projects
           </a>
           <a href='#heat' onClick={onNavClick}>
@@ -80,7 +147,10 @@ export default function NavBar() {
             href={TELEGRAM_CHANNEL}
             target='_blank'
             rel='noreferrer'
-            onClick={() => setOpen(false)}
+            onClick={(e) => {
+              onWebLinkClick(e);
+              setOpen(false);
+            }}
           >
             Projects
           </a>
@@ -115,6 +185,16 @@ export default function NavBar() {
         </nav>
       </div>
 
+      {welcomeVisible && (
+        <div className='welcomeOverlay' role='status' aria-live='assertive'>
+          <div className='welcomeInner'>
+            <span className='welcomeLabel'>Welcome</span>
+            <span className='welcomeTitle'>NEXERS</span>
+            <span className='welcomeHint'>Preparing your gateway...</span>
+          </div>
+        </div>
+      )}
+
       <style jsx>{`
         .cnx-nav {
           position: sticky;
@@ -123,6 +203,115 @@ export default function NavBar() {
           backdrop-filter: blur(8px);
           background: rgba(0, 0, 0, 0.35);
           border-bottom: 1px solid rgba(245, 199, 107, 0.18);
+        }
+
+        .welcomeOverlay {
+          position: fixed;
+          inset: 0;
+          z-index: 200;
+          background: rgba(5, 4, 14, 0.78);
+          backdrop-filter: blur(18px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          animation: fadeIn 0.25s ease;
+        }
+        .welcomeInner {
+          padding: 48px 72px;
+          border-radius: 32px;
+          border: 1px solid rgba(245, 199, 107, 0.32);
+          box-shadow: 0 40px 120px rgba(16, 165, 255, 0.28);
+          background: linear-gradient(
+            160deg,
+            rgba(28, 16, 52, 0.92),
+            rgba(8, 6, 20, 0.94)
+          );
+          text-align: center;
+          position: relative;
+          overflow: hidden;
+        }
+        .welcomeInner::after {
+          content: '';
+          position: absolute;
+          inset: -12%;
+          background: radial-gradient(
+              circle at 30% -20%,
+              rgba(245, 199, 107, 0.22),
+              transparent 60%
+            ),
+            radial-gradient(
+              circle at 80% 120%,
+              rgba(16, 165, 255, 0.18),
+              transparent 65%
+            );
+          opacity: 0.8;
+          mix-blend-mode: screen;
+          animation: aurora 4s ease-in-out infinite;
+        }
+        .welcomeLabel {
+          display: block;
+          font-size: 14px;
+          letter-spacing: 0.36em;
+          text-transform: uppercase;
+          color: rgba(245, 199, 107, 0.82);
+          margin-bottom: 18px;
+        }
+        .welcomeTitle {
+          display: block;
+          font-size: 54px;
+          font-weight: 900;
+          letter-spacing: 0.38em;
+          text-transform: uppercase;
+          color: transparent;
+          background: linear-gradient(
+            90deg,
+            #f5c76b,
+            #9c4dff,
+            #10a5ff,
+            #f5c76b
+          );
+          background-size: 250%;
+          -webkit-background-clip: text;
+          animation: shimmer 3.2s linear infinite;
+        }
+        .welcomeHint {
+          display: block;
+          margin-top: 20px;
+          font-size: 13px;
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
+          color: rgba(202, 210, 255, 0.78);
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+        @keyframes shimmer {
+          0% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+          100% {
+            background-position: 0% 50%;
+          }
+        }
+        @keyframes aurora {
+          0%,
+          100% {
+            transform: translate3d(-4%, 0, 0) scale(1);
+            opacity: 0.6;
+          }
+          50% {
+            transform: translate3d(6%, -2%, 0) scale(1.05);
+            opacity: 1;
+          }
         }
         .cnx-nav-inner {
           max-width: 1100px;
