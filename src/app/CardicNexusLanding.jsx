@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import Link from 'next/link';
+import { useEffect, useRef, useState } from 'react';
 
 import PaymentSheet from '@/components/PaymentSheet';
 import RedeemSheet from '@/components/RedeemSheet';
@@ -9,10 +10,62 @@ export default function CardicNexusLanding() {
   const [payOpen, setPayOpen] = useState(false);
   const [plan, setPlan] = useState(null);
   const [redeemOpen, setRedeemOpen] = useState(false);
+  const [comingSoon, setComingSoon] = useState(null);
+  const soonTimer = useRef(null);
+  const quickLinks = [
+    {
+      title: 'Algo Bots',
+      description: 'Automations engineered for relentless precision.',
+      href: '/partner',
+      accent: 'bots',
+      soon: true,
+    },
+    {
+      title: 'Indicators',
+      description: 'Signature overlays that frame the market narrative.',
+      href: '#projects',
+      accent: 'indicators',
+    },
+    {
+      title: 'Cardic Heat',
+      description: 'Live liquidity intelligence. Always-on market radar.',
+      href: '#heat',
+      accent: 'heat',
+    },
+    {
+      title: 'EAs',
+      description: 'Expert advisors tuned for disciplined execution.',
+      href: '/partner',
+      accent: 'eas',
+      soon: true,
+    },
+  ];
   const openPay = (p) => {
     setPlan(p);
     setPayOpen(true);
   };
+
+  const openAssistance = (version) => {
+    const baseUrl = 'https://t.me/DeuceForex';
+    const message = `hey I need help understanding the cardic heat ${version}`;
+    const target = `${baseUrl}?text=${encodeURIComponent(message)}`;
+    const win = window.open(target, '_blank', 'noopener,noreferrer');
+    if (win) {
+      win.focus();
+    }
+  };
+
+  const triggerComingSoon = (label) => {
+    setComingSoon(label);
+    if (soonTimer.current) clearTimeout(soonTimer.current);
+    soonTimer.current = setTimeout(() => setComingSoon(null), 2200);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (soonTimer.current) clearTimeout(soonTimer.current);
+    };
+  }, []);
 
   const projects = [
     {
@@ -71,6 +124,7 @@ export default function CardicNexusLanding() {
       <div className='cnx-stars' />
       <div className='cnx-glow cnx-glow-gold' />
       <div className='cnx-glow cnx-glow-blue' />
+      <div className='cnx-glow cnx-glow-purple' />
 
       {/* HERO */}
       <section className='cnx-hero'>
@@ -108,6 +162,43 @@ export default function CardicNexusLanding() {
         </div>
         <div className='cnx-note'>
           💙 GOODLUCK ON YOUR TRADING JOURNEY — WE WANT TO SEE YOU WIN
+        </div>
+        <div className='cnx-cta-grid'>
+          {quickLinks.map((item) => {
+            const content = (
+              <>
+                <div className='cnx-cta-content'>
+                  <span className='cnx-cta-label'>{item.title}</span>
+                  <span className='cnx-cta-desc'>{item.description}</span>
+                </div>
+                <span className='cnx-cta-arrow'>↗</span>
+              </>
+            );
+
+            if (item.soon) {
+              return (
+                <button
+                  key={item.title}
+                  type='button'
+                  className={`cnx-cta cnx-cta-${item.accent}`}
+                  onClick={() => triggerComingSoon(item.title)}
+                >
+                  {content}
+                </button>
+              );
+            }
+
+            return (
+              <Link
+                key={item.title}
+                href={item.href}
+                className={`cnx-cta cnx-cta-${item.accent}`}
+                prefetch={false}
+              >
+                {content}
+              </Link>
+            );
+          })}
         </div>
       </section>
 
@@ -182,6 +273,13 @@ export default function CardicNexusLanding() {
               >
                 Get 2.0
               </button>
+              <button
+                type='button'
+                className='cnx-btn cnx-btn-ghost cnx-assist-btn'
+                onClick={() => openAssistance('2.0')}
+              >
+                Need Assistance?
+              </button>
             </div>
           </article>
 
@@ -208,6 +306,13 @@ export default function CardicNexusLanding() {
               >
                 Get 2.1
               </button>
+              <button
+                type='button'
+                className='cnx-btn cnx-btn-ghost cnx-assist-btn'
+                onClick={() => openAssistance('2.1')}
+              >
+                Need Assistance?
+              </button>
             </div>
           </article>
 
@@ -233,6 +338,13 @@ export default function CardicNexusLanding() {
                 }
               >
                 Get 2.3
+              </button>
+              <button
+                type='button'
+                className='cnx-btn cnx-btn-ghost cnx-assist-btn'
+                onClick={() => openAssistance('2.3')}
+              >
+                Need Assistance?
               </button>
             </div>
           </article>
@@ -371,12 +483,26 @@ export default function CardicNexusLanding() {
         plan={plan}
       />
 
+      {comingSoon && (
+        <div className='cnx-soon' role='status' aria-live='polite'>
+          <div className='cnx-soon-inner'>
+            <span className='cnx-soon-prompt'>{comingSoon}</span>
+            <span className='cnx-soon-title'>Coming Soon</span>
+            <span className='cnx-soon-ribbon'>
+              Stay locked in — drops imminent.
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Scoped CSS (no Tailwind) */}
       <style>{`
         :root{
-          --ink:#0a0b0d; --ink2:#0e0f12;
+          --ink:#040309; --ink2:#070510;
+          --night:#0b0518; --night2:#120a24;
+          --purple:#6124c7;
           --blue:#10A5FF; --gold:#F5C76B;
-          --text:#fff; --muted:#cfd3dc;
+          --text:#f7f5ff; --muted:#c9c3d7;
         }
         *{box-sizing:border-box} html,body,#root{height:100%}
         body{margin:0}
@@ -384,64 +510,143 @@ export default function CardicNexusLanding() {
         .cnx-root{
           min-height:100vh; color:var(--text);
           background:
-            radial-gradient(60% 50% at 50% -10%, #191417 0%, transparent 60%),
-            linear-gradient(180deg, var(--ink), var(--ink2));
+            radial-gradient(60% 45% at 20% -10%, rgba(97,36,199,.32) 0%, transparent 55%),
+            radial-gradient(40% 35% at 80% 10%, rgba(16,165,255,.18) 0%, transparent 60%),
+            linear-gradient(160deg, var(--ink) 0%, var(--night) 45%, var(--night2) 100%);
           position:relative; overflow-x:hidden;
-          font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial;
+          font-family: 'Space Grotesk', Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial;
+          letter-spacing:.01em;
+        }
+
+        .cnx-root::before{
+          content:''; position:fixed; inset:0; z-index:-2;
+          background:radial-gradient(circle at 50% 120%, rgba(245,199,107,.12) 0%, transparent 55%);
+          opacity:.9;
+          pointer-events:none;
         }
 
         .cnx-stars{
           position:fixed; inset:0; z-index:-1; pointer-events:none;
           background-image:
             radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,.9) 99%, transparent 100%),
-            radial-gradient(1.5px 1.5px at 80% 70%, rgba(255,255,255,.7) 99%, transparent 100%),
-            radial-gradient(1.2px 1.2px at 40% 60%, rgba(255,255,255,.6) 99%, transparent 100%),
-            radial-gradient(1.2px 1.2px at 60% 20%, rgba(255,255,255,.6) 99%, transparent 100%);
+            radial-gradient(1.5px 1.5px at 80% 70%, rgba(137,128,255,.6) 99%, transparent 100%),
+            radial-gradient(1.2px 1.2px at 40% 60%, rgba(245,199,107,.7) 99%, transparent 100%),
+            radial-gradient(1.2px 1.2px at 60% 20%, rgba(123,76,255,.5) 99%, transparent 100%);
           animation: twinkle 9s linear infinite;
           opacity:.75;
         }
-        .cnx-glow{position:fixed; z-index:-1; filter:blur(60px); opacity:.22}
-        .cnx-glow-gold{top:-120px; left:-120px; width:300px; height:300px; background: radial-gradient(circle, var(--gold), transparent 60%)}
-        .cnx-glow-blue{bottom:-120px; right:-120px; width:300px; height:300px; background: radial-gradient(circle, var(--blue), transparent 60%)}
+        .cnx-glow{position:fixed; z-index:-1; filter:blur(90px); opacity:.3}
+        .cnx-glow-gold{top:-120px; left:-140px; width:360px; height:360px; background: radial-gradient(circle, rgba(245,199,107,.85), transparent 65%)}
+        .cnx-glow-blue{bottom:-120px; right:-140px; width:340px; height:340px; background: radial-gradient(circle, rgba(16,165,255,.65), transparent 65%)}
+        .cnx-glow-purple{top:40%; left:50%; width:480px; height:480px; transform:translate(-50%, -50%); background: radial-gradient(circle, rgba(97,36,199,.55), transparent 70%)}
         @keyframes twinkle { 0%,100%{opacity:.65} 50%{opacity:1} }
 
-        .cnx-btn{display:inline-block; padding:10px 14px; border-radius:14px; text-decoration:none; transition:.2s; border:1px solid rgba(245,199,107,.45); color:#fff}
-        .cnx-btn-ghost:hover{background:rgba(255,255,255,.08)}
-        .cnx-btn-blue{background:var(--blue); color:#000; font-weight:800; border-color:transparent; box-shadow:0 0 24px rgba(16,165,255,.35)}
-        .cnx-btn-blue:hover{filter:brightness(1.08)}
+        .cnx-btn{display:inline-flex; align-items:center; justify-content:center; padding:12px 20px; border-radius:18px; text-decoration:none; transition:.2s ease; border:1px solid rgba(245,199,107,.35); color:#fff; font-weight:600; letter-spacing:.02em; backdrop-filter:blur(6px); background:rgba(16,12,32,.28)}
+        .cnx-btn-ghost:hover{background:rgba(245,199,107,.1); border-color:rgba(245,199,107,.55)}
+        .cnx-btn-blue{background:linear-gradient(135deg, #1b98ff 0%, #4dc8ff 70%); color:#031224; font-weight:800; border-color:transparent; box-shadow:0 12px 32px rgba(16,165,255,.28)}
+        .cnx-btn-blue:hover{transform:translateY(-1px); filter:brightness(1.05)}
 
-        .cnx-hero{max-width:1100px; margin:0 auto; padding:64px 16px 32px; text-align:center}
-        .cnx-tag{color:#b6beca; margin:12px 0 18px}
-        .cnx-row{display:flex; gap:12px; justify-content:center; flex-wrap:wrap}
-        .cnx-note{color:#cfe0ff; font-size:14px; margin-top:12px; font-weight:700; letter-spacing:.02em}
-
-        .cnx-section{max-width:1100px; margin:0 auto; padding:34px 16px}
-        .cnx-section h2{margin:0 0 14px; font-size:24px}
-        .cnx-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:14px}
-        .cnx-card, .cnx-price{
-          background:rgba(255,255,255,.05);
-          border:1px solid rgba(255,255,255,.12);
-          border-radius:18px; padding:16px;
-          box-shadow:0 0 0 1px rgba(245,199,107,.35), 0 0 24px rgba(245,199,107,.15);
-          transition:.2s;
+        .cnx-hero{max-width:1120px; margin:0 auto; padding:90px 18px 48px; text-align:center; position:relative}
+        .cnx-hero::after{
+          content:''; position:absolute; inset:auto 10% -40px; height:1px;
+          background:linear-gradient(90deg, transparent, rgba(245,199,107,.28), transparent);
+          opacity:.7;
         }
-        .cnx-card:hover, .cnx-price:hover{ border-color: rgba(245,199,107,.55); }
-        .cnx-meta{display:flex; justify-content:space-between; align-items:center; color:#cfd3dc; font-size:12px}
-        .cnx-badge{border:1px solid rgba(255,255,255,.15); padding:3px 8px; border-radius:999px}
-        .cnx-card-title{margin:6px 0 8px}
-        .cnx-text{color:#cfd3dc}
+        .cnx-tag{color:rgba(193,197,214,.85); margin:16px 0 24px; font-size:18px; letter-spacing:.12em; text-transform:uppercase}
+        .cnx-row{display:flex; gap:12px; justify-content:center; flex-wrap:wrap}
+        .cnx-note{color:#d9d3ff; font-size:13px; margin-top:18px; font-weight:700; letter-spacing:.14em; text-transform:uppercase}
+        .cnx-cta-grid{
+          display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr));
+          gap:14px; margin-top:32px;
+        }
+        .cnx-cta{
+          position:relative; padding:18px 20px; border-radius:20px; border:1px solid rgba(255,255,255,.12);
+          background:linear-gradient(140deg, rgba(18,12,34,.92), rgba(9,6,22,.9));
+          color:inherit; display:flex; gap:12px; align-items:flex-start; justify-content:space-between;
+          text-decoration:none; transition:.25s ease; overflow:hidden; cursor:pointer; font:inherit;
+        }
+        .cnx-cta:focus-visible{outline:2px solid rgba(245,199,107,.65); outline-offset:4px}
+        .cnx-cta::after{
+          content:''; position:absolute; inset:1px; border-radius:18px; opacity:.4;
+          background:radial-gradient(circle at top right, rgba(255,255,255,.12), transparent 65%);
+          transition:opacity .25s ease;
+        }
+        .cnx-cta:hover{transform:translateY(-4px); border-color:rgba(245,199,107,.55)}
+        .cnx-cta:hover::after{opacity:.6}
+        .cnx-cta-content{position:relative; z-index:1; display:flex; flex-direction:column; gap:6px}
+        .cnx-cta-label{font-size:18px; font-weight:700; letter-spacing:.04em}
+        .cnx-cta-desc{font-size:13px; line-height:1.4; color:rgba(211,210,232,.78)}
+        .cnx-cta-arrow{position:relative; z-index:1; align-self:flex-end; font-size:20px; opacity:.7; transition:transform .25s ease, opacity .25s ease}
+        .cnx-cta:hover .cnx-cta-arrow{transform:translate(4px, -4px); opacity:1}
+        .cnx-cta-bots{box-shadow:0 0 32px rgba(97,36,199,.25)}
+        .cnx-cta-bots::before{content:''; position:absolute; inset:-40% 55% auto -40%; height:140%; border-radius:50%; background:radial-gradient(circle, rgba(97,36,199,.35), transparent 70%); z-index:0}
+        .cnx-cta-indicators::before{content:''; position:absolute; inset:-50% -30% auto 40%; height:150%; border-radius:50%; background:radial-gradient(circle, rgba(245,199,107,.35), transparent 72%); z-index:0}
+        .cnx-cta-heat::before{content:''; position:absolute; inset:-30% -20% auto 20%; height:120%; border-radius:50%; background:radial-gradient(circle, rgba(255,93,93,.35), transparent 70%); z-index:0}
+        .cnx-cta-eas::before{content:''; position:absolute; inset:-45% 30% auto -25%; height:130%; border-radius:50%; background:radial-gradient(circle, rgba(16,165,255,.32), transparent 70%); z-index:0}
+
+        .cnx-section{max-width:1120px; margin:0 auto; padding:48px 18px}
+        .cnx-section h2{margin:0 0 18px; font-size:26px; text-transform:uppercase; letter-spacing:.24em; color:#e9e6ff}
+        .cnx-section h2::after{
+          content:''; display:block; width:64px; height:2px; margin-top:10px;
+          background:linear-gradient(90deg, rgba(245,199,107,.8), rgba(16,165,255,.6));
+        }
+        .cnx-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:18px}
+        .cnx-card, .cnx-price{
+          background:linear-gradient(145deg, rgba(24,16,42,.92), rgba(13,9,26,.88));
+          border:1px solid rgba(255,255,255,.08);
+          border-radius:22px; padding:20px;
+          box-shadow:0 18px 44px rgba(8,4,18,.6);
+          transition:.3s ease;
+        }
+        .cnx-card:hover, .cnx-price:hover{ border-color: rgba(245,199,107,.55); transform:translateY(-6px); box-shadow:0 28px 50px rgba(9,5,20,.65); }
+        .cnx-meta{display:flex; justify-content:space-between; align-items:center; color:#cfd3dc; font-size:12px; text-transform:uppercase; letter-spacing:.18em}
+        .cnx-badge{border:1px solid rgba(255,255,255,.18); padding:4px 10px; border-radius:999px; background:rgba(255,255,255,.06); font-size:11px; letter-spacing:.18em}
+        .cnx-card-title{margin:10px 0 12px; font-size:20px; letter-spacing:.02em}
+        .cnx-text{color:#d8d4e8; line-height:1.6}
         .cnx-tags{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
-        .cnx-tags span{font-size:12px; color:#d5dbe6; border:1px solid rgba(255,255,255,.12); padding:4px 8px; border-radius:999px}
-        .cnx-card-actions{display:flex; gap:10px; margin-top:12px}
+        .cnx-tags span{font-size:12px; color:#dad4ff; border:1px solid rgba(120,112,255,.45); padding:5px 10px; border-radius:999px; background:rgba(52,38,92,.4)}
+        .cnx-card-actions{display:flex; gap:10px; margin-top:18px}
+        .cnx-assist-btn{border-color:rgba(16,165,255,.35); background:rgba(16,12,32,.35); color:rgba(198,208,255,.92)}
+        .cnx-assist-btn:hover{border-color:rgba(16,165,255,.65); background:rgba(16,165,255,.12); color:#fff}
 
-        .cnx-price h3{margin:6px 0}
-        .cnx-amount{font-size:22px; color:var(--blue); font-weight:800}
-        .cnx-price ul{margin:10px 0 14px; padding-left:18px; color:#cfd3dc}
+        .cnx-price h3{margin:8px 0; font-size:20px}
+        .cnx-amount{font-size:26px; color:var(--gold); font-weight:800; letter-spacing:.04em}
+        .cnx-price ul{margin:14px 0 18px; padding-left:18px; color:#d0cee2; line-height:1.6}
 
-        .cnx-footer{max-width:1100px; margin:24px auto 40px; text-align:center; color:#a9b4c2; font-size:12px}
-        .cnx-line{height:1px; background:linear-gradient(90deg, transparent, rgba(255,255,255,.15), transparent); margin:18px 0}
+        .cnx-footer{max-width:1120px; margin:48px auto 60px; text-align:center; color:#9189b1; font-size:12px; letter-spacing:.14em; text-transform:uppercase}
+        .cnx-line{height:1px; background:linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent); margin:22px 0}
 
         .cnx-tagline{color:var(--muted); margin-top:12px; text-align:center}
+
+        .cnx-soon{position:fixed; inset:0; z-index:99; display:flex; align-items:center; justify-content:center; padding:18px; background:rgba(4,3,12,.76); backdrop-filter:blur(14px); animation:soonFade .25s ease}
+        .cnx-soon-inner{position:relative; padding:42px 64px; border-radius:32px; text-align:center; background:linear-gradient(160deg, rgba(27,16,52,.88), rgba(8,6,20,.92)); border:1px solid rgba(245,199,107,.28); box-shadow:0 40px 120px rgba(16,165,255,.22)}
+        .cnx-soon-inner::after{content:''; position:absolute; inset:-2px; border-radius:34px; border:1px solid rgba(255,255,255,.08); opacity:.5; mix-blend-mode:screen; animation:pulseHalo 2.4s ease-in-out infinite}
+        .cnx-soon-prompt{display:block; font-size:16px; letter-spacing:.28em; text-transform:uppercase; color:rgba(245,199,107,.85); margin-bottom:18px}
+        .cnx-soon-title{display:block; font-size:44px; font-weight:800; letter-spacing:.24em; text-transform:uppercase; background:linear-gradient(90deg, #f5c76b, #9c4dff, #10a5ff, #f5c76b); background-size:300%; color:transparent; -webkit-background-clip:text; animation:soonGlow 3.5s linear infinite}
+        .cnx-soon-ribbon{display:inline-block; margin-top:18px; padding:8px 18px; border-radius:999px; font-size:13px; letter-spacing:.22em; text-transform:uppercase; color:rgba(198,208,255,.88); background:rgba(52,36,88,.72); box-shadow:0 10px 32px rgba(76,58,128,.3); animation:ribbonPulse 1.9s ease-in-out infinite}
+
+        @keyframes soonGlow {0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+        @keyframes ribbonPulse {0%,100%{transform:translateY(0); opacity:.8}50%{transform:translateY(-4px); opacity:1}}
+        @keyframes soonFade {from{opacity:0} to{opacity:1}}
+        @keyframes pulseHalo {0%,100%{opacity:.3}50%{opacity:.7}}
+
+
+        @media (max-width: 720px){
+          .cnx-tag{font-size:13px; letter-spacing:.18em}
+          .cnx-cta-grid{margin-top:26px}
+          .cnx-cta{padding:16px 18px}
+          .cnx-cta-label{font-size:16px}
+        }
+
+        @media (max-width: 520px){
+          .cnx-hero{padding-top:72px}
+          .cnx-tag{letter-spacing:.14em}
+          .cnx-note{letter-spacing:.08em}
+          .cnx-section h2{letter-spacing:.16em}
+          .cnx-soon-inner{padding:32px 30px}
+          .cnx-soon-title{font-size:32px}
+          .cnx-soon-prompt{letter-spacing:.18em}
+        }
 
 
       `}</style>
