@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { FormEvent, useEffect } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 
 export type PaymentPlan = {
   id: string;
@@ -24,6 +24,9 @@ export default function PaymentSheet({
   onClose,
   plan,
 }: PaymentSheetProps) {
+  const [copyFeedback, setCopyFeedback] = useState('');
+  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
     if (!open) {
       return;
@@ -45,10 +48,24 @@ export default function PaymentSheet({
     };
   }, [open, onClose]);
 
-  const copy = async (text: string) => {
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) {
+        clearTimeout(copyTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const copy = async (text: string, label: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      alert('Copied');
+      setCopyFeedback(label);
+      if (copyTimeoutRef.current) {
+        clearTimeout(copyTimeoutRef.current);
+      }
+      copyTimeoutRef.current = window.setTimeout(() => {
+        setCopyFeedback('');
+      }, 2200);
     } catch {
       /* ignore */
     }
@@ -125,7 +142,7 @@ export default function PaymentSheet({
                 <button
                   className='cnx-copy'
                   type='button'
-                  onClick={() => copy(USDT_ADDRESS)}
+                  onClick={() => copy(USDT_ADDRESS, 'USDT (ERC-20) Address')}
                 >
                   Copy
                 </button>
@@ -149,7 +166,7 @@ export default function PaymentSheet({
                 <button
                   className='cnx-copy'
                   type='button'
-                  onClick={() => copy(ETH_ADDRESS)}
+                  onClick={() => copy(ETH_ADDRESS, 'ETH Address')}
                 >
                   Copy
                 </button>
@@ -173,7 +190,7 @@ export default function PaymentSheet({
                 <button
                   className='cnx-copy'
                   type='button'
-                  onClick={() => copy(BTC_ADDRESS)}
+                  onClick={() => copy(BTC_ADDRESS, 'BTC Address')}
                 >
                   Copy
                 </button>
@@ -232,6 +249,17 @@ export default function PaymentSheet({
         </div>
       </div>
 
+      {copyFeedback ? (
+        <div className='cnx-copy-toast' role='status' aria-live='polite'>
+          <span className='cnx-copy-toast-glow' aria-hidden />
+          <span className='cnx-copy-toast-title'>Copied!</span>
+          <span className='cnx-copy-toast-label'>{copyFeedback}</span>
+          <span className='cnx-copy-toast-sub'>
+            Paste when you&apos;re ready.
+          </span>
+        </div>
+      ) : null}
+
       <style jsx>{`
         .cnx-sheet {
           position: fixed;
@@ -248,6 +276,66 @@ export default function PaymentSheet({
           background: rgba(10, 12, 16, 0.78);
           backdrop-filter: blur(8px);
         }
+        .cnx-copy-toast {
+          position: absolute;
+          left: 50%;
+          bottom: 32px;
+          transform: translateX(-50%);
+          display: grid;
+          gap: 2px;
+          padding: 14px 20px 16px;
+          border-radius: 16px;
+          color: #f4f6ff;
+          background: rgba(18, 21, 44, 0.92);
+          border: 1px solid rgba(101, 216, 255, 0.5);
+          box-shadow: 0 25px 60px rgba(8, 11, 32, 0.65);
+          min-width: 220px;
+          text-align: center;
+          animation: cnxCopyToastIn 120ms ease-out,
+            cnxCopyToastPulse 1.4s ease-in-out 120ms infinite;
+          overflow: hidden;
+        }
+        .cnx-copy-toast::after {
+          content: '';
+          position: absolute;
+          inset: -40% -20%;
+          background: radial-gradient(
+              circle at 20% 30%,
+              rgba(115, 213, 255, 0.24),
+              transparent 60%
+            ),
+            radial-gradient(
+              circle at 80% 80%,
+              rgba(144, 118, 255, 0.18),
+              transparent 65%
+            );
+          opacity: 0.9;
+          pointer-events: none;
+        }
+        .cnx-copy-toast-glow {
+          position: absolute;
+          inset: 0;
+          border-radius: 16px;
+          box-shadow: 0 0 0 rgba(110, 215, 255, 0.8);
+          animation: cnxCopyToastGlow 1.8s ease-out infinite;
+        }
+        .cnx-copy-toast-title {
+          font-size: 0.85rem;
+          font-weight: 600;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          z-index: 1;
+        }
+        .cnx-copy-toast-label {
+          font-size: 0.95rem;
+          font-weight: 600;
+          z-index: 1;
+        }
+        .cnx-copy-toast-sub {
+          font-size: 0.78rem;
+          opacity: 0.78;
+          z-index: 1;
+        }
         .cnx-sheet-dialog {
           position: relative;
           width: min(720px, 100%);
@@ -255,6 +343,36 @@ export default function PaymentSheet({
           overflow-y: auto;
           border-radius: 24px;
           box-shadow: 0 18px 60px rgba(2, 8, 20, 0.4);
+        }
+        @keyframes cnxCopyToastIn {
+          from {
+            opacity: 0;
+            transform: translate(-50%, 16px);
+          }
+          to {
+            opacity: 1;
+            transform: translate(-50%, 0);
+          }
+        }
+        @keyframes cnxCopyToastPulse {
+          0%,
+          100% {
+            filter: drop-shadow(0 0 16px rgba(104, 214, 255, 0.35));
+          }
+          50% {
+            filter: drop-shadow(0 0 26px rgba(138, 111, 255, 0.55));
+          }
+        }
+        @keyframes cnxCopyToastGlow {
+          0% {
+            box-shadow: 0 0 0 rgba(110, 215, 255, 0.65);
+          }
+          60% {
+            box-shadow: 0 0 24px rgba(110, 215, 255, 0.35);
+          }
+          100% {
+            box-shadow: 0 0 0 rgba(110, 215, 255, 0.65);
+          }
         }
         .cnx-sheet-close {
           position: absolute;
