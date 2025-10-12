@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 
+import FreeTrialModal from '@/components/FreeTrialModal';
 import PaymentSheet from '@/components/PaymentSheet';
 import RedeemSheet from '@/components/RedeemSheet';
 
@@ -11,6 +12,7 @@ export default function CardicNexusLanding() {
   const [plan, setPlan] = useState(null);
   const [redeemOpen, setRedeemOpen] = useState(false);
   const [comingSoon, setComingSoon] = useState(null);
+  const [trialOpen, setTrialOpen] = useState(false);
   const soonTimer = useRef(null);
   const quickLinks = [
     {
@@ -148,6 +150,13 @@ export default function CardicNexusLanding() {
           </button>
           <button
             type='button'
+            className='group relative inline-flex items-center justify-center rounded-full border border-cyan-400/60 bg-cyan-500/10 px-5 py-2 text-sm font-semibold uppercase tracking-wide text-cyan-100 shadow-[0_0_30px_rgba(34,211,238,0.38)] transition hover:shadow-[0_0_45px_rgba(34,211,238,0.55)] focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950'
+            onClick={() => setTrialOpen(true)}
+          >
+            CLAIM FREE TRIAL
+          </button>
+          <button
+            type='button'
             className='cnx-btn cnx-btn-blue'
             onClick={() =>
               openPay({
@@ -201,6 +210,8 @@ export default function CardicNexusLanding() {
           })}
         </div>
       </section>
+
+      <FreeTrialModal open={trialOpen} onClose={() => setTrialOpen(false)} />
 
       {/* PROJECTS */}
       <section id='projects' className='cnx-section'>
