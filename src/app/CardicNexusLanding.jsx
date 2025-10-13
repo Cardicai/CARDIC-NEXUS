@@ -6,11 +6,13 @@ import { useEffect, useRef, useState } from 'react';
 import FreeTrialModal from '@/components/FreeTrialModal';
 import PaymentSheet from '@/components/PaymentSheet';
 import RedeemSheet from '@/components/RedeemSheet';
+import TrialRequestSheet from '@/components/TrialRequestSheet';
 
 export default function CardicNexusLanding() {
   const [payOpen, setPayOpen] = useState(false);
   const [plan, setPlan] = useState(null);
   const [redeemOpen, setRedeemOpen] = useState(false);
+  const [trialOpen, setTrialOpen] = useState(false);
   const [comingSoon, setComingSoon] = useState(null);
   const [trialOpen, setTrialOpen] = useState(false);
   const soonTimer = useRef(null);
@@ -138,6 +140,13 @@ export default function CardicNexusLanding() {
           AI • Trading • Innovation — for retail traders.
         </p>
         <div className='cnx-row'>
+          <button
+            type='button'
+            className='cnx-btn cnx-btn-trial'
+            onClick={() => setTrialOpen(true)}
+          >
+            CLAIM FREE TRIAL
+          </button>
           <a className='cnx-btn cnx-btn-ghost' href='#projects'>
             Explore Projects
           </a>
@@ -488,6 +497,8 @@ export default function CardicNexusLanding() {
 
       <RedeemSheet open={redeemOpen} onClose={() => setRedeemOpen(false)} />
 
+      <TrialRequestSheet open={trialOpen} onClose={() => setTrialOpen(false)} />
+
       <PaymentSheet
         open={payOpen}
         onClose={() => setPayOpen(false)}
@@ -553,9 +564,17 @@ export default function CardicNexusLanding() {
         @keyframes twinkle { 0%,100%{opacity:.65} 50%{opacity:1} }
 
         .cnx-btn{display:inline-flex; align-items:center; justify-content:center; padding:12px 20px; border-radius:18px; text-decoration:none; transition:.2s ease; border:1px solid rgba(245,199,107,.35); color:#fff; font-weight:600; letter-spacing:.02em; backdrop-filter:blur(6px); background:rgba(16,12,32,.28)}
+        .cnx-btn-trial{position:relative; z-index:0; overflow:hidden; padding:14px 28px; border-radius:24px; letter-spacing:.18em; font-weight:800; text-transform:uppercase; background:linear-gradient(120deg, rgba(79,205,255,1) 0%, rgba(0,255,224,.92) 48%, rgba(139,93,255,.92) 100%); color:#04031a; border:1px solid rgba(79,205,255,.6); box-shadow:0 0 18px rgba(79,205,255,.45), 0 0 36px rgba(139,93,255,.35); animation:cnxTrialPulse 2.8s ease-in-out infinite; backdrop-filter:blur(8px)}
+        .cnx-btn-trial::after{content:''; position:absolute; inset:-45%; background:conic-gradient(from 0deg, rgba(255,255,255,.25), rgba(79,205,255,.75), rgba(139,93,255,.55), rgba(255,255,255,.25)); filter:blur(28px); opacity:.8; z-index:-1; animation:cnxTrialAurora 6s linear infinite}
+        .cnx-btn-trial:hover{transform:translateY(-2px) scale(1.01); box-shadow:0 0 22px rgba(79,205,255,.6), 0 0 48px rgba(139,93,255,.45)}
+        .cnx-btn-trial:focus-visible{outline:2px solid rgba(255,255,255,.8); outline-offset:3px}
+        .cnx-btn-trial:active{transform:scale(.98); box-shadow:0 0 16px rgba(79,205,255,.5)}
         .cnx-btn-ghost:hover{background:rgba(245,199,107,.1); border-color:rgba(245,199,107,.55)}
         .cnx-btn-blue{background:linear-gradient(135deg, #1b98ff 0%, #4dc8ff 70%); color:#031224; font-weight:800; border-color:transparent; box-shadow:0 12px 32px rgba(16,165,255,.28)}
         .cnx-btn-blue:hover{transform:translateY(-1px); filter:brightness(1.05)}
+        @keyframes cnxTrialPulse{0%,100%{box-shadow:0 0 16px rgba(79,205,255,.45), 0 0 34px rgba(139,93,255,.35)}50%{box-shadow:0 0 26px rgba(79,205,255,.65), 0 0 52px rgba(139,93,255,.5)}}
+        @keyframes cnxTrialAurora{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        @media (prefers-reduced-motion:reduce){.cnx-btn-trial{animation:none}.cnx-btn-trial::after{animation:none}}
 
         .cnx-hero{max-width:1120px; margin:0 auto; padding:90px 18px 48px; text-align:center; position:relative}
         .cnx-hero::after{
