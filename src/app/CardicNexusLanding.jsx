@@ -1,666 +1,501 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 
-import FreeTrialModal from '@/components/FreeTrialModal';
-import PaymentSheet from '@/components/PaymentSheet';
-import RedeemSheet from '@/components/RedeemSheet';
+const initialFormState = {
+  name: '',
+  email: '',
+  telegram: '',
+  proof: '',
+  agree: false,
+};
+
+const ruleSections = [
+  {
+    title: '1️⃣ Overview',
+    body: (
+      <p className='text-sm leading-relaxed text-slate-200 md:text-base'>
+        Welcome to the Cardic Nexus Trading Tournament, an exclusive competition
+        designed to identify the most disciplined and skilled traders in our
+        community. All participants will compete on simulated $10,000 USD demo
+        accounts with real market conditions on MT4/MT5. Your goal: Achieve the
+        highest ROI within the competition period — without violating the
+        drawdown limits.
+      </p>
+    ),
+  },
+  {
+    title: '2️⃣ Registration & Eligibility',
+    body: (
+      <div className='space-y-3 text-sm leading-relaxed text-slate-200 md:text-base'>
+        <p>✅ Entry is 100% FREE.</p>
+        <p>✅ To qualify, each participant must:</p>
+        <ul className='list-disc space-y-1 pl-5 text-left text-sm text-slate-200 marker:text-amber-400 md:text-base'>
+          <li>Register via the official Cardic Nexus competition portal.</li>
+          <li>
+            Provide Full Name, Email, Contact info, Country, and Broker details
+            (Exness).
+          </li>
+          <li>
+            Upload proof of following at least 2 official Cardic Nexus social
+            accounts.
+          </li>
+          <li>Verify their email (confirmation link sent automatically).</li>
+        </ul>
+        <p>Only verified and complete entries will be accepted.</p>
+      </div>
+    ),
+  },
+  {
+    title: '3️⃣ Competition Details',
+    body: (
+      <ul className='grid gap-2 text-left text-sm text-slate-200 md:text-base'>
+        <li>
+          <span className='font-semibold text-amber-300'>Start Date:</span> [To
+          be announced]
+        </li>
+        <li>
+          <span className='font-semibold text-amber-300'>Duration:</span> 1
+          Month
+        </li>
+        <li>
+          <span className='font-semibold text-amber-300'>Platform:</span> MT4 /
+          MT5 (Exness Demo)
+        </li>
+        <li>
+          <span className='font-semibold text-amber-300'>
+            Starting Balance:
+          </span>{' '}
+          $10,000 USD
+        </li>
+        <li>
+          <span className='font-semibold text-amber-300'>Leverage:</span> 1:200
+        </li>
+        <li>
+          <span className='font-semibold text-amber-300'>Trading Allowed:</span>{' '}
+          All forex, gold, and crypto pairs
+        </li>
+        <li>
+          <span className='font-semibold text-amber-300'>EA usage:</span>{' '}
+          Allowed (if verified by Cardic Nexus team)
+        </li>
+      </ul>
+    ),
+  },
+  {
+    title: '4️⃣ Trading Rules',
+    body: (
+      <ul className='list-disc space-y-1 pl-5 text-left text-sm text-slate-200 marker:text-purple-400 md:text-base'>
+        <li>Maximum Daily Drawdown: 5%</li>
+        <li>Maximum Overall Drawdown: 10%</li>
+        <li>Minimum Trading Days: 10 days within the month</li>
+        <li>No Copy Trading from another participant’s account</li>
+        <li>No Martingale / grid / arbitrage systems</li>
+        <li>Stop-loss must be used on every trade</li>
+        <li>No insider trades or manipulation attempts</li>
+        <li>Violation of any rule = instant disqualification.</li>
+      </ul>
+    ),
+  },
+  {
+    title: '5️⃣ Leaderboard & Eliminations',
+    body: (
+      <div className='space-y-2 text-sm leading-relaxed text-slate-200 md:text-base'>
+        <p>The leaderboard updates automatically on the dashboard.</p>
+        <p>ROI (Return on Investment) determines rankings.</p>
+        <p>
+          At the end of Week 2, the lowest 20 participants by ROI are
+          eliminated.
+        </p>
+        <p>Elimination continues weekly until Top 50 traders remain.</p>
+        <p>Final top 50 battle it out till the end of the month.</p>
+      </div>
+    ),
+  },
+  {
+    title: '6️⃣ Prizes',
+    body: (
+      <ul className='space-y-2 text-left text-sm text-slate-200 md:text-base'>
+        <li>🏅 1st Place: $15,000 Instant Funded Account</li>
+        <li>🥈 2nd Place: $10,000 Instant Funded Account</li>
+        <li>🥉 3rd Place: $5,000 Instant Funded Account</li>
+        <li>🎖 Top 10 get lifetime Cardic Nexus VIP access.</li>
+        <li>🎖 Spotlight interview and feature on our socials.</li>
+      </ul>
+    ),
+  },
+  {
+    title: '7️⃣ Disqualification Terms',
+    body: (
+      <ul className='list-disc space-y-1 pl-5 text-left text-sm text-slate-200 marker:text-cyan-300 md:text-base'>
+        <li>
+          Participants will be disqualified if they exceed drawdown limits.
+        </li>
+        <li>Use multiple accounts.</li>
+        <li>Submit fake or incomplete registration info.</li>
+        <li>Attempt to manipulate trade data or leaderboard.</li>
+        <li>Fail to trade for at least 10 active days.</li>
+      </ul>
+    ),
+  },
+  {
+    title: '8️⃣ Communication & Support',
+    body: (
+      <div className='space-y-2 text-sm leading-relaxed text-slate-200 md:text-base'>
+        <p>
+          All official updates, leaderboard links, and account details will be
+          sent via email.
+        </p>
+        <p>
+          Traders are encouraged to join the Cardic Nexus Telegram group for
+          live updates and support.
+        </p>
+        <p>
+          Support Contact:
+          <br />
+          📧 support@cardicnexusglobal.com
+          <br />
+          💬 Telegram: @cardicnexus
+        </p>
+      </div>
+    ),
+  },
+  {
+    title: '9️⃣ Legal Disclaimer',
+    body: (
+      <p className='text-sm leading-relaxed text-slate-200 md:text-base'>
+        This competition is purely for educational and entertainment purposes.
+        Cardic Nexus reserves the right to modify, pause, or terminate the
+        competition at any time. All participants agree to fair use of demo
+        accounts and acknowledge that results do not represent real profits or
+        losses.
+      </p>
+    ),
+  },
+  {
+    title: '🔟 Agreement',
+    body: (
+      <p className='text-sm leading-relaxed text-slate-200 md:text-base'>
+        By joining the Cardic Nexus Trading Tournament, you agree to abide by
+        these rules, uphold trading discipline, and respect other participants.
+      </p>
+    ),
+  },
+];
+
+const highlightedPerks = [
+  {
+    heading: 'Simulated $10,000 Accounts',
+    description:
+      'Trade on MT4/MT5 with real market conditions — demonstrate discipline without risking capital.',
+  },
+  {
+    heading: 'Weekly Eliminations',
+    description:
+      'Hold the line. ROI decides who advances after each cut until the Top 50 showdown.',
+  },
+  {
+    heading: 'Instant Funded Accounts',
+    description:
+      'Top 3 winners secure $30,000 in instant funding and VIP recognition from the Cardic Nexus team.',
+  },
+];
+
+const validateForm = (formState) => {
+  if (!formState.name.trim()) {
+    return 'Full name is required.';
+  }
+  if (!formState.email.trim()) {
+    return 'Email address is required.';
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formState.email.trim())) {
+    return 'Please provide a valid email address.';
+  }
+  if (!formState.telegram.trim()) {
+    return 'Your Telegram handle is required.';
+  }
+  if (!formState.proof.trim()) {
+    return 'Please provide proof that you followed at least 2 Cardic Nexus social pages.';
+  }
+  if (!formState.agree) {
+    return 'You must agree to the official rules and terms.';
+  }
+
+  return null;
+};
 
 export default function CardicNexusLanding() {
-  const [payOpen, setPayOpen] = useState(false);
-  const [plan, setPlan] = useState(null);
-  const [redeemOpen, setRedeemOpen] = useState(false);
-  const [comingSoon, setComingSoon] = useState(null);
-  const [trialOpen, setTrialOpen] = useState(false);
-  const soonTimer = useRef(null);
-  const quickLinks = [
-    {
-      title: 'Algo Bots',
-      description: 'Automations engineered for relentless precision.',
-      href: '/partner',
-      accent: 'bots',
-      soon: true,
-    },
-    {
-      title: 'Indicators',
-      description: 'Signature overlays that frame the market narrative.',
-      href: '#projects',
-      accent: 'indicators',
-    },
-    {
-      title: 'Cardic Heat',
-      description: 'Live liquidity intelligence. Always-on market radar.',
-      href: '#heat',
-      accent: 'heat',
-    },
-    {
-      title: 'EAs',
-      description: 'Expert advisors tuned for disciplined execution.',
-      href: '/partner',
-      accent: 'eas',
-      soon: true,
-    },
-  ];
-  const openPay = (p) => {
-    setPlan(p);
-    setPayOpen(true);
+  const [formState, setFormState] = useState(initialFormState);
+  const [status, setStatus] = useState({ type: 'idle', message: '' });
+
+  const isSubmitting = status.type === 'loading';
+
+  const ctaHref = useMemo(() => '#register', []);
+
+  const handleChange = (event) => {
+    const { name, value, type, checked } = event.target;
+    setFormState((previous) => ({
+      ...previous,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
   };
 
-  const openAssistance = (version) => {
-    const baseUrl = 'https://t.me/DeuceForex';
-    const message = `hey I need help understanding the cardic heat ${version}`;
-    const target = `${baseUrl}?text=${encodeURIComponent(message)}`;
-    const win = window.open(target, '_blank', 'noopener,noreferrer');
-    if (win) {
-      win.focus();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const validationError = validateForm(formState);
+    if (validationError) {
+      setStatus({ type: 'error', message: validationError });
+      return;
+    }
+
+    try {
+      setStatus({ type: 'loading', message: 'Submitting your registration…' });
+      const response = await fetch('/api/tournament/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formState.name.trim(),
+          email: formState.email.trim(),
+          telegram: formState.telegram.trim(),
+          proof: formState.proof.trim(),
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(
+          typeof data.error === 'string' && data.error.length > 0
+            ? data.error
+            : 'We could not process your registration. Please try again.'
+        );
+      }
+
+      setStatus({
+        type: 'success',
+        message:
+          'Registration received! Check your inbox for confirmation and look out for your credentials within 24 hours.',
+      });
+      setFormState(initialFormState);
+    } catch (error) {
+      setStatus({
+        type: 'error',
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Something went wrong while submitting the form. Please try again.',
+      });
     }
   };
 
-  const triggerComingSoon = (label) => {
-    setComingSoon(label);
-    if (soonTimer.current) clearTimeout(soonTimer.current);
-    soonTimer.current = setTimeout(() => setComingSoon(null), 2200);
-  };
-
-  useEffect(() => {
-    return () => {
-      if (soonTimer.current) clearTimeout(soonTimer.current);
-    };
-  }, []);
-
-  const projects = [
-    {
-      title: 'CARDIC Oracle 1.0',
-      type: 'Indicator',
-      status: 'Soon',
-      text: 'Real-time psychology, liquidity battles, predictive zones.',
-      tags: ['Psychology', 'Liquidity', 'AI'],
-      plan: {
-        id: 'oracle-1-0',
-        title: 'CARDIC Oracle 1.0',
-        price: 'Coming Soon',
-      },
-    },
-    {
-      title: 'Cardic Heat Zones™',
-      type: 'Indicator',
-      status: 'Live',
-      text: 'Smart money zones with alerts.',
-      tags: ['SMC', 'Zones', 'Alerts'],
-      plan: {
-        id: 'heat-zones',
-        title: 'CARDIC Heat Zones™',
-        price: 'From $99',
-      },
-    },
-    {
-      title: 'Cardic Spider Web™',
-      type: 'Indicator',
-      status: 'In Dev',
-      text: 'Dynamic SR + Fibonacci + Order Blocks.',
-      tags: ['Fib', 'OB', 'Grid'],
-      plan: {
-        id: 'spider-web',
-        title: 'Cardic Spider Web™',
-        price: 'From $129',
-      },
-    },
-    {
-      title: 'Premium Signals',
-      type: 'Membership',
-      status: 'Live',
-      text: 'Daily gold/FX/crypto signals with risk notes.',
-      tags: ['Gold', 'Forex', 'Crypto'],
-      plan: {
-        id: 'premium-signals',
-        title: 'Premium Signals',
-        price: '$49/mo',
-      },
-    },
-  ];
-
   return (
-    <div className='cnx-root'>
-      {/* Galaxy background layers */}
-      <div className='cnx-stars' />
-      <div className='cnx-glow cnx-glow-gold' />
-      <div className='cnx-glow cnx-glow-blue' />
-      <div className='cnx-glow cnx-glow-purple' />
+    <div className='relative overflow-hidden'>
+      <div className='pointer-events-none absolute inset-0 -z-[1] bg-[radial-gradient(circle_at_10%_10%,rgba(56,189,248,0.25),transparent_60%),_radial-gradient(circle_at_90%_0%,rgba(168,85,247,0.25),transparent_55%),_radial-gradient(circle_at_50%_80%,rgba(250,204,21,0.18),transparent_55%)]' />
 
-      {/* HERO */}
-      <section className='cnx-hero'>
-        <h1 className='heroTitle'>
-          <span className='heroGold'>CARDIC</span>{' '}
-          <span className='heroBlue'>NEXUS</span>
+      <section className='relative mx-auto flex max-w-6xl flex-col gap-10 px-6 pb-20 pt-24 text-center md:pt-28'>
+        <div className='mx-auto w-fit rounded-full border border-cyan-500/40 bg-cyan-500/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.35em] text-cyan-100 shadow-[0_0_40px_rgba(6,182,212,0.35)]'>
+          Season 1 • Live Registration
+        </div>
+        <h1 className='text-balance text-4xl font-black leading-tight text-white drop-shadow-[0_0_45px_rgba(16,185,255,0.35)] md:text-6xl'>
+          🚀 Cardic Nexus Tournament – Season 1 Now Live
         </h1>
-        <p className='cnx-tag'>
-          AI • Trading • Innovation — for retail traders.
+        <p className='mx-auto max-w-2xl text-lg leading-relaxed text-slate-200 md:text-xl'>
+          The rest of Cardic Nexus is undergoing upgrades — but the battlefield
+          stays open. Register below to join the official competition.
         </p>
-        <div className='cnx-row'>
-          <a className='cnx-btn cnx-btn-ghost' href='#projects'>
-            Explore Projects
+        <div className='flex flex-wrap items-center justify-center gap-4'>
+          <a
+            href={ctaHref}
+            className='inline-flex items-center justify-center rounded-full bg-gradient-to-r from-cyan-400 via-indigo-500 to-purple-500 px-8 py-3 text-base font-semibold text-white shadow-[0_12px_40px_rgba(59,130,246,0.35)] transition hover:scale-105 hover:shadow-[0_16px_60px_rgba(107,33,168,0.45)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300'
+          >
+            Register Free →
           </a>
-          <button
-            type='button'
-            className='cnx-btn cnx-btn-ghost'
-            onClick={() => setRedeemOpen(true)}
+          <Link
+            href='/dashboard'
+            className='inline-flex items-center justify-center rounded-full border border-amber-400/60 bg-amber-500/10 px-8 py-3 text-base font-semibold text-amber-200 shadow-[0_0_35px_rgba(250,204,21,0.28)] transition hover:bg-amber-400/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300'
           >
-            Redeem
-          </button>
-          <button
-            type='button'
-            className='group relative inline-flex items-center justify-center rounded-full border border-cyan-400/60 bg-cyan-500/10 px-5 py-2 text-sm font-semibold uppercase tracking-wide text-cyan-100 shadow-[0_0_30px_rgba(34,211,238,0.38)] transition hover:shadow-[0_0_45px_rgba(34,211,238,0.55)] focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950'
-            onClick={() => setTrialOpen(true)}
-          >
-            CLAIM FREE TRIAL
-          </button>
-          <button
-            type='button'
-            className='cnx-btn cnx-btn-blue'
-            onClick={() =>
-              openPay({
-                id: 'all-access',
-                title: 'All-Access',
-                price: '$179/mo',
-              })
-            }
-          >
-            Join Premium
-          </button>
+            View Dashboard Preview
+          </Link>
         </div>
-        <div className='cnx-note'>
-          💙 GOODLUCK ON YOUR TRADING JOURNEY — WE WANT TO SEE YOU WIN
-        </div>
-        <div className='cnx-cta-grid'>
-          {quickLinks.map((item) => {
-            const content = (
-              <>
-                <div className='cnx-cta-content'>
-                  <span className='cnx-cta-label'>{item.title}</span>
-                  <span className='cnx-cta-desc'>{item.description}</span>
-                </div>
-                <span className='cnx-cta-arrow'>↗</span>
-              </>
-            );
-
-            if (item.soon) {
-              return (
-                <button
-                  key={item.title}
-                  type='button'
-                  className={`cnx-cta cnx-cta-${item.accent}`}
-                  onClick={() => triggerComingSoon(item.title)}
-                >
-                  {content}
-                </button>
-              );
-            }
-
-            return (
-              <Link
-                key={item.title}
-                href={item.href}
-                className={`cnx-cta cnx-cta-${item.accent}`}
-                prefetch={false}
-              >
-                {content}
-              </Link>
-            );
-          })}
-        </div>
-      </section>
-
-      <FreeTrialModal open={trialOpen} onClose={() => setTrialOpen(false)} />
-
-      {/* PROJECTS */}
-      <section id='projects' className='cnx-section'>
-        <h2>Projects</h2>
-        <div className='cnx-grid'>
-          {projects.map((p) => (
-            <article key={p.title} className='cnx-card'>
-              <div className='cnx-meta'>
-                <span className='cnx-type'>{p.type}</span>
-                <span className='cnx-badge'>{p.status}</span>
-              </div>
-              <h3 className='cnx-card-title'>{p.title}</h3>
-              <p className='cnx-text'>{p.text}</p>
-              <div className='cnx-tags'>
-                {p.tags.map((t) => (
-                  <span key={t}>{t}</span>
-                ))}
-              </div>
-              <div className='cnx-card-actions'>
-                <button
-                  type='button'
-                  className='cnx-btn cnx-btn-ghost'
-                  onClick={() => openPay(p.plan)}
-                >
-                  Buy
-                </button>
-                <a className='cnx-btn cnx-btn-blue' href='#contact'>
-                  Details
-                </a>
-              </div>
-            </article>
+        <div className='grid gap-6 text-left md:grid-cols-3 md:gap-8'>
+          {highlightedPerks.map((perk) => (
+            <div
+              key={perk.heading}
+              className='rounded-2xl border border-white/10 bg-white/5 p-6 shadow-lg shadow-blue-950/40 backdrop-blur-sm transition hover:-translate-y-1 hover:border-cyan-300/40'
+            >
+              <h3 className='text-lg font-semibold text-amber-200'>
+                {perk.heading}
+              </h3>
+              <p className='mt-3 text-sm leading-relaxed text-slate-200 md:text-base'>
+                {perk.description}
+              </p>
+            </div>
           ))}
         </div>
       </section>
 
-      {/* CARDIC HEAT — spotlight */}
-      <section id='heat' className='cnx-section'>
-        <h2>Cardic Heat 🔥</h2>
-        <p className='cnx-text'>
-          A next-generation indicator that tracks liquidity zones, market
-          sentiment, and trade signals in real time.
-        </p>
-
-        <p className='cnx-text' style={{ marginTop: 6 }}>
-          ✨ There are <b>3 evolving versions</b>, each one sharper and more
-          precise than the last:
-        </p>
-
-        <div className='cnx-grid' style={{ marginTop: 10 }}>
-          {/* 2.0 */}
-          <article className='cnx-card'>
-            <div className='cnx-meta'>
-              <span className='cnx-type'>Indicator</span>
-              <span className='cnx-badge'>Live</span>
-            </div>
-            <h3 className='cnx-card-title'>CARDIC Heat 2.0</h3>
-            <div className='cnx-amount'>$25</div>
-            <div className='cnx-note'>2 months</div>
-            <div className='cnx-card-actions' style={{ marginTop: 12 }}>
-              <button
-                type='button'
-                className='cnx-btn cnx-btn-blue'
-                onClick={() =>
-                  openPay({
-                    id: 'heat-20',
-                    title: 'CARDIC Heat 2.0',
-                    price: '$25 / 2 months',
-                  })
-                }
-              >
-                Get 2.0
-              </button>
-              <button
-                type='button'
-                className='cnx-btn cnx-btn-ghost cnx-assist-btn'
-                onClick={() => openAssistance('2.0')}
-              >
-                Need Assistance?
-              </button>
-            </div>
-          </article>
-
-          {/* 2.1 */}
-          <article className='cnx-card'>
-            <div className='cnx-meta'>
-              <span className='cnx-type'>Indicator</span>
-              <span className='cnx-badge'>Live</span>
-            </div>
-            <h3 className='cnx-card-title'>CARDIC Heat 2.1</h3>
-            <div className='cnx-amount'>$35</div>
-            <div className='cnx-note'>2 months</div>
-            <div className='cnx-card-actions' style={{ marginTop: 12 }}>
-              <button
-                type='button'
-                className='cnx-btn cnx-btn-blue'
-                onClick={() =>
-                  openPay({
-                    id: 'heat-21',
-                    title: 'CARDIC Heat 2.1',
-                    price: '$35 / 2 months',
-                  })
-                }
-              >
-                Get 2.1
-              </button>
-              <button
-                type='button'
-                className='cnx-btn cnx-btn-ghost cnx-assist-btn'
-                onClick={() => openAssistance('2.1')}
-              >
-                Need Assistance?
-              </button>
-            </div>
-          </article>
-
-          {/* 2.3 Early Access */}
-          <article className='cnx-card'>
-            <div className='cnx-meta'>
-              <span className='cnx-type'>Indicator</span>
-              <span className='cnx-badge'>Early</span>
-            </div>
-            <h3 className='cnx-card-title'>CARDIC Heat 2.3</h3>
-            <div className='cnx-amount'>$50</div>
-            <div className='cnx-note'>Early Access — 1 month</div>
-            <div className='cnx-card-actions' style={{ marginTop: 12 }}>
-              <button
-                type='button'
-                className='cnx-btn cnx-btn-blue'
-                onClick={() =>
-                  openPay({
-                    id: 'heat-23',
-                    title: 'CARDIC Heat 2.3',
-                    price: '$50 / month',
-                  })
-                }
-              >
-                Get 2.3
-              </button>
-              <button
-                type='button'
-                className='cnx-btn cnx-btn-ghost cnx-assist-btn'
-                onClick={() => openAssistance('2.3')}
-              >
-                Need Assistance?
-              </button>
-            </div>
-          </article>
-        </div>
-
-        <p className='cnx-text' style={{ marginTop: 12 }}>
-          📈 The higher the version, the more acute, dynamic, and powerful the
-          signal detection becomes.
-        </p>
-      </section>
-
-      {/* PRICING */}
-      <section id='pricing' className='cnx-section'>
-        <h2>Pricing</h2>
-        <div className='cnx-grid'>
-          <article className='cnx-price'>
-            <h3>Premium Signals</h3>
-            <div className='cnx-amount'>$49/mo</div>
-            <ul>
-              <li>Daily gold/FX/crypto signals</li>
-              <li>Risk management notes</li>
-              <li>Telegram access</li>
+      <section
+        id='register'
+        className='relative mx-auto max-w-6xl gap-12 px-6 pb-24 md:grid md:grid-cols-[1.1fr_0.9fr] md:pb-32'
+      >
+        <div className='space-y-8'>
+          <div className='rounded-3xl border border-white/10 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-amber-400/10 p-8 shadow-2xl shadow-indigo-950/40 backdrop-blur'>
+            <h2 className='text-3xl font-bold text-white md:text-4xl'>
+              Secure Your Slot
+            </h2>
+            <p className='mt-3 text-base leading-relaxed text-slate-200 md:text-lg'>
+              Submit the registration form to alert the Cardic Nexus team.
+              We&apos;ll deliver a confirmation instantly and send your
+              credentials within 24 hours of verification.
+            </p>
+            <ul className='mt-6 grid gap-4 text-sm text-slate-200 md:grid-cols-2 md:text-base'>
+              <li className='rounded-2xl border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 font-medium shadow-[0_0_35px_rgba(6,182,212,0.25)]'>
+                Instant email confirmation
+              </li>
+              <li className='rounded-2xl border border-purple-400/40 bg-purple-500/10 px-4 py-3 font-medium shadow-[0_0_35px_rgba(168,85,247,0.25)]'>
+                Credentials sent separately within 24h
+              </li>
+              <li className='rounded-2xl border border-amber-400/50 bg-amber-500/10 px-4 py-3 font-medium shadow-[0_0_35px_rgba(250,204,21,0.25)]'>
+                Proof of two social follows required
+              </li>
+              <li className='rounded-2xl border border-sky-400/40 bg-sky-500/10 px-4 py-3 font-medium shadow-[0_0_35px_rgba(56,189,248,0.25)]'>
+                Telegram handle keeps you in the loop
+              </li>
             </ul>
-            <button
-              type='button'
-              className='cnx-btn cnx-btn-ghost'
-              onClick={() =>
-                openPay({
-                  id: 'premium-signals',
-                  title: 'Premium Signals',
-                  price: '$49/mo',
-                })
-              }
-            >
-              Subscribe
-            </button>
-          </article>
-          <article className='cnx-price'>
-            <h3>Indicators</h3>
-            <div className='cnx-amount'>From $99</div>
-            <ul>
-              <li>Heat Zones™</li>
-              <li>Spider Web™</li>
-              <li>Oracle 1.0 (Soon)</li>
-            </ul>
-            <a className='cnx-btn cnx-btn-ghost' href='#projects'>
-              Browse
-            </a>
-          </article>
-          <article className='cnx-price'>
-            <h3>All-Access</h3>
-            <div className='cnx-amount'>$179/mo</div>
-            <ul>
-              <li>All indicators</li>
-              <li>Premium signals</li>
-              <li>Priority support</li>
-            </ul>
-            <button
-              type='button'
-              className='cnx-btn cnx-btn-blue'
-              onClick={() =>
-                openPay({
-                  id: 'all-access',
-                  title: 'All-Access',
-                  price: '$179/mo',
-                })
-              }
-            >
-              Join
-            </button>
-          </article>
-        </div>
-      </section>
-
-      {/* CONTACT & SOCIALS */}
-      <section id='contact' className='cnx-section'>
-        <h2>Contact & Socials</h2>
-        <div className='cnx-row' style={{ flexWrap: 'wrap' }}>
-          <a
-            className='cnx-btn cnx-btn-blue'
-            href='https://www.tiktok.com/@cardicnexus?_t=ZT-8zDvH2iUl01&_r=1'
-            target='_blank'
-            rel='noreferrer'
-          >
-            TikTok (Global)
-          </a>
-          <a
-            className='cnx-btn cnx-btn-ghost'
-            href='https://www.instagram.com/cardicnexus?igsh=MXh3NGhxZXdpdDR0OQ=='
-            target='_blank'
-            rel='noreferrer'
-          >
-            Instagram
-          </a>
-          <a
-            className='cnx-btn cnx-btn-ghost'
-            href='https://x.com/CARDICNEXUS?t=xpUNONAmekVrQBRXiQp36A&s=09'
-            target='_blank'
-            rel='noreferrer'
-          >
-            X (Twitter)
-          </a>
-          <a
-            className='cnx-btn cnx-btn-ghost'
-            href='https://t.me/REALCARDIC'
-            target='_blank'
-            rel='noreferrer'
-          >
-            Telegram (DM)
-          </a>
-          <a
-            className='cnx-btn cnx-btn-ghost'
-            href='https://t.me/cardicnewsupdates'
-            target='_blank'
-            rel='noreferrer'
-          >
-            Telegram (News/Community)
-          </a>
-        </div>
-        <p className='cnx-tagline'>
-          We don’t chase — we build. From vision to results. ♾️
-        </p>
-      </section>
-
-      {/* FOOTER */}
-      <footer className='cnx-footer'>
-        <div className='cnx-line' />© {new Date().getFullYear()} Cardic Nexus.
-        All rights reserved.
-      </footer>
-
-      <RedeemSheet open={redeemOpen} onClose={() => setRedeemOpen(false)} />
-
-      <PaymentSheet
-        open={payOpen}
-        onClose={() => setPayOpen(false)}
-        plan={plan}
-      />
-
-      {comingSoon && (
-        <div className='cnx-soon' role='status' aria-live='polite'>
-          <div className='cnx-soon-inner'>
-            <span className='cnx-soon-prompt'>{comingSoon}</span>
-            <span className='cnx-soon-title'>Coming Soon</span>
-            <span className='cnx-soon-ribbon'>
-              Stay locked in — drops imminent.
-            </span>
+          </div>
+          <div className='rounded-3xl border border-white/10 bg-white/5 p-8 shadow-xl shadow-blue-950/40 backdrop-blur'>
+            <h3 className='text-2xl font-semibold text-white md:text-3xl'>
+              CARDIC NEXUS TRADING TOURNAMENT — OFFICIAL RULES & TERMS
+            </h3>
+            <div className='mt-6 grid gap-6'>
+              {ruleSections.map((section) => (
+                <div
+                  key={section.title}
+                  className='rounded-2xl border border-white/5 bg-black/20 p-5 shadow-inner shadow-black/40'
+                >
+                  <h4 className='text-lg font-semibold text-cyan-200 md:text-xl'>
+                    {section.title}
+                  </h4>
+                  <div className='mt-3'>{section.body}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      )}
 
-      {/* Scoped CSS (no Tailwind) */}
-      <style>{`
-        :root{
-          --ink:#040309; --ink2:#070510;
-          --night:#0b0518; --night2:#120a24;
-          --purple:#6124c7;
-          --blue:#10A5FF; --gold:#F5C76B;
-          --text:#f7f5ff; --muted:#c9c3d7;
-        }
-        *{box-sizing:border-box} html,body,#root{height:100%}
-        body{margin:0}
+        <form
+          onSubmit={handleSubmit}
+          className='mt-12 flex flex-col gap-6 rounded-3xl border border-white/10 bg-black/40 p-8 shadow-[0_40px_120px_rgba(14,165,233,0.18)] backdrop-blur md:mt-0'
+        >
+          <div>
+            <h2 className='text-3xl font-semibold text-white'>
+              2️⃣ Registration Form
+            </h2>
+            <p className='mt-2 text-sm leading-relaxed text-slate-200 md:text-base'>
+              Provide the details below so we can confirm your spot. Email is
+              required and will be tied to your tournament access.
+            </p>
+          </div>
 
-        .cnx-root{
-          min-height:100vh; color:var(--text);
-          background:
-            radial-gradient(60% 45% at 20% -10%, rgba(97,36,199,.32) 0%, transparent 55%),
-            radial-gradient(40% 35% at 80% 10%, rgba(16,165,255,.18) 0%, transparent 60%),
-            linear-gradient(160deg, var(--ink) 0%, var(--night) 45%, var(--night2) 100%);
-          position:relative; overflow-x:hidden;
-          font-family: 'Space Grotesk', Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial;
-          letter-spacing:.01em;
-        }
+          <label className='space-y-2 text-left'>
+            <span className='text-sm font-semibold uppercase tracking-wide text-slate-100'>
+              Full Name
+            </span>
+            <input
+              className='w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/40'
+              name='name'
+              value={formState.name}
+              onChange={handleChange}
+              placeholder='Your full name'
+              autoComplete='name'
+            />
+          </label>
 
-        .cnx-root::before{
-          content:''; position:fixed; inset:0; z-index:-2;
-          background:radial-gradient(circle at 50% 120%, rgba(245,199,107,.12) 0%, transparent 55%);
-          opacity:.9;
-          pointer-events:none;
-        }
+          <label className='space-y-2 text-left'>
+            <span className='text-sm font-semibold uppercase tracking-wide text-slate-100'>
+              Email
+            </span>
+            <input
+              className='w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/40'
+              name='email'
+              type='email'
+              required
+              value={formState.email}
+              onChange={handleChange}
+              placeholder='name@example.com'
+              autoComplete='email'
+            />
+          </label>
 
-        .cnx-stars{
-          position:fixed; inset:0; z-index:-1; pointer-events:none;
-          background-image:
-            radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,.9) 99%, transparent 100%),
-            radial-gradient(1.5px 1.5px at 80% 70%, rgba(137,128,255,.6) 99%, transparent 100%),
-            radial-gradient(1.2px 1.2px at 40% 60%, rgba(245,199,107,.7) 99%, transparent 100%),
-            radial-gradient(1.2px 1.2px at 60% 20%, rgba(123,76,255,.5) 99%, transparent 100%);
-          animation: twinkle 9s linear infinite;
-          opacity:.75;
-        }
-        .cnx-glow{position:fixed; z-index:-1; filter:blur(90px); opacity:.3}
-        .cnx-glow-gold{top:-120px; left:-140px; width:360px; height:360px; background: radial-gradient(circle, rgba(245,199,107,.85), transparent 65%)}
-        .cnx-glow-blue{bottom:-120px; right:-140px; width:340px; height:340px; background: radial-gradient(circle, rgba(16,165,255,.65), transparent 65%)}
-        .cnx-glow-purple{top:40%; left:50%; width:480px; height:480px; transform:translate(-50%, -50%); background: radial-gradient(circle, rgba(97,36,199,.55), transparent 70%)}
-        @keyframes twinkle { 0%,100%{opacity:.65} 50%{opacity:1} }
+          <label className='space-y-2 text-left'>
+            <span className='text-sm font-semibold uppercase tracking-wide text-slate-100'>
+              Telegram @handle
+            </span>
+            <input
+              className='w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/40'
+              name='telegram'
+              value={formState.telegram}
+              onChange={handleChange}
+              placeholder='@yourhandle'
+              autoComplete='off'
+            />
+          </label>
 
-        .cnx-btn{display:inline-flex; align-items:center; justify-content:center; padding:12px 20px; border-radius:18px; text-decoration:none; transition:.2s ease; border:1px solid rgba(245,199,107,.35); color:#fff; font-weight:600; letter-spacing:.02em; backdrop-filter:blur(6px); background:rgba(16,12,32,.28)}
-        .cnx-btn-ghost:hover{background:rgba(245,199,107,.1); border-color:rgba(245,199,107,.55)}
-        .cnx-btn-blue{background:linear-gradient(135deg, #1b98ff 0%, #4dc8ff 70%); color:#031224; font-weight:800; border-color:transparent; box-shadow:0 12px 32px rgba(16,165,255,.28)}
-        .cnx-btn-blue:hover{transform:translateY(-1px); filter:brightness(1.05)}
+          <label className='space-y-2 text-left'>
+            <span className='text-sm font-semibold uppercase tracking-wide text-slate-100'>
+              Proof of 2 social follows
+            </span>
+            <textarea
+              className='min-h-[120px] w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-300/40'
+              name='proof'
+              value={formState.proof}
+              onChange={handleChange}
+              placeholder='Paste screenshot links or profile URLs showing you follow at least 2 Cardic Nexus pages.'
+            />
+          </label>
 
-        .cnx-hero{max-width:1120px; margin:0 auto; padding:90px 18px 48px; text-align:center; position:relative}
-        .cnx-hero::after{
-          content:''; position:absolute; inset:auto 10% -40px; height:1px;
-          background:linear-gradient(90deg, transparent, rgba(245,199,107,.28), transparent);
-          opacity:.7;
-        }
-        .cnx-tag{color:rgba(193,197,214,.85); margin:16px 0 24px; font-size:18px; letter-spacing:.12em; text-transform:uppercase}
-        .cnx-row{display:flex; gap:12px; justify-content:center; flex-wrap:wrap}
-        .cnx-note{color:#d9d3ff; font-size:13px; margin-top:18px; font-weight:700; letter-spacing:.14em; text-transform:uppercase}
-        .cnx-cta-grid{
-          display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr));
-          gap:14px; margin-top:32px;
-        }
-        .cnx-cta{
-          position:relative; padding:18px 20px; border-radius:20px; border:1px solid rgba(255,255,255,.12);
-          background:linear-gradient(140deg, rgba(18,12,34,.92), rgba(9,6,22,.9));
-          color:inherit; display:flex; gap:12px; align-items:flex-start; justify-content:space-between;
-          text-decoration:none; transition:.25s ease; overflow:hidden; cursor:pointer; font:inherit;
-        }
-        .cnx-cta:focus-visible{outline:2px solid rgba(245,199,107,.65); outline-offset:4px}
-        .cnx-cta::after{
-          content:''; position:absolute; inset:1px; border-radius:18px; opacity:.4;
-          background:radial-gradient(circle at top right, rgba(255,255,255,.12), transparent 65%);
-          transition:opacity .25s ease;
-        }
-        .cnx-cta:hover{transform:translateY(-4px); border-color:rgba(245,199,107,.55)}
-        .cnx-cta:hover::after{opacity:.6}
-        .cnx-cta-content{position:relative; z-index:1; display:flex; flex-direction:column; gap:6px}
-        .cnx-cta-label{font-size:18px; font-weight:700; letter-spacing:.04em}
-        .cnx-cta-desc{font-size:13px; line-height:1.4; color:rgba(211,210,232,.78)}
-        .cnx-cta-arrow{position:relative; z-index:1; align-self:flex-end; font-size:20px; opacity:.7; transition:transform .25s ease, opacity .25s ease}
-        .cnx-cta:hover .cnx-cta-arrow{transform:translate(4px, -4px); opacity:1}
-        .cnx-cta-bots{box-shadow:0 0 32px rgba(97,36,199,.25)}
-        .cnx-cta-bots::before{content:''; position:absolute; inset:-40% 55% auto -40%; height:140%; border-radius:50%; background:radial-gradient(circle, rgba(97,36,199,.35), transparent 70%); z-index:0}
-        .cnx-cta-indicators::before{content:''; position:absolute; inset:-50% -30% auto 40%; height:150%; border-radius:50%; background:radial-gradient(circle, rgba(245,199,107,.35), transparent 72%); z-index:0}
-        .cnx-cta-heat::before{content:''; position:absolute; inset:-30% -20% auto 20%; height:120%; border-radius:50%; background:radial-gradient(circle, rgba(255,93,93,.35), transparent 70%); z-index:0}
-        .cnx-cta-eas::before{content:''; position:absolute; inset:-45% 30% auto -25%; height:130%; border-radius:50%; background:radial-gradient(circle, rgba(16,165,255,.32), transparent 70%); z-index:0}
+          <label className='flex items-start gap-3 text-left'>
+            <input
+              type='checkbox'
+              name='agree'
+              checked={formState.agree}
+              onChange={handleChange}
+              className='mt-1 h-5 w-5 rounded border border-white/20 bg-black/40 text-cyan-400 focus:ring-cyan-400'
+            />
+            <span className='text-sm leading-relaxed text-slate-200'>
+              I agree to the Cardic Nexus Trading Tournament Official Rules &
+              Terms and confirm that the information provided is accurate.
+            </span>
+          </label>
 
-        .cnx-section{max-width:1120px; margin:0 auto; padding:48px 18px}
-        .cnx-section h2{margin:0 0 18px; font-size:26px; text-transform:uppercase; letter-spacing:.24em; color:#e9e6ff}
-        .cnx-section h2::after{
-          content:''; display:block; width:64px; height:2px; margin-top:10px;
-          background:linear-gradient(90deg, rgba(245,199,107,.8), rgba(16,165,255,.6));
-        }
-        .cnx-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:18px}
-        .cnx-card, .cnx-price{
-          background:linear-gradient(145deg, rgba(24,16,42,.92), rgba(13,9,26,.88));
-          border:1px solid rgba(255,255,255,.08);
-          border-radius:22px; padding:20px;
-          box-shadow:0 18px 44px rgba(8,4,18,.6);
-          transition:.3s ease;
-        }
-        .cnx-card:hover, .cnx-price:hover{ border-color: rgba(245,199,107,.55); transform:translateY(-6px); box-shadow:0 28px 50px rgba(9,5,20,.65); }
-        .cnx-meta{display:flex; justify-content:space-between; align-items:center; color:#cfd3dc; font-size:12px; text-transform:uppercase; letter-spacing:.18em}
-        .cnx-badge{border:1px solid rgba(255,255,255,.18); padding:4px 10px; border-radius:999px; background:rgba(255,255,255,.06); font-size:11px; letter-spacing:.18em}
-        .cnx-card-title{margin:10px 0 12px; font-size:20px; letter-spacing:.02em}
-        .cnx-text{color:#d8d4e8; line-height:1.6}
-        .cnx-tags{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
-        .cnx-tags span{font-size:12px; color:#dad4ff; border:1px solid rgba(120,112,255,.45); padding:5px 10px; border-radius:999px; background:rgba(52,38,92,.4)}
-        .cnx-card-actions{display:flex; gap:10px; margin-top:18px}
-        .cnx-assist-btn{border-color:rgba(16,165,255,.35); background:rgba(16,12,32,.35); color:rgba(198,208,255,.92)}
-        .cnx-assist-btn:hover{border-color:rgba(16,165,255,.65); background:rgba(16,165,255,.12); color:#fff}
+          {status.type !== 'idle' && (
+            <div
+              className={
+                status.type === 'success'
+                  ? 'rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200'
+                  : status.type === 'error'
+                  ? 'rounded-xl border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-200'
+                  : 'rounded-xl border border-cyan-500/40 bg-cyan-500/10 px-4 py-3 text-sm text-cyan-100'
+              }
+            >
+              {status.message}
+            </div>
+          )}
 
-        .cnx-price h3{margin:8px 0; font-size:20px}
-        .cnx-amount{font-size:26px; color:var(--gold); font-weight:800; letter-spacing:.04em}
-        .cnx-price ul{margin:14px 0 18px; padding-left:18px; color:#d0cee2; line-height:1.6}
-
-        .cnx-footer{max-width:1120px; margin:48px auto 60px; text-align:center; color:#9189b1; font-size:12px; letter-spacing:.14em; text-transform:uppercase}
-        .cnx-line{height:1px; background:linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent); margin:22px 0}
-
-        .cnx-tagline{color:var(--muted); margin-top:12px; text-align:center}
-
-        .cnx-soon{position:fixed; inset:0; z-index:99; display:flex; align-items:center; justify-content:center; padding:18px; background:rgba(4,3,12,.76); backdrop-filter:blur(14px); animation:soonFade .25s ease}
-        .cnx-soon-inner{position:relative; padding:42px 64px; border-radius:32px; text-align:center; background:linear-gradient(160deg, rgba(27,16,52,.88), rgba(8,6,20,.92)); border:1px solid rgba(245,199,107,.28); box-shadow:0 40px 120px rgba(16,165,255,.22)}
-        .cnx-soon-inner::after{content:''; position:absolute; inset:-2px; border-radius:34px; border:1px solid rgba(255,255,255,.08); opacity:.5; mix-blend-mode:screen; animation:pulseHalo 2.4s ease-in-out infinite}
-        .cnx-soon-prompt{display:block; font-size:16px; letter-spacing:.28em; text-transform:uppercase; color:rgba(245,199,107,.85); margin-bottom:18px}
-        .cnx-soon-title{display:block; font-size:44px; font-weight:800; letter-spacing:.24em; text-transform:uppercase; background:linear-gradient(90deg, #f5c76b, #9c4dff, #10a5ff, #f5c76b); background-size:300%; color:transparent; -webkit-background-clip:text; animation:soonGlow 3.5s linear infinite}
-        .cnx-soon-ribbon{display:inline-block; margin-top:18px; padding:8px 18px; border-radius:999px; font-size:13px; letter-spacing:.22em; text-transform:uppercase; color:rgba(198,208,255,.88); background:rgba(52,36,88,.72); box-shadow:0 10px 32px rgba(76,58,128,.3); animation:ribbonPulse 1.9s ease-in-out infinite}
-
-        @keyframes soonGlow {0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-        @keyframes ribbonPulse {0%,100%{transform:translateY(0); opacity:.8}50%{transform:translateY(-4px); opacity:1}}
-        @keyframes soonFade {from{opacity:0} to{opacity:1}}
-        @keyframes pulseHalo {0%,100%{opacity:.3}50%{opacity:.7}}
-
-
-        @media (max-width: 720px){
-          .cnx-tag{font-size:13px; letter-spacing:.18em}
-          .cnx-cta-grid{margin-top:26px}
-          .cnx-cta{padding:16px 18px}
-          .cnx-cta-label{font-size:16px}
-        }
-
-        @media (max-width: 520px){
-          .cnx-hero{padding-top:72px}
-          .cnx-tag{letter-spacing:.14em}
-          .cnx-note{letter-spacing:.08em}
-          .cnx-section h2{letter-spacing:.16em}
-          .cnx-soon-inner{padding:32px 30px}
-          .cnx-soon-title{font-size:32px}
-          .cnx-soon-prompt{letter-spacing:.18em}
-        }
-
-
-      `}</style>
+          <button
+            type='submit'
+            className='mt-4 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-amber-400 via-fuchsia-500 to-blue-500 px-6 py-3 text-base font-semibold text-white shadow-[0_15px_45px_rgba(251,191,36,0.3)] transition hover:scale-[1.02] hover:shadow-[0_18px_60px_rgba(168,85,247,0.4)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-200 disabled:cursor-not-allowed disabled:opacity-60'
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Submitting…' : 'Submit Registration'}
+          </button>
+          <p className='text-center text-xs text-slate-400'>
+            Confirmation email arrives immediately. Credentials follow within 24
+            hours of approval.
+          </p>
+        </form>
+      </section>
     </div>
   );
 }
