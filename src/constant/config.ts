@@ -1,8 +1,8 @@
 // app/constants/config.ts
 export const siteConfig = {
-  title: 'CARDIC NEXUS - AI • Trading',
+  title: 'Cardic Nexus Tournament',
   description:
-    'AI • Trading • Innovation for retail traders • Precision indicators, EAs, and premium signals',
+    'Register for the Cardic Nexus Tournament while the main platform is under maintenance. Stay tuned for your dashboard credentials.',
   url: 'https://www.cardicnex.us',
   ogImage: 'https://www.cardicnex.us/og-cardic.png',
   ogType: 'website',
