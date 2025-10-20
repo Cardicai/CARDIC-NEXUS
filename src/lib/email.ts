@@ -1,4 +1,4 @@
-const RESEND_ENDPOINT = 'https://api.resend.com/emails';
+import { Resend } from 'resend';
 
 export class EmailError extends Error {
   status?: number;
@@ -23,6 +23,14 @@ export type SendEmailOptions = {
   attachments?: EmailAttachment[];
 };
 
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    throw new EmailError('Missing RESEND_API_KEY environment variable');
+  }
+  return new Resend(apiKey);
+}
+
 export async function sendEmail({
   to,
   subject,
@@ -35,28 +43,18 @@ export async function sendEmail({
     throw new EmailError('Missing FROM_EMAIL environment variable');
   }
 
-  const res = await fetch(RESEND_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-    },
-    body: JSON.stringify({
-      from,
-      to,
-      subject,
-      text,
-      ...(html ? { html } : {}),
-      ...(attachments?.length ? { attachments } : {}),
-    }),
+  const resend = getResendClient();
+
+  const response = await resend.emails.send({
+    from,
+    to,
+    subject,
+    text,
+    ...(html ? { html } : {}),
+    ...(attachments?.length ? { attachments } : {}),
   });
 
-  if (res.status === 429) {
-    throw new EmailError('Rate limited', 429);
-  }
-
-  if (!res.ok) {
-    const message = await res.text().catch(() => 'Failed to send email');
-    throw new EmailError(message || 'Failed to send email', res.status);
+  if ('error' in response && response.error) {
+    throw new EmailError(response.error.message, response.error.statusCode);
   }
 }
