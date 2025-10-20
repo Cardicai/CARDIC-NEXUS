@@ -1,10 +1,11 @@
-import type { ReactNode } from 'react';
-import { siteConfig } from '@/constant/config';
 import Head from 'next/head';
+import type { ReactNode } from 'react';
 
 import './globals.css';
 
 import NavBar from '@/components/NavBar';
+
+import { siteConfig } from '@/constant/config';
 
 export const metadata = {
   metadataBase: new URL('https://www.cardicnex.us'),
@@ -42,25 +43,20 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang='en'>
-    <Head>
+      <Head>
         <title>{siteConfig.title}</title>
-        <meta name="description" content={siteConfig.description} />
-        <meta property="og:title" content={siteConfig.title} />
-        <meta property="og:description" content={siteConfig.description} />
-        <meta property="og:image" content={siteConfig.ogImage} />
-        <meta property="og:url" content={siteConfig.url} />
-        <meta property="og:type" content={siteConfig.ogType} />
-        <meta name="twitter:card" content={siteConfig.twitterCard} />
+        <meta name='description' content={siteConfig.description} />
+        <meta property='og:title' content={siteConfig.title} />
+        <meta property='og:description' content={siteConfig.description} />
+        <meta property='og:image' content={siteConfig.ogImage} />
+        <meta property='og:url' content={siteConfig.url} />
+        <meta property='og:type' content={siteConfig.ogType} />
+        <meta name='twitter:card' content={siteConfig.twitterCard} />
       </Head>
-      <body
-        style={{
-          margin: 0,
-          background: 'linear-gradient(180deg,#0a0b0d,#0e0f12)',
-          color: '#fff',
-        }}
-      >
+      <body className='cnx-app'>
+        <div className='cnx-app__backdrop' aria-hidden='true' />
         <NavBar />
-        <main style={{ minHeight: '100vh' }}>{children}</main>
+        <main className='cnx-app__main'>{children}</main>
       </body>
     </html>
   );

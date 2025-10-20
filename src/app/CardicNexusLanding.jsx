@@ -3,9 +3,237 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 
+import './cardic-nexus.css';
+
 import FreeTrialModal from '@/components/FreeTrialModal';
 import PaymentSheet from '@/components/PaymentSheet';
 import RedeemSheet from '@/components/RedeemSheet';
+
+const stats = [
+  { label: 'Active traders', value: '12k+' },
+  { label: 'Markets covered', value: '24' },
+  { label: 'Signal accuracy', value: '87%' },
+  { label: 'Avg. response', value: '< 2m' },
+];
+
+const quickLinks = [
+  {
+    title: 'Algo Bots',
+    description: 'Autonomous executions engineered for disciplined risk.',
+    href: '/partner',
+    accent: 'bots',
+    soon: true,
+  },
+  {
+    title: 'Indicators',
+    description: 'Signature overlays defining market structure in real time.',
+    href: '#projects',
+    accent: 'indicators',
+  },
+  {
+    title: 'Cardic Heat',
+    description: 'Liquidity intelligence, volatility sensing, adaptive alerts.',
+    href: '#heat',
+    accent: 'heat',
+  },
+  {
+    title: 'Expert Advisors',
+    description: 'Institutional logic delivered to MT4 / MT5.',
+    href: '/partner',
+    accent: 'eas',
+    soon: true,
+  },
+];
+
+const solutionPillars = [
+  {
+    title: 'AI Market Intelligence',
+    copy: 'Adaptive neural models compressing macro, orderflow, and liquidity data into decisive trading narratives.',
+    bullets: [
+      'Institutional feeds distilled for retail',
+      'Auto-learned thresholds per symbol',
+      'Risk overlays with confidence scoring',
+    ],
+  },
+  {
+    title: 'Execution Toolkit',
+    copy: 'From premium signals to premium-grade automation, everything is calibrated to protect capital first.',
+    bullets: [
+      'Scenario-based signal notes',
+      'Position sizing frameworks',
+      'Automation with guard rails',
+    ],
+  },
+  {
+    title: 'Investor Experience',
+    copy: 'Concierge onboarding, rapid response support, and transparent performance dashboards for every member.',
+    bullets: [
+      '2-minute median response time',
+      'Global community rooms',
+      'Priority partner success team',
+    ],
+  },
+];
+
+const heatVersions = [
+  {
+    version: 'CARDIC Heat 2.0',
+    price: '$25',
+    badge: 'Live',
+    term: '2 months access',
+    plan: {
+      id: 'heat-20',
+      title: 'CARDIC Heat 2.0',
+      price: '$25 / 2 months',
+    },
+    description:
+      'Signature liquidity zones with adaptive heat-mapping and execution prompts.',
+  },
+  {
+    version: 'CARDIC Heat 2.1',
+    price: '$35',
+    badge: 'Live',
+    term: '2 months access',
+    plan: {
+      id: 'heat-21',
+      title: 'CARDIC Heat 2.1',
+      price: '$35 / 2 months',
+    },
+    description:
+      'Enhanced volatility detection plus bias calibration for gold, FX, and crypto.',
+  },
+  {
+    version: 'CARDIC Heat 2.3',
+    price: '$50',
+    badge: 'Early Access',
+    term: '1 month access',
+    plan: {
+      id: 'heat-23',
+      title: 'CARDIC Heat 2.3',
+      price: '$50 / month',
+    },
+    description:
+      'Early AI copilot that forecasts order block battles before they trigger.',
+  },
+];
+
+const pipeline = [
+  {
+    title: 'CARDIC Oracle™ 1.0',
+    type: 'Indicator',
+    status: 'In Validation',
+    summary:
+      'Predictive zones aligning liquidity sweeps with AI derived sentiment scoring.',
+    tags: ['AI', 'Liquidity', 'Sentiment'],
+    plan: {
+      id: 'oracle-1-0',
+      title: 'CARDIC Oracle 1.0',
+      price: 'Coming Soon',
+    },
+  },
+  {
+    title: 'Cardic Heat Zones™',
+    type: 'Indicator',
+    status: 'Live',
+    summary:
+      'Smart money liquidity grids with streaming alerts and execution insights.',
+    tags: ['SMC', 'Zones', 'Alerts'],
+    plan: {
+      id: 'heat-zones',
+      title: 'CARDIC Heat Zones™',
+      price: 'From $99',
+    },
+  },
+  {
+    title: 'Cardic Spider Web™',
+    type: 'Indicator',
+    status: 'Prototype',
+    summary:
+      'Dynamic SR lattice merging Fibonacci, volume profile, and fair value mapping.',
+    tags: ['Fibonacci', 'Volume', 'Order Blocks'],
+    plan: {
+      id: 'spider-web',
+      title: 'Cardic Spider Web™',
+      price: 'From $129',
+    },
+  },
+  {
+    title: 'Premium Signals',
+    type: 'Membership',
+    status: 'Live',
+    summary:
+      'Daily multi-asset signals backed by institutional risk commentary.',
+    tags: ['Forex', 'Metals', 'Crypto'],
+    plan: {
+      id: 'premium-signals',
+      title: 'Premium Signals',
+      price: '$49/mo',
+    },
+  },
+];
+
+const pricing = [
+  {
+    title: 'Premium Signals',
+    price: '$49/mo',
+    description: 'Gold, FX, and crypto entries with detailed trade management.',
+    perks: [
+      'Intraday + swing trade feeds',
+      'Risk notes & market context',
+      'Private Telegram access',
+    ],
+    cta: {
+      label: 'Subscribe',
+      action: {
+        id: 'premium-signals',
+        title: 'Premium Signals',
+        price: '$49/mo',
+      },
+    },
+  },
+  {
+    title: 'Indicator Suite',
+    price: 'From $99',
+    description: 'Cardic Heat suite, Heat Zones™, and upcoming Oracle roadmap.',
+    perks: [
+      'Plug-and-trade templates',
+      'Lifetime updates on purchased tiers',
+      'Priority release previews',
+    ],
+    href: '#projects',
+    cta: {
+      label: 'View Indicators',
+    },
+  },
+  {
+    title: 'All-Access',
+    price: '$179/mo',
+    description:
+      'Everything Cardic builds, plus private desk guidance and automation.',
+    perks: [
+      'All indicators + premium signals',
+      'Quarterly strategy labs',
+      'Priority concierge desk',
+    ],
+    action: {
+      id: 'all-access',
+      title: 'All-Access',
+      price: '$179/mo',
+    },
+    cta: {
+      label: 'Join Premium',
+      accent: 'blue',
+    },
+  },
+];
+
+const partners = [
+  'TradersCove',
+  'MetaQuant Alliance',
+  'FXPulse Labs',
+  'Blockwave Group',
+  'Aurora Desk',
+];
 
 export default function CardicNexusLanding() {
   const [payOpen, setPayOpen] = useState(false);
@@ -14,42 +242,15 @@ export default function CardicNexusLanding() {
   const [comingSoon, setComingSoon] = useState(null);
   const [trialOpen, setTrialOpen] = useState(false);
   const soonTimer = useRef(null);
-  const quickLinks = [
-    {
-      title: 'Algo Bots',
-      description: 'Automations engineered for relentless precision.',
-      href: '/partner',
-      accent: 'bots',
-      soon: true,
-    },
-    {
-      title: 'Indicators',
-      description: 'Signature overlays that frame the market narrative.',
-      href: '#projects',
-      accent: 'indicators',
-    },
-    {
-      title: 'Cardic Heat',
-      description: 'Live liquidity intelligence. Always-on market radar.',
-      href: '#heat',
-      accent: 'heat',
-    },
-    {
-      title: 'EAs',
-      description: 'Expert advisors tuned for disciplined execution.',
-      href: '/partner',
-      accent: 'eas',
-      soon: true,
-    },
-  ];
-  const openPay = (p) => {
-    setPlan(p);
+
+  const openPay = (selectedPlan) => {
+    setPlan(selectedPlan);
     setPayOpen(true);
   };
 
   const openAssistance = (version) => {
     const baseUrl = 'https://t.me/DeuceForex';
-    const message = `hey I need help understanding the cardic heat ${version}`;
+    const message = `Hey Cardic team, I need help understanding CARDIC Heat ${version}.`;
     const target = `${baseUrl}?text=${encodeURIComponent(message)}`;
     const win = window.open(target, '_blank', 'noopener,noreferrer');
     if (win) {
@@ -59,105 +260,63 @@ export default function CardicNexusLanding() {
 
   const triggerComingSoon = (label) => {
     setComingSoon(label);
-    if (soonTimer.current) clearTimeout(soonTimer.current);
-    soonTimer.current = setTimeout(() => setComingSoon(null), 2200);
+    if (soonTimer.current) window.clearTimeout(soonTimer.current);
+    soonTimer.current = window.setTimeout(() => setComingSoon(null), 2200);
   };
 
-  useEffect(() => {
-    return () => {
-      if (soonTimer.current) clearTimeout(soonTimer.current);
-    };
-  }, []);
+  useEffect(
+    () => () => {
+      if (soonTimer.current) window.clearTimeout(soonTimer.current);
+    },
+    []
+  );
 
-  const projects = [
-    {
-      title: 'CARDIC Oracle 1.0',
-      type: 'Indicator',
-      status: 'Soon',
-      text: 'Real-time psychology, liquidity battles, predictive zones.',
-      tags: ['Psychology', 'Liquidity', 'AI'],
-      plan: {
-        id: 'oracle-1-0',
-        title: 'CARDIC Oracle 1.0',
-        price: 'Coming Soon',
-      },
-    },
-    {
-      title: 'Cardic Heat Zones™',
-      type: 'Indicator',
-      status: 'Live',
-      text: 'Smart money zones with alerts.',
-      tags: ['SMC', 'Zones', 'Alerts'],
-      plan: {
-        id: 'heat-zones',
-        title: 'CARDIC Heat Zones™',
-        price: 'From $99',
-      },
-    },
-    {
-      title: 'Cardic Spider Web™',
-      type: 'Indicator',
-      status: 'In Dev',
-      text: 'Dynamic SR + Fibonacci + Order Blocks.',
-      tags: ['Fib', 'OB', 'Grid'],
-      plan: {
-        id: 'spider-web',
-        title: 'Cardic Spider Web™',
-        price: 'From $129',
-      },
-    },
-    {
-      title: 'Premium Signals',
-      type: 'Membership',
-      status: 'Live',
-      text: 'Daily gold/FX/crypto signals with risk notes.',
-      tags: ['Gold', 'Forex', 'Crypto'],
-      plan: {
-        id: 'premium-signals',
-        title: 'Premium Signals',
-        price: '$49/mo',
-      },
-    },
-  ];
+  const handlePricingCTA = (config) => {
+    if (config?.href) {
+      const anchor = document.querySelector(config.href);
+      if (anchor) {
+        anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      return;
+    }
+    if (config?.action) {
+      openPay(config.action);
+    }
+  };
 
   return (
-    <div className='cnx-root'>
-      {/* Galaxy background layers */}
-      <div className='cnx-stars' />
-      <div className='cnx-glow cnx-glow-gold' />
-      <div className='cnx-glow cnx-glow-blue' />
-      <div className='cnx-glow cnx-glow-purple' />
+    <div className='cnx-landing'>
+      <div className='cnx-landing__mesh' aria-hidden='true' />
+      <div className='cnx-landing__aura' aria-hidden='true' />
 
-      {/* HERO */}
       <section className='cnx-hero'>
-        <h1 className='heroTitle'>
-          <span className='heroGold'>CARDIC</span>{' '}
-          <span className='heroBlue'>NEXUS</span>
+        <div className='cnx-hero__eyebrow'>AI • Trading • Innovation</div>
+        <h1 className='cnx-hero__title'>
+          The precision operating system for modern retail traders.
         </h1>
-        <p className='cnx-tag'>
-          AI • Trading • Innovation — for retail traders.
+        <p className='cnx-hero__subtitle'>
+          CARDIC NEXUS merges institutional intelligence, adaptive automation,
+          and white-glove service so you can trade with conviction even in
+          turbulent markets.
         </p>
-        <div className='cnx-row'>
-          <a className='cnx-btn cnx-btn-ghost' href='#projects'>
-            Explore Projects
-          </a>
+        <div className='cnx-hero__actions'>
           <button
             type='button'
-            className='cnx-btn cnx-btn-ghost'
-            onClick={() => setRedeemOpen(true)}
-          >
-            Redeem
-          </button>
-          <button
-            type='button'
-            className='group relative inline-flex items-center justify-center rounded-full border border-cyan-400/60 bg-cyan-500/10 px-5 py-2 text-sm font-semibold uppercase tracking-wide text-cyan-100 shadow-[0_0_30px_rgba(34,211,238,0.38)] transition hover:shadow-[0_0_45px_rgba(34,211,238,0.55)] focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950'
+            className='cnx-btn cnx-btn--light'
             onClick={() => setTrialOpen(true)}
           >
-            CLAIM FREE TRIAL
+            Claim free trial
           </button>
           <button
             type='button'
-            className='cnx-btn cnx-btn-blue'
+            className='cnx-btn cnx-btn--dark'
+            onClick={() => setRedeemOpen(true)}
+          >
+            Redeem access code
+          </button>
+          <button
+            type='button'
+            className='cnx-btn cnx-btn--primary'
             onClick={() =>
               openPay({
                 id: 'all-access',
@@ -166,21 +325,40 @@ export default function CardicNexusLanding() {
               })
             }
           >
-            Join Premium
+            Join premium desk
           </button>
         </div>
-        <div className='cnx-note'>
-          💙 GOODLUCK ON YOUR TRADING JOURNEY — WE WANT TO SEE YOU WIN
-        </div>
-        <div className='cnx-cta-grid'>
+        <dl className='cnx-hero__stats'>
+          {stats.map((stat) => (
+            <div key={stat.label} className='cnx-hero__stat'>
+              <dt>{stat.label}</dt>
+              <dd>{stat.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      <section
+        className='cnx-section cnx-section--grid'
+        aria-label='Solution shortcuts'
+      >
+        <header className='cnx-section__head'>
+          <span className='cnx-section__eyebrow'>Launchpad</span>
+          <h2>Navigate the suite</h2>
+          <p>
+            Precision tooling across AI-powered indicators, expert advisors, and
+            live market intelligence — curated for traders who demand more.
+          </p>
+        </header>
+        <div className='cnx-grid cnx-grid--quicklinks'>
           {quickLinks.map((item) => {
             const content = (
               <>
-                <div className='cnx-cta-content'>
-                  <span className='cnx-cta-label'>{item.title}</span>
-                  <span className='cnx-cta-desc'>{item.description}</span>
-                </div>
-                <span className='cnx-cta-arrow'>↗</span>
+                <div className='cnx-quicklink__label'>{item.title}</div>
+                <p className='cnx-quicklink__copy'>{item.description}</p>
+                <span className='cnx-quicklink__icon' aria-hidden='true'>
+                  ↗
+                </span>
               </>
             );
 
@@ -189,10 +367,11 @@ export default function CardicNexusLanding() {
                 <button
                   key={item.title}
                   type='button'
-                  className={`cnx-cta cnx-cta-${item.accent}`}
+                  className={`cnx-card cnx-quicklink cnx-quicklink--${item.accent}`}
                   onClick={() => triggerComingSoon(item.title)}
                 >
                   {content}
+                  <span className='cnx-quicklink__status'>Coming soon</span>
                 </button>
               );
             }
@@ -201,45 +380,110 @@ export default function CardicNexusLanding() {
               <Link
                 key={item.title}
                 href={item.href}
-                className={`cnx-cta cnx-cta-${item.accent}`}
                 prefetch={false}
+                className={`cnx-card cnx-quicklink cnx-quicklink--${item.accent}`}
               >
                 {content}
+                <span className='cnx-quicklink__status'>Explore</span>
               </Link>
             );
           })}
         </div>
       </section>
 
-      <FreeTrialModal open={trialOpen} onClose={() => setTrialOpen(false)} />
-
-      {/* PROJECTS */}
-      <section id='projects' className='cnx-section'>
-        <h2>Projects</h2>
-        <div className='cnx-grid'>
-          {projects.map((p) => (
-            <article key={p.title} className='cnx-card'>
-              <div className='cnx-meta'>
-                <span className='cnx-type'>{p.type}</span>
-                <span className='cnx-badge'>{p.status}</span>
-              </div>
-              <h3 className='cnx-card-title'>{p.title}</h3>
-              <p className='cnx-text'>{p.text}</p>
-              <div className='cnx-tags'>
-                {p.tags.map((t) => (
-                  <span key={t}>{t}</span>
+      <section className='cnx-section cnx-section--pillars'>
+        <header className='cnx-section__head'>
+          <span className='cnx-section__eyebrow'>Operating Model</span>
+          <h2>Built like a trading desk. Delivered for you.</h2>
+        </header>
+        <div className='cnx-grid cnx-grid--pillars'>
+          {solutionPillars.map((pillar) => (
+            <article key={pillar.title} className='cnx-card cnx-pillar'>
+              <h3>{pillar.title}</h3>
+              <p>{pillar.copy}</p>
+              <ul>
+                {pillar.bullets.map((item) => (
+                  <li key={item}>{item}</li>
                 ))}
+              </ul>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id='heat' className='cnx-section cnx-section--feature'>
+        <header className='cnx-section__head'>
+          <span className='cnx-section__eyebrow'>Flagship</span>
+          <h2>CARDIC Heat™ Intelligence</h2>
+          <p>
+            Three evolutionary versions tuned to decode liquidity wars before
+            price action confirms. Pick your tier, or tap our desk for guidance.
+          </p>
+        </header>
+        <div className='cnx-grid cnx-grid--heat'>
+          {heatVersions.map((entry) => (
+            <article key={entry.version} className='cnx-card cnx-heat'>
+              <div className='cnx-chip'>{entry.badge}</div>
+              <h3>{entry.version}</h3>
+              <p>{entry.description}</p>
+              <div className='cnx-heat__meta'>
+                <span className='cnx-heat__price'>{entry.price}</span>
+                <span className='cnx-heat__term'>{entry.term}</span>
               </div>
-              <div className='cnx-card-actions'>
+              <div className='cnx-heat__actions'>
                 <button
                   type='button'
-                  className='cnx-btn cnx-btn-ghost'
-                  onClick={() => openPay(p.plan)}
+                  className='cnx-btn cnx-btn--primary'
+                  onClick={() => openPay(entry.plan)}
                 >
-                  Buy
+                  Secure access
                 </button>
-                <a className='cnx-btn cnx-btn-blue' href='#contact'>
-                  Details
+                <button
+                  type='button'
+                  className='cnx-btn cnx-btn--ghost'
+                  onClick={() => openAssistance(entry.version)}
+                >
+                  Need assistance?
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id='projects' className='cnx-section cnx-section--projects'>
+        <header className='cnx-section__head'>
+          <span className='cnx-section__eyebrow'>Product Roadmap</span>
+          <h2>Experience the Nexus suite</h2>
+          <p>
+            Every product is orchestrated to give retail traders institutional
+            precision without the bureaucracy.
+          </p>
+        </header>
+        <div className='cnx-grid cnx-grid--projects'>
+          {pipeline.map((product) => (
+            <article key={product.title} className='cnx-card cnx-project'>
+              <div className='cnx-project__meta'>
+                <span>{product.type}</span>
+                <span className='cnx-chip'>{product.status}</span>
+              </div>
+              <h3>{product.title}</h3>
+              <p>{product.summary}</p>
+              <div className='cnx-project__tags'>
+                {product.tags.map((tag) => (
+                  <span key={tag}>{tag}</span>
+                ))}
+              </div>
+              <div className='cnx-project__actions'>
+                <button
+                  type='button'
+                  className='cnx-btn cnx-btn--ghost'
+                  onClick={() => openPay(product.plan)}
+                >
+                  View offer
+                </button>
+                <a className='cnx-btn cnx-btn--light' href='#contact'>
+                  Talk to us
                 </a>
               </div>
             </article>
@@ -247,195 +491,74 @@ export default function CardicNexusLanding() {
         </div>
       </section>
 
-      {/* CARDIC HEAT — spotlight */}
-      <section id='heat' className='cnx-section'>
-        <h2>Cardic Heat 🔥</h2>
-        <p className='cnx-text'>
-          A next-generation indicator that tracks liquidity zones, market
-          sentiment, and trade signals in real time.
-        </p>
-
-        <p className='cnx-text' style={{ marginTop: 6 }}>
-          ✨ There are <b>3 evolving versions</b>, each one sharper and more
-          precise than the last:
-        </p>
-
-        <div className='cnx-grid' style={{ marginTop: 10 }}>
-          {/* 2.0 */}
-          <article className='cnx-card'>
-            <div className='cnx-meta'>
-              <span className='cnx-type'>Indicator</span>
-              <span className='cnx-badge'>Live</span>
-            </div>
-            <h3 className='cnx-card-title'>CARDIC Heat 2.0</h3>
-            <div className='cnx-amount'>$25</div>
-            <div className='cnx-note'>2 months</div>
-            <div className='cnx-card-actions' style={{ marginTop: 12 }}>
+      <section id='pay' className='cnx-section cnx-section--pricing'>
+        <header className='cnx-section__head'>
+          <span className='cnx-section__eyebrow'>Plans</span>
+          <h2>Choose your trading advantage</h2>
+          <p>
+            Simple, transparent options that keep you locked in with the desk —
+            no hidden upsells, just outcomes.
+          </p>
+        </header>
+        <div className='cnx-grid cnx-grid--pricing'>
+          {pricing.map((tier) => (
+            <article key={tier.title} className='cnx-card cnx-price'>
+              <h3>{tier.title}</h3>
+              <p className='cnx-price__lead'>{tier.description}</p>
+              <div className='cnx-price__value'>{tier.price}</div>
+              <ul>
+                {tier.perks.map((perk) => (
+                  <li key={perk}>{perk}</li>
+                ))}
+              </ul>
               <button
                 type='button'
-                className='cnx-btn cnx-btn-blue'
+                className={`cnx-btn ${
+                  tier.cta?.accent === 'blue'
+                    ? 'cnx-btn--primary'
+                    : 'cnx-btn--light'
+                }`}
                 onClick={() =>
-                  openPay({
-                    id: 'heat-20',
-                    title: 'CARDIC Heat 2.0',
-                    price: '$25 / 2 months',
+                  handlePricingCTA({
+                    href: tier.href,
+                    action: tier.action ?? tier.cta?.action,
                   })
                 }
               >
-                Get 2.0
+                {tier.cta?.label ?? 'Learn more'}
               </button>
-              <button
-                type='button'
-                className='cnx-btn cnx-btn-ghost cnx-assist-btn'
-                onClick={() => openAssistance('2.0')}
-              >
-                Need Assistance?
-              </button>
-            </div>
-          </article>
-
-          {/* 2.1 */}
-          <article className='cnx-card'>
-            <div className='cnx-meta'>
-              <span className='cnx-type'>Indicator</span>
-              <span className='cnx-badge'>Live</span>
-            </div>
-            <h3 className='cnx-card-title'>CARDIC Heat 2.1</h3>
-            <div className='cnx-amount'>$35</div>
-            <div className='cnx-note'>2 months</div>
-            <div className='cnx-card-actions' style={{ marginTop: 12 }}>
-              <button
-                type='button'
-                className='cnx-btn cnx-btn-blue'
-                onClick={() =>
-                  openPay({
-                    id: 'heat-21',
-                    title: 'CARDIC Heat 2.1',
-                    price: '$35 / 2 months',
-                  })
-                }
-              >
-                Get 2.1
-              </button>
-              <button
-                type='button'
-                className='cnx-btn cnx-btn-ghost cnx-assist-btn'
-                onClick={() => openAssistance('2.1')}
-              >
-                Need Assistance?
-              </button>
-            </div>
-          </article>
-
-          {/* 2.3 Early Access */}
-          <article className='cnx-card'>
-            <div className='cnx-meta'>
-              <span className='cnx-type'>Indicator</span>
-              <span className='cnx-badge'>Early</span>
-            </div>
-            <h3 className='cnx-card-title'>CARDIC Heat 2.3</h3>
-            <div className='cnx-amount'>$50</div>
-            <div className='cnx-note'>Early Access — 1 month</div>
-            <div className='cnx-card-actions' style={{ marginTop: 12 }}>
-              <button
-                type='button'
-                className='cnx-btn cnx-btn-blue'
-                onClick={() =>
-                  openPay({
-                    id: 'heat-23',
-                    title: 'CARDIC Heat 2.3',
-                    price: '$50 / month',
-                  })
-                }
-              >
-                Get 2.3
-              </button>
-              <button
-                type='button'
-                className='cnx-btn cnx-btn-ghost cnx-assist-btn'
-                onClick={() => openAssistance('2.3')}
-              >
-                Need Assistance?
-              </button>
-            </div>
-          </article>
-        </div>
-
-        <p className='cnx-text' style={{ marginTop: 12 }}>
-          📈 The higher the version, the more acute, dynamic, and powerful the
-          signal detection becomes.
-        </p>
-      </section>
-
-      {/* PRICING */}
-      <section id='pricing' className='cnx-section'>
-        <h2>Pricing</h2>
-        <div className='cnx-grid'>
-          <article className='cnx-price'>
-            <h3>Premium Signals</h3>
-            <div className='cnx-amount'>$49/mo</div>
-            <ul>
-              <li>Daily gold/FX/crypto signals</li>
-              <li>Risk management notes</li>
-              <li>Telegram access</li>
-            </ul>
-            <button
-              type='button'
-              className='cnx-btn cnx-btn-ghost'
-              onClick={() =>
-                openPay({
-                  id: 'premium-signals',
-                  title: 'Premium Signals',
-                  price: '$49/mo',
-                })
-              }
-            >
-              Subscribe
-            </button>
-          </article>
-          <article className='cnx-price'>
-            <h3>Indicators</h3>
-            <div className='cnx-amount'>From $99</div>
-            <ul>
-              <li>Heat Zones™</li>
-              <li>Spider Web™</li>
-              <li>Oracle 1.0 (Soon)</li>
-            </ul>
-            <a className='cnx-btn cnx-btn-ghost' href='#projects'>
-              Browse
-            </a>
-          </article>
-          <article className='cnx-price'>
-            <h3>All-Access</h3>
-            <div className='cnx-amount'>$179/mo</div>
-            <ul>
-              <li>All indicators</li>
-              <li>Premium signals</li>
-              <li>Priority support</li>
-            </ul>
-            <button
-              type='button'
-              className='cnx-btn cnx-btn-blue'
-              onClick={() =>
-                openPay({
-                  id: 'all-access',
-                  title: 'All-Access',
-                  price: '$179/mo',
-                })
-              }
-            >
-              Join
-            </button>
-          </article>
+            </article>
+          ))}
         </div>
       </section>
 
-      {/* CONTACT & SOCIALS */}
-      <section id='contact' className='cnx-section'>
-        <h2>Contact & Socials</h2>
-        <div className='cnx-row' style={{ flexWrap: 'wrap' }}>
+      <section
+        className='cnx-section cnx-section--partners'
+        aria-label='Partners and alliances'
+      >
+        <header className='cnx-section__head'>
+          <span className='cnx-section__eyebrow'>Alliances</span>
+          <h2>Trusted by desks pushing the edge</h2>
+        </header>
+        <ul className='cnx-partners'>
+          {partners.map((name) => (
+            <li key={name}>{name}</li>
+          ))}
+        </ul>
+      </section>
+
+      <section id='contact' className='cnx-section cnx-section--contact'>
+        <header className='cnx-section__head'>
+          <span className='cnx-section__eyebrow'>Connect</span>
+          <h2>Stay close to the pulse</h2>
+          <p>
+            Drop into the community, follow the drops, or DM the desk — the team
+            is live and responsive.
+          </p>
+        </header>
+        <div className='cnx-contact__grid'>
           <a
-            className='cnx-btn cnx-btn-blue'
+            className='cnx-btn cnx-btn--primary'
             href='https://www.tiktok.com/@cardicnexus?_t=ZT-8zDvH2iUl01&_r=1'
             target='_blank'
             rel='noreferrer'
@@ -443,7 +566,7 @@ export default function CardicNexusLanding() {
             TikTok (Global)
           </a>
           <a
-            className='cnx-btn cnx-btn-ghost'
+            className='cnx-btn cnx-btn--light'
             href='https://www.instagram.com/cardicnexus?igsh=MXh3NGhxZXdpdDR0OQ=='
             target='_blank'
             rel='noreferrer'
@@ -451,7 +574,7 @@ export default function CardicNexusLanding() {
             Instagram
           </a>
           <a
-            className='cnx-btn cnx-btn-ghost'
+            className='cnx-btn cnx-btn--light'
             href='https://x.com/CARDICNEXUS?t=xpUNONAmekVrQBRXiQp36A&s=09'
             target='_blank'
             rel='noreferrer'
@@ -459,7 +582,7 @@ export default function CardicNexusLanding() {
             X (Twitter)
           </a>
           <a
-            className='cnx-btn cnx-btn-ghost'
+            className='cnx-btn cnx-btn--light'
             href='https://t.me/REALCARDIC'
             target='_blank'
             rel='noreferrer'
@@ -467,27 +590,31 @@ export default function CardicNexusLanding() {
             Telegram (DM)
           </a>
           <a
-            className='cnx-btn cnx-btn-ghost'
+            className='cnx-btn cnx-btn--light'
             href='https://t.me/cardicnewsupdates'
             target='_blank'
             rel='noreferrer'
           >
-            Telegram (News/Community)
+            Telegram (News)
           </a>
         </div>
-        <p className='cnx-tagline'>
-          We don’t chase — we build. From vision to results. ♾️
+        <p className='cnx-contact__tagline'>
+          We build, we iterate, and we keep traders winning. ♾️
         </p>
       </section>
 
-      {/* FOOTER */}
       <footer className='cnx-footer'>
-        <div className='cnx-line' />© {new Date().getFullYear()} Cardic Nexus.
-        All rights reserved.
+        <div className='cnx-footer__divider' />
+        <div className='cnx-footer__meta'>
+          <span>
+            © {new Date().getFullYear()} Cardic Nexus. All rights reserved.
+          </span>
+          <span>Crafted for traders who refuse ordinary.</span>
+        </div>
       </footer>
 
+      <FreeTrialModal open={trialOpen} onClose={() => setTrialOpen(false)} />
       <RedeemSheet open={redeemOpen} onClose={() => setRedeemOpen(false)} />
-
       <PaymentSheet
         open={payOpen}
         onClose={() => setPayOpen(false)}
@@ -496,171 +623,15 @@ export default function CardicNexusLanding() {
 
       {comingSoon && (
         <div className='cnx-soon' role='status' aria-live='polite'>
-          <div className='cnx-soon-inner'>
-            <span className='cnx-soon-prompt'>{comingSoon}</span>
-            <span className='cnx-soon-title'>Coming Soon</span>
-            <span className='cnx-soon-ribbon'>
-              Stay locked in — drops imminent.
-            </span>
+          <div className='cnx-soon__inner'>
+            <span className='cnx-soon__label'>Coming soon</span>
+            <h3 className='cnx-soon__title'>{comingSoon}</h3>
+            <p className='cnx-soon__copy'>
+              Stay close — launch alerts drop inside the community first.
+            </p>
           </div>
         </div>
       )}
-
-      {/* Scoped CSS (no Tailwind) */}
-      <style>{`
-        :root{
-          --ink:#040309; --ink2:#070510;
-          --night:#0b0518; --night2:#120a24;
-          --purple:#6124c7;
-          --blue:#10A5FF; --gold:#F5C76B;
-          --text:#f7f5ff; --muted:#c9c3d7;
-        }
-        *{box-sizing:border-box} html,body,#root{height:100%}
-        body{margin:0}
-
-        .cnx-root{
-          min-height:100vh; color:var(--text);
-          background:
-            radial-gradient(60% 45% at 20% -10%, rgba(97,36,199,.32) 0%, transparent 55%),
-            radial-gradient(40% 35% at 80% 10%, rgba(16,165,255,.18) 0%, transparent 60%),
-            linear-gradient(160deg, var(--ink) 0%, var(--night) 45%, var(--night2) 100%);
-          position:relative; overflow-x:hidden;
-          font-family: 'Space Grotesk', Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial;
-          letter-spacing:.01em;
-        }
-
-        .cnx-root::before{
-          content:''; position:fixed; inset:0; z-index:-2;
-          background:radial-gradient(circle at 50% 120%, rgba(245,199,107,.12) 0%, transparent 55%);
-          opacity:.9;
-          pointer-events:none;
-        }
-
-        .cnx-stars{
-          position:fixed; inset:0; z-index:-1; pointer-events:none;
-          background-image:
-            radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,.9) 99%, transparent 100%),
-            radial-gradient(1.5px 1.5px at 80% 70%, rgba(137,128,255,.6) 99%, transparent 100%),
-            radial-gradient(1.2px 1.2px at 40% 60%, rgba(245,199,107,.7) 99%, transparent 100%),
-            radial-gradient(1.2px 1.2px at 60% 20%, rgba(123,76,255,.5) 99%, transparent 100%);
-          animation: twinkle 9s linear infinite;
-          opacity:.75;
-        }
-        .cnx-glow{position:fixed; z-index:-1; filter:blur(90px); opacity:.3}
-        .cnx-glow-gold{top:-120px; left:-140px; width:360px; height:360px; background: radial-gradient(circle, rgba(245,199,107,.85), transparent 65%)}
-        .cnx-glow-blue{bottom:-120px; right:-140px; width:340px; height:340px; background: radial-gradient(circle, rgba(16,165,255,.65), transparent 65%)}
-        .cnx-glow-purple{top:40%; left:50%; width:480px; height:480px; transform:translate(-50%, -50%); background: radial-gradient(circle, rgba(97,36,199,.55), transparent 70%)}
-        @keyframes twinkle { 0%,100%{opacity:.65} 50%{opacity:1} }
-
-        .cnx-btn{display:inline-flex; align-items:center; justify-content:center; padding:12px 20px; border-radius:18px; text-decoration:none; transition:.2s ease; border:1px solid rgba(245,199,107,.35); color:#fff; font-weight:600; letter-spacing:.02em; backdrop-filter:blur(6px); background:rgba(16,12,32,.28)}
-        .cnx-btn-ghost:hover{background:rgba(245,199,107,.1); border-color:rgba(245,199,107,.55)}
-        .cnx-btn-blue{background:linear-gradient(135deg, #1b98ff 0%, #4dc8ff 70%); color:#031224; font-weight:800; border-color:transparent; box-shadow:0 12px 32px rgba(16,165,255,.28)}
-        .cnx-btn-blue:hover{transform:translateY(-1px); filter:brightness(1.05)}
-
-        .cnx-hero{max-width:1120px; margin:0 auto; padding:90px 18px 48px; text-align:center; position:relative}
-        .cnx-hero::after{
-          content:''; position:absolute; inset:auto 10% -40px; height:1px;
-          background:linear-gradient(90deg, transparent, rgba(245,199,107,.28), transparent);
-          opacity:.7;
-        }
-        .cnx-tag{color:rgba(193,197,214,.85); margin:16px 0 24px; font-size:18px; letter-spacing:.12em; text-transform:uppercase}
-        .cnx-row{display:flex; gap:12px; justify-content:center; flex-wrap:wrap}
-        .cnx-note{color:#d9d3ff; font-size:13px; margin-top:18px; font-weight:700; letter-spacing:.14em; text-transform:uppercase}
-        .cnx-cta-grid{
-          display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr));
-          gap:14px; margin-top:32px;
-        }
-        .cnx-cta{
-          position:relative; padding:18px 20px; border-radius:20px; border:1px solid rgba(255,255,255,.12);
-          background:linear-gradient(140deg, rgba(18,12,34,.92), rgba(9,6,22,.9));
-          color:inherit; display:flex; gap:12px; align-items:flex-start; justify-content:space-between;
-          text-decoration:none; transition:.25s ease; overflow:hidden; cursor:pointer; font:inherit;
-        }
-        .cnx-cta:focus-visible{outline:2px solid rgba(245,199,107,.65); outline-offset:4px}
-        .cnx-cta::after{
-          content:''; position:absolute; inset:1px; border-radius:18px; opacity:.4;
-          background:radial-gradient(circle at top right, rgba(255,255,255,.12), transparent 65%);
-          transition:opacity .25s ease;
-        }
-        .cnx-cta:hover{transform:translateY(-4px); border-color:rgba(245,199,107,.55)}
-        .cnx-cta:hover::after{opacity:.6}
-        .cnx-cta-content{position:relative; z-index:1; display:flex; flex-direction:column; gap:6px}
-        .cnx-cta-label{font-size:18px; font-weight:700; letter-spacing:.04em}
-        .cnx-cta-desc{font-size:13px; line-height:1.4; color:rgba(211,210,232,.78)}
-        .cnx-cta-arrow{position:relative; z-index:1; align-self:flex-end; font-size:20px; opacity:.7; transition:transform .25s ease, opacity .25s ease}
-        .cnx-cta:hover .cnx-cta-arrow{transform:translate(4px, -4px); opacity:1}
-        .cnx-cta-bots{box-shadow:0 0 32px rgba(97,36,199,.25)}
-        .cnx-cta-bots::before{content:''; position:absolute; inset:-40% 55% auto -40%; height:140%; border-radius:50%; background:radial-gradient(circle, rgba(97,36,199,.35), transparent 70%); z-index:0}
-        .cnx-cta-indicators::before{content:''; position:absolute; inset:-50% -30% auto 40%; height:150%; border-radius:50%; background:radial-gradient(circle, rgba(245,199,107,.35), transparent 72%); z-index:0}
-        .cnx-cta-heat::before{content:''; position:absolute; inset:-30% -20% auto 20%; height:120%; border-radius:50%; background:radial-gradient(circle, rgba(255,93,93,.35), transparent 70%); z-index:0}
-        .cnx-cta-eas::before{content:''; position:absolute; inset:-45% 30% auto -25%; height:130%; border-radius:50%; background:radial-gradient(circle, rgba(16,165,255,.32), transparent 70%); z-index:0}
-
-        .cnx-section{max-width:1120px; margin:0 auto; padding:48px 18px}
-        .cnx-section h2{margin:0 0 18px; font-size:26px; text-transform:uppercase; letter-spacing:.24em; color:#e9e6ff}
-        .cnx-section h2::after{
-          content:''; display:block; width:64px; height:2px; margin-top:10px;
-          background:linear-gradient(90deg, rgba(245,199,107,.8), rgba(16,165,255,.6));
-        }
-        .cnx-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:18px}
-        .cnx-card, .cnx-price{
-          background:linear-gradient(145deg, rgba(24,16,42,.92), rgba(13,9,26,.88));
-          border:1px solid rgba(255,255,255,.08);
-          border-radius:22px; padding:20px;
-          box-shadow:0 18px 44px rgba(8,4,18,.6);
-          transition:.3s ease;
-        }
-        .cnx-card:hover, .cnx-price:hover{ border-color: rgba(245,199,107,.55); transform:translateY(-6px); box-shadow:0 28px 50px rgba(9,5,20,.65); }
-        .cnx-meta{display:flex; justify-content:space-between; align-items:center; color:#cfd3dc; font-size:12px; text-transform:uppercase; letter-spacing:.18em}
-        .cnx-badge{border:1px solid rgba(255,255,255,.18); padding:4px 10px; border-radius:999px; background:rgba(255,255,255,.06); font-size:11px; letter-spacing:.18em}
-        .cnx-card-title{margin:10px 0 12px; font-size:20px; letter-spacing:.02em}
-        .cnx-text{color:#d8d4e8; line-height:1.6}
-        .cnx-tags{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
-        .cnx-tags span{font-size:12px; color:#dad4ff; border:1px solid rgba(120,112,255,.45); padding:5px 10px; border-radius:999px; background:rgba(52,38,92,.4)}
-        .cnx-card-actions{display:flex; gap:10px; margin-top:18px}
-        .cnx-assist-btn{border-color:rgba(16,165,255,.35); background:rgba(16,12,32,.35); color:rgba(198,208,255,.92)}
-        .cnx-assist-btn:hover{border-color:rgba(16,165,255,.65); background:rgba(16,165,255,.12); color:#fff}
-
-        .cnx-price h3{margin:8px 0; font-size:20px}
-        .cnx-amount{font-size:26px; color:var(--gold); font-weight:800; letter-spacing:.04em}
-        .cnx-price ul{margin:14px 0 18px; padding-left:18px; color:#d0cee2; line-height:1.6}
-
-        .cnx-footer{max-width:1120px; margin:48px auto 60px; text-align:center; color:#9189b1; font-size:12px; letter-spacing:.14em; text-transform:uppercase}
-        .cnx-line{height:1px; background:linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent); margin:22px 0}
-
-        .cnx-tagline{color:var(--muted); margin-top:12px; text-align:center}
-
-        .cnx-soon{position:fixed; inset:0; z-index:99; display:flex; align-items:center; justify-content:center; padding:18px; background:rgba(4,3,12,.76); backdrop-filter:blur(14px); animation:soonFade .25s ease}
-        .cnx-soon-inner{position:relative; padding:42px 64px; border-radius:32px; text-align:center; background:linear-gradient(160deg, rgba(27,16,52,.88), rgba(8,6,20,.92)); border:1px solid rgba(245,199,107,.28); box-shadow:0 40px 120px rgba(16,165,255,.22)}
-        .cnx-soon-inner::after{content:''; position:absolute; inset:-2px; border-radius:34px; border:1px solid rgba(255,255,255,.08); opacity:.5; mix-blend-mode:screen; animation:pulseHalo 2.4s ease-in-out infinite}
-        .cnx-soon-prompt{display:block; font-size:16px; letter-spacing:.28em; text-transform:uppercase; color:rgba(245,199,107,.85); margin-bottom:18px}
-        .cnx-soon-title{display:block; font-size:44px; font-weight:800; letter-spacing:.24em; text-transform:uppercase; background:linear-gradient(90deg, #f5c76b, #9c4dff, #10a5ff, #f5c76b); background-size:300%; color:transparent; -webkit-background-clip:text; animation:soonGlow 3.5s linear infinite}
-        .cnx-soon-ribbon{display:inline-block; margin-top:18px; padding:8px 18px; border-radius:999px; font-size:13px; letter-spacing:.22em; text-transform:uppercase; color:rgba(198,208,255,.88); background:rgba(52,36,88,.72); box-shadow:0 10px 32px rgba(76,58,128,.3); animation:ribbonPulse 1.9s ease-in-out infinite}
-
-        @keyframes soonGlow {0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-        @keyframes ribbonPulse {0%,100%{transform:translateY(0); opacity:.8}50%{transform:translateY(-4px); opacity:1}}
-        @keyframes soonFade {from{opacity:0} to{opacity:1}}
-        @keyframes pulseHalo {0%,100%{opacity:.3}50%{opacity:.7}}
-
-
-        @media (max-width: 720px){
-          .cnx-tag{font-size:13px; letter-spacing:.18em}
-          .cnx-cta-grid{margin-top:26px}
-          .cnx-cta{padding:16px 18px}
-          .cnx-cta-label{font-size:16px}
-        }
-
-        @media (max-width: 520px){
-          .cnx-hero{padding-top:72px}
-          .cnx-tag{letter-spacing:.14em}
-          .cnx-note{letter-spacing:.08em}
-          .cnx-section h2{letter-spacing:.16em}
-          .cnx-soon-inner{padding:32px 30px}
-          .cnx-soon-title{font-size:32px}
-          .cnx-soon-prompt{letter-spacing:.18em}
-        }
-
-
-      `}</style>
     </div>
   );
 }

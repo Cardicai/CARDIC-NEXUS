@@ -1,6 +1,53 @@
 @import '../styles/globals.css';
 @import '../styles/colors.css';
 
+.cnx-app {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(
+      circle at 20% 20%,
+      rgba(97, 36, 199, 0.16),
+      transparent 55%
+    ),
+    radial-gradient(circle at 80% 0%, rgba(16, 165, 255, 0.12), transparent 50%),
+    linear-gradient(180deg, #05060f 0%, #03030a 55%, #010107 100%);
+  color: #f4f6ff;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    sans-serif;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.cnx-app__backdrop {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(
+      circle at 50% -10%,
+      rgba(245, 199, 107, 0.18),
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 10% 90%,
+      rgba(16, 165, 255, 0.12),
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 90% 80%,
+      rgba(104, 58, 255, 0.14),
+      transparent 52%
+    );
+  opacity: 0.75;
+  z-index: -1;
+  transform: translate3d(0, 0, 0);
+}
+
+.cnx-app__main {
+  position: relative;
+  z-index: 0;
+  min-height: calc(100vh - 64px);
+}
+
 /* ===== CARDIC NEXUS center title ===== */
 .heroTitle {
   margin: 0 auto 8px;
