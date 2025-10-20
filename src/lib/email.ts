@@ -31,15 +31,20 @@ export async function sendEmail({
   attachments,
 }: SendEmailOptions) {
   const from = process.env.FROM_EMAIL;
+  const apiKey = process.env.RESEND_API_KEY;
   if (!from) {
     throw new EmailError('Missing FROM_EMAIL environment variable');
+  }
+
+  if (!apiKey) {
+    throw new EmailError('Missing RESEND_API_KEY environment variable');
   }
 
   const res = await fetch(RESEND_ENDPOINT, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
       from,
