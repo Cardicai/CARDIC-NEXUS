@@ -15,7 +15,20 @@ export async function POST(request: Request) {
       );
     }
 
-    const adminEmail = process.env.ADMIN_EMAIL || 'realcardic1@gmail.com';
+    const adminRecipients =
+      process.env.ADMIN_EMAIL?.split(',')
+        .map((email) => email.trim())
+        .filter(Boolean) ?? [];
+
+    if (adminRecipients.length === 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'ADMIN_EMAIL environment variable is not set.',
+        },
+        { status: 500 }
+      );
+    }
     const fromEmail = process.env.FROM_EMAIL;
     const apiKey = process.env.RESEND_API_KEY;
 
@@ -36,7 +49,7 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify({
         from: fromEmail,
-        to: adminEmail,
+        to: adminRecipients.length === 1 ? adminRecipients[0] : adminRecipients,
         subject: 'New Redeem Code Submission',
         text,
       }),
