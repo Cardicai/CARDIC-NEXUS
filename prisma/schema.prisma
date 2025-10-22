@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Participant {
+  id           String     @id @default(cuid())
+  token        String     @unique
+  displayName  String?
+  csvUrl       String
+  fxSource     String     @default("fxblue-csv")
+  isActive     Boolean    @default(true)
+  lastSyncAt   DateTime?
+  stats        Json?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  snapshots    Snapshot[]
+}
+
+model Snapshot {
+  id             String      @id @default(cuid())
+  participantId  String
+  at             DateTime    @default(now())
+  balance        Float?
+  equity         Float?
+  closedPL       Float?
+  floatingPL     Float?
+  totalTrades    Int?
+  wins           Int?
+  losses         Int?
+  winRatePct     Float?
+  profitFactor   Float?
+  maxDrawdownPct Float?
+  roiPct         Float?
+  raw            Json?
+
+  participant Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  @@index([participantId, at])
+}
