@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+import { parseEmailRecipients } from '@/lib/emailRecipients';
+
 export const runtime = 'nodejs';
 
 export async function POST(request: Request) {
@@ -24,6 +26,17 @@ export async function POST(request: Request) {
       });
     }
 
+    const adminRecipients = parseEmailRecipients(process.env.ADMIN_EMAIL);
+    if (!adminRecipients.length) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'ADMIN_EMAIL environment variable is not set.',
+        },
+        { status: 500 }
+      );
+    }
+
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -32,7 +45,7 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify({
         from: process.env.FROM_EMAIL,
-        to: process.env.ADMIN_EMAIL || 'realcardic1@gmail.com',
+        to: adminRecipients.length === 1 ? adminRecipients[0] : adminRecipients,
         subject: 'Crypto Payment Submission',
         text: fieldsText,
         attachments,
