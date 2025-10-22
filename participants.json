@@ -1,0 +1,17 @@
+{
+  "participants": [
+    {
+      "id": "real-cardic-WCH8TC",
+      "name": "Real Cardic",
+      "email": "",
+      "status": "ACTIVE",
+      "createdAt": "2025-10-22T10:34:28.000Z",
+      "fx": {
+        "username": "real-cardic"
+      },
+      "meta": {
+        "country": ""
+      }
+    }
+  ]
+}
