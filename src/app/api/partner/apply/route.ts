@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
 
-import { EmailAttachment, EmailError, sendEmail } from '@/lib/email';
+import {
+  EmailAttachment,
+  EmailError,
+  plainTextToHtml,
+  sendEmail,
+} from '@/lib/email';
 
 export const runtime = 'nodejs';
 
@@ -116,6 +121,7 @@ export async function POST(request: Request) {
       to: adminEmail,
       subject: adminSubject,
       text: adminText,
+      html: plainTextToHtml(adminText),
       attachments: attachments.length ? attachments : undefined,
     });
 
@@ -141,6 +147,7 @@ export async function POST(request: Request) {
       to: email,
       subject: userSubject,
       text: userText,
+      html: plainTextToHtml(userText),
     });
 
     return NextResponse.json({ success: true });
