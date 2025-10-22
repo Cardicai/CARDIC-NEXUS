@@ -24,6 +24,22 @@ export async function POST(request: Request) {
       });
     }
 
+    const adminEnv =
+      process.env.ADMIN_EMAIL?.split(',')
+        .map((email) => email.trim())
+        .filter(Boolean) ?? [];
+    if (adminEnv.length === 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'ADMIN_EMAIL environment variable is not set.',
+        },
+        { status: 500 }
+      );
+    }
+
+    const recipients = adminEnv.length === 1 ? adminEnv[0] : adminEnv;
+
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -32,7 +48,7 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify({
         from: process.env.FROM_EMAIL,
-        to: process.env.ADMIN_EMAIL || 'realcardic1@gmail.com',
+        to: recipients,
         subject: 'Crypto Payment Submission',
         text: fieldsText,
         attachments,
