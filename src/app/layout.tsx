@@ -7,14 +7,14 @@ import { siteConfig } from '@/constant/config';
 
 export const metadata = {
   metadataBase: new URL('https://www.cardicnex.us'),
-  title: 'CARDIC NEXUS — AI • Trading',
+  title: 'Cardic Nexus Tournament Portal',
   description:
-    'AI • Trading • Innovation for retail traders. Precision indicators, EAs, and premium signals.',
+    'Register for the official Cardic Nexus Tournament and access the competition dashboard.',
   openGraph: {
     type: 'website',
-    title: 'CARDIC NEXUS — AI • Trading',
+    title: 'Cardic Nexus Tournament Portal',
     description:
-      'AI • Trading • Innovation for retail traders. Precision indicators, EAs, and premium signals.',
+      'Register for the official Cardic Nexus Tournament and access the competition dashboard.',
     url: 'https://www.cardicnex.us',
     images: [
       {
@@ -27,9 +27,9 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'CARDIC NEXUS — AI • Trading',
+    title: 'Cardic Nexus Tournament Portal',
     description:
-      'AI • Trading • Innovation for retail traders. Precision indicators, EAs, and premium signals.',
+      'Register for the official Cardic Nexus Tournament and access the competition dashboard.',
     images: ['/og-cardic.png'],
     creator: '@CARDICNEXUS',
   },
@@ -52,33 +52,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <meta property='og:type' content={siteConfig.ogType} />
         <meta name='twitter:card' content={siteConfig.twitterCard} />
       </Head>
-      <body
-        style={{
-          margin: 0,
-          background: 'linear-gradient(180deg,#0a0b0d,#0e0f12)',
-          color: '#fff',
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontFamily: 'Arial, Helvetica, sans-serif',
-          textAlign: 'center',
-          padding: '0 1.5rem',
-        }}
-      >
-        <main>
-          <h1 style={{ fontSize: '2.25rem', marginBottom: '1rem' }}>
-            Under Maintenance
-          </h1>
-          <p style={{ fontSize: '1.1rem', lineHeight: 1.6 }}>
-            We&apos;re sorry for the inconvenience — we&apos;ll be live soon.
-            Stay safe 🤠
-            <br />
-            <span style={{ display: 'inline-block', marginTop: '0.75rem' }}>
-              (Cardic Team)
-            </span>
-          </p>
-        </main>
+      <body className='min-h-screen bg-[#05030f] bg-[radial-gradient(circle_at_20%_20%,rgba(76,29,149,0.55),transparent_55%),_radial-gradient(circle_at_80%_0%,rgba(14,116,175,0.45),transparent_55%),_linear-gradient(180deg,#05030f,#090b1b)] text-white antialiased'>
+        <div className='min-h-screen bg-white/5 backdrop-blur-md'>
+          <main className='relative z-[1]'>{children}</main>
+        </div>
       </body>
     </html>
   );
