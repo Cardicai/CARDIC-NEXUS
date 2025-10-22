@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+import { parseEmailRecipients } from '@/lib/emailRecipients';
+
 export const runtime = 'nodejs';
 
 export async function POST(request: Request) {
@@ -15,11 +17,11 @@ export async function POST(request: Request) {
       );
     }
 
-    const adminEmail = process.env.ADMIN_EMAIL || 'realcardic1@gmail.com';
+    const adminRecipients = parseEmailRecipients(process.env.ADMIN_EMAIL);
     const fromEmail = process.env.FROM_EMAIL;
     const apiKey = process.env.RESEND_API_KEY;
 
-    if (!fromEmail || !apiKey) {
+    if (!fromEmail || !apiKey || adminRecipients.length === 0) {
       return NextResponse.json(
         { success: false, error: 'Email service not configured' },
         { status: 500 }
@@ -36,7 +38,7 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify({
         from: fromEmail,
-        to: adminEmail,
+        to: adminRecipients.length === 1 ? adminRecipients[0] : adminRecipients,
         subject: 'New Redeem Code Submission',
         text,
       }),

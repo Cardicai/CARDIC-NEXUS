@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { parseEmailRecipients } from '@/lib/emailRecipients';
+
 export const runtime = 'nodejs';
 
 const RESEND_ENDPOINT = 'https://api.resend.com/emails';
@@ -304,8 +306,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const adminEmail = process.env.ADMIN_EMAIL?.trim();
-  if (!adminEmail) {
+  const adminRecipients = parseEmailRecipients(process.env.ADMIN_EMAIL);
+  if (adminRecipients.length === 0) {
     return NextResponse.json(
       { error: 'ADMIN_EMAIL environment variable is not set.' },
       { status: 500 }
@@ -322,7 +324,7 @@ export async function POST(request: NextRequest) {
   const dashboardUrl = 'https://cardicnex.us/dashboard';
 
   const adminPayload: ResendPayload = {
-    to: adminEmail,
+    to: adminRecipients.length === 1 ? adminRecipients[0] : adminRecipients,
     subject: `New tournament registration — ${siteName}`,
     text: `A new tournament registration has been submitted.\n\nName: ${name}\nEmail: ${email}\nTelegram: ${telegram}\nCountry: ${country}\nProof (links/details): ${proof}\nScreenshot: ${screenshot.name}\n`,
     html: `
