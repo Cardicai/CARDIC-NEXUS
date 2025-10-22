@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { EmailError } from '@/lib/email';
 import { sendMail } from '@/lib/mailer';
 
 export const runtime = 'edge';
@@ -35,12 +36,24 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    await sendMail({ to: to.trim(), subject: subject.trim(), html });
+    await sendMail({
+      to: to.trim(),
+      subject: subject.trim(),
+      html,
+      text: html,
+    });
 
     return NextResponse.json({ ok: true, message: 'Email sent successfully' });
   } catch (error: unknown) {
     // eslint-disable-next-line no-console
     console.error('Email dispatch failed', error);
+    if (error instanceof EmailError) {
+      return NextResponse.json(
+        { ok: false, error: error.message },
+        { status: error.status ?? 500 }
+      );
+    }
+
     const message =
       error instanceof Error ? error.message : 'Unable to send email';
     return NextResponse.json({ ok: false, error: message }, { status: 500 });

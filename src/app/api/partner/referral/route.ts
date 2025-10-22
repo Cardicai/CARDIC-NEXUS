@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { EmailError, sendEmail } from '@/lib/email';
+import { EmailError, plainTextToHtml, sendEmail } from '@/lib/email';
 
 export const runtime = 'nodejs';
 
@@ -72,6 +72,7 @@ export async function POST(request: Request) {
       to: adminEmail,
       subject: adminSubject,
       text: adminText,
+      html: plainTextToHtml(adminText),
     });
 
     const userSubject = 'Your Cardic Nexus referral code';
@@ -93,6 +94,7 @@ export async function POST(request: Request) {
       to: email,
       subject: userSubject,
       text: userText,
+      html: plainTextToHtml(userText),
     });
 
     return NextResponse.json({ code, link });

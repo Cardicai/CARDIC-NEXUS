@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+import { EmailError, plainTextToHtml, sendEmail } from '@/lib/email';
+
 export const runtime = 'nodejs';
 
 export async function POST(request: Request) {
@@ -16,38 +18,24 @@ export async function POST(request: Request) {
     }
 
     const adminEmail = process.env.ADMIN_EMAIL || 'realcardic1@gmail.com';
-    const fromEmail = process.env.FROM_EMAIL;
-    const apiKey = process.env.RESEND_API_KEY;
+    const bodyText = `Redeem code submission\n\nCode: ${code}\nTradingView: ${tradingview}`;
 
-    if (!fromEmail || !apiKey) {
-      return NextResponse.json(
-        { success: false, error: 'Email service not configured' },
-        { status: 500 }
-      );
-    }
-
-    const text = `Redeem code submission\n\nCode: ${code}\nTradingView: ${tradingview}`;
-
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        from: fromEmail,
-        to: adminEmail,
-        subject: 'New Redeem Code Submission',
-        text,
-      }),
+    await sendEmail({
+      to: adminEmail,
+      subject: 'New Redeem Code Submission',
+      text: bodyText,
+      html: plainTextToHtml(bodyText),
     });
-
-    if (!res.ok) {
-      throw new Error('Failed to send email');
-    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof EmailError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.status ?? 502 }
+      );
+    }
+
     return NextResponse.json({ success: false }, { status: 500 });
   }
 }

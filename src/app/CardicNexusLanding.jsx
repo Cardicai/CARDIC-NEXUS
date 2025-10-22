@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { useMemo, useRef, useState } from 'react';
 
+import EmailWarning from '@/components/EmailWarning';
+
 const createInitialFormState = () => ({
   name: '',
   email: '',
@@ -452,6 +454,7 @@ const validateForm = (formState) => {
 export default function CardicNexusLanding() {
   const [formState, setFormState] = useState(() => createInitialFormState());
   const [status, setStatus] = useState({ type: 'idle', message: '' });
+  const [fallbackNotice, setFallbackNotice] = useState('');
   const fileInputRef = useRef(null);
 
   const isSubmitting = status.type === 'loading';
@@ -485,12 +488,16 @@ export default function CardicNexusLanding() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setFallbackNotice('');
 
     const validationError = validateForm(formState);
     if (validationError) {
       setStatus({ type: 'error', message: validationError });
       return;
     }
+
+    const trimmedName = formState.name.trim();
+    const trimmedEmail = formState.email.trim();
 
     try {
       setStatus({ type: 'loading', message: 'Submitting your registration…' });
@@ -502,8 +509,8 @@ export default function CardicNexusLanding() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: formState.name.trim(),
-          email: formState.email.trim(),
+          name: trimmedName,
+          email: trimmedEmail,
           telegram: formState.telegram.trim(),
           country: formState.country.trim(),
           proof: formState.proof.trim(),
@@ -536,6 +543,49 @@ export default function CardicNexusLanding() {
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
+
+      let noticeMessage = '';
+
+      if (trimmedEmail) {
+        try {
+          const confirmationResponse = await fetch('/api/email/registration', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: trimmedEmail,
+              name: trimmedName,
+            }),
+          });
+
+          const confirmationData = await confirmationResponse
+            .json()
+            .catch(() => ({}));
+
+          if (!confirmationResponse.ok || !confirmationData.ok) {
+            noticeMessage =
+              'Confirmation email could not be sent automatically. We will follow up shortly.';
+          } else {
+            const fallbackWarning =
+              typeof confirmationData.xWarning === 'string'
+                ? confirmationData.xWarning
+                : typeof confirmationData.warning === 'string'
+                ? confirmationData.warning
+                : typeof confirmationData['x-warning'] === 'string'
+                ? confirmationData['x-warning']
+                : '';
+
+            if (fallbackWarning) {
+              noticeMessage =
+                'Sent to fallback (testing inbox) because domain not verified.';
+            }
+          }
+        } catch {
+          noticeMessage =
+            'Confirmation email may be delayed. We will retry manually.';
+        }
+      }
+
+      setFallbackNotice(noticeMessage);
     } catch (error) {
       setStatus({
         type: 'error',
@@ -544,6 +594,7 @@ export default function CardicNexusLanding() {
             ? error.message
             : 'Something went wrong while submitting the form. Please try again.',
       });
+      setFallbackNotice('');
     }
   };
 
@@ -656,6 +707,8 @@ export default function CardicNexusLanding() {
               required and will be tied to your tournament access.
             </p>
           </div>
+
+          <EmailWarning />
 
           <label className='space-y-2 text-left'>
             <span className='text-sm font-semibold uppercase tracking-wide text-slate-100'>
@@ -783,6 +836,12 @@ export default function CardicNexusLanding() {
             >
               {status.message}
             </div>
+          )}
+
+          {fallbackNotice && (
+            <p className='rounded-xl border border-amber-400/40 bg-amber-500/10 px-4 py-2 text-xs text-amber-100'>
+              {fallbackNotice}
+            </p>
           )}
 
           <button

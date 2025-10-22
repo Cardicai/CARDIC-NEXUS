@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export const runtime = 'nodejs';
+import { EmailAttachment, EmailError, sendEmail } from '@/lib/email';
 
-const RESEND_ENDPOINT = 'https://api.resend.com/emails';
-const FALLBACK_FROM = 'onboarding@resend.dev';
+export const runtime = 'nodejs';
 
 type RegisterBody = {
   name?: unknown;
@@ -12,20 +11,6 @@ type RegisterBody = {
   country?: unknown;
   proof?: unknown;
   screenshot?: unknown;
-};
-
-type ResendPayload = {
-  to: string | string[];
-  subject: string;
-  text: string;
-  html: string;
-  attachments?: ResendAttachment[];
-};
-
-type ResendAttachment = {
-  filename: string;
-  content: string;
-  contentType?: string;
 };
 
 type ParsedScreenshot = {
@@ -231,62 +216,6 @@ const parseScreenshot = (
   return { screenshot: parsed };
 };
 
-const sendEmailWithFallback = async (
-  payload: ResendPayload,
-  apiKey: string,
-  fromCandidates: string[]
-) => {
-  let lastErrorMessage = 'Failed to send email via Resend.';
-
-  for (let index = 0; index < fromCandidates.length; index += 1) {
-    const from = fromCandidates[index];
-    const response = await fetch(RESEND_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        from,
-        ...payload,
-      }),
-    });
-
-    if (response.ok) {
-      return;
-    }
-
-    const errorJson = await response.json().catch(() => null);
-    const message =
-      (typeof errorJson === 'object' && errorJson && 'message' in errorJson
-        ? String((errorJson as { message?: unknown }).message ?? '')
-        : '') ||
-      (typeof errorJson === 'object' && errorJson && 'error' in errorJson
-        ? String((errorJson as { error?: unknown }).error ?? '')
-        : '') ||
-      (await response.text().catch(() => '')) ||
-      'Failed to send email.';
-
-    lastErrorMessage = message;
-
-    const lowerMessage = message.toLowerCase();
-    const shouldFallback =
-      fromCandidates.length > index + 1 &&
-      from !== FALLBACK_FROM &&
-      (lowerMessage.includes('domain') ||
-        lowerMessage.includes('verify') ||
-        lowerMessage.includes('dkim'));
-
-    if (shouldFallback) {
-      continue;
-    }
-
-    throw new Error(message);
-  }
-
-  throw new Error(lastErrorMessage);
-};
-
 export async function POST(request: NextRequest) {
   const parsed = await parseRequest(request);
 
@@ -296,14 +225,6 @@ export async function POST(request: NextRequest) {
 
   const { name, email, telegram, country, proof, screenshot } = parsed;
 
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json(
-      { error: 'RESEND_API_KEY environment variable is not set.' },
-      { status: 500 }
-    );
-  }
-
   const adminEmail = process.env.ADMIN_EMAIL?.trim();
   if (!adminEmail) {
     return NextResponse.json(
@@ -312,65 +233,49 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const providedFrom = process.env.FROM_EMAIL?.trim();
-  const fromCandidates =
-    providedFrom && providedFrom.length > 0
-      ? Array.from(new Set([providedFrom, FALLBACK_FROM]))
-      : [FALLBACK_FROM];
-
   const siteName = process.env.NEXT_PUBLIC_SITE_NAME?.trim() || 'Cardic Nexus';
-  const dashboardUrl = 'https://cardicnex.us/dashboard';
 
-  const adminPayload: ResendPayload = {
-    to: adminEmail,
-    subject: `New tournament registration — ${siteName}`,
-    text: `A new tournament registration has been submitted.\n\nName: ${name}\nEmail: ${email}\nTelegram: ${telegram}\nCountry: ${country}\nProof (links/details): ${proof}\nScreenshot: ${screenshot.name}\n`,
-    html: `
-      <h1 style="margin:0;font-size:18px;">New tournament registration</h1>
-      <p style="margin:16px 0 0;font-size:14px;">
-        <strong>Name:</strong> ${name}<br />
-        <strong>Email:</strong> <a href="mailto:${email}">${email}</a><br />
-        <strong>Telegram:</strong> ${telegram}<br />
-        <strong>Country:</strong> ${country}<br />
-        <strong>Proof (links/details):</strong> ${proof}<br />
-        <strong>Screenshot:</strong> ${screenshot.name}
-      </p>
-    `,
-    attachments: [
-      {
-        filename: screenshot.name,
-        content: screenshot.base64,
-        contentType: screenshot.type,
-      },
-    ],
-  };
+  const adminAttachments: EmailAttachment[] = [
+    {
+      filename: screenshot.name,
+      content: screenshot.base64,
+      contentType: screenshot.type,
+    },
+  ];
 
-  const userPayload: ResendPayload = {
-    to: email,
-    subject: 'Cardic Nexus Tournament Registration Confirmed',
-    text: `Hi ${name}, your registration for the Cardic Nexus Tournament is confirmed.\n\nLogin dashboard: ${dashboardUrl}\n\nYour credentials will arrive in a separate mail within 24 hours.`,
-    html: `
-      <div style="font-size:15px;line-height:1.7;">
-        <p>Hi ${name},</p>
-        <p>Your registration for the <strong>Cardic Nexus Tournament</strong> is confirmed.</p>
-        <p>
-          Login dashboard: <a href="${dashboardUrl}" style="color:#38bdf8;">${dashboardUrl}</a>
-        </p>
-        <p>Your credentials will arrive in a separate mail within 24 hours.</p>
-        <p style="margin-top:24px;">Stay sharp — we&apos;ll see you on the leaderboard.</p>
-      </div>
-    `,
-  };
+  const adminText = `A new tournament registration has been submitted.\n\nName: ${name}\nEmail: ${email}\nTelegram: ${telegram}\nCountry: ${country}\nProof (links/details): ${proof}\nScreenshot: ${screenshot.name}\n`;
+  const adminHtml = `
+    <h1 style="margin:0;font-size:18px;">New tournament registration</h1>
+    <p style="margin:16px 0 0;font-size:14px;">
+      <strong>Name:</strong> ${name}<br />
+      <strong>Email:</strong> <a href="mailto:${email}">${email}</a><br />
+      <strong>Telegram:</strong> ${telegram}<br />
+      <strong>Country:</strong> ${country}<br />
+      <strong>Proof (links/details):</strong> ${proof}<br />
+      <strong>Screenshot:</strong> ${screenshot.name}
+    </p>
+  `;
 
   try {
-    await sendEmailWithFallback(adminPayload, apiKey, fromCandidates);
-    await sendEmailWithFallback(userPayload, apiKey, fromCandidates);
+    await sendEmail({
+      to: adminEmail,
+      subject: `New tournament registration — ${siteName}`,
+      text: adminText,
+      html: adminHtml,
+      attachments: adminAttachments,
+    });
   } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : 'We could not send confirmation emails.';
-    return NextResponse.json({ error: message }, { status: 502 });
+    if (error instanceof EmailError) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status ?? 502 }
+      );
+    }
+
+    return NextResponse.json(
+      { error: 'We could not send confirmation emails.' },
+      { status: 502 }
+    );
   }
 
   return NextResponse.json({ success: true });
