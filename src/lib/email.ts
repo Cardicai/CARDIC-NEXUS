@@ -1,62 +1,47 @@
-const RESEND_ENDPOINT = 'https://api.resend.com/emails';
+import { Resend } from 'resend';
 
-export class EmailError extends Error {
-  status?: number;
-
-  constructor(message: string, status?: number) {
-    super(message);
-    this.name = 'EmailError';
-    this.status = status;
-  }
+function requireEnv(name: string) {
+  const v = process.env[name];
+  if (!v) throw new Error(`Missing env: ${name}`);
+  return v;
 }
 
-export type EmailAttachment = {
-  filename: string;
-  content: string;
-};
-
-export type SendEmailOptions = {
-  to: string | string[];
+export async function sendEmail(opts: {
+  to: string;
   subject: string;
-  text: string;
-  html?: string;
-  attachments?: EmailAttachment[];
-};
+  html: string;
+  text?: string;
+}) {
+  const RESEND_API_KEY = requireEnv('RESEND_API_KEY');
+  const EMAIL_FROM = requireEnv('EMAIL_FROM');
+  const EMAIL_DOMAIN_VERIFIED = process.env.EMAIL_DOMAIN_VERIFIED === 'true';
+  const EMAIL_FALLBACK = process.env.EMAIL_FALLBACK || '';
+  const EMAIL_REPLY_TO = process.env.EMAIL_REPLY_TO || undefined;
 
-export async function sendEmail({
-  to,
-  subject,
-  text,
-  html,
-  attachments,
-}: SendEmailOptions) {
-  const from = process.env.FROM_EMAIL;
-  if (!from) {
-    throw new EmailError('Missing FROM_EMAIL environment variable');
+  const resend = new Resend(RESEND_API_KEY);
+
+  let finalTo = opts.to;
+  let warning: string | undefined;
+  if (!EMAIL_DOMAIN_VERIFIED && EMAIL_FALLBACK) {
+    finalTo = EMAIL_FALLBACK;
+    warning = 'Domain not verified; sent to fallback inbox.';
   }
 
-  const res = await fetch(RESEND_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-    },
-    body: JSON.stringify({
-      from,
-      to,
-      subject,
-      text,
-      ...(html ? { html } : {}),
-      ...(attachments?.length ? { attachments } : {}),
-    }),
+  const { error } = await resend.emails.send({
+    from: EMAIL_FROM,
+    to: finalTo,
+    subject: opts.subject,
+    html: opts.html,
+    text: opts.text,
+    reply_to: EMAIL_REPLY_TO,
   });
 
-  if (res.status === 429) {
-    throw new EmailError('Rate limited', 429);
+  if (error) {
+    // Make error obvious in logs; upstream will return JSON not throw opaque network error
+    // eslint-disable-next-line no-console
+    console.error('Resend send error:', error);
+    return { ok: false as const, error: 'send_failed' as const };
   }
 
-  if (!res.ok) {
-    const message = await res.text().catch(() => 'Failed to send email');
-    throw new EmailError(message || 'Failed to send email', res.status);
-  }
+  return { ok: true as const, to: finalTo, warning };
 }

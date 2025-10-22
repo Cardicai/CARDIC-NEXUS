@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
 
-import { EmailAttachment, EmailError, sendEmail } from '@/lib/email';
+import { sendEmail } from '@/lib/email';
+import {
+  EmailAttachment,
+  plainTextToHtml,
+  sendEmailWithAttachments,
+} from '@/lib/email-extras';
 
 export const runtime = 'nodejs';
 
@@ -90,7 +95,10 @@ export async function POST(request: Request) {
 
     const adminEmail = process.env.ADMIN_EMAIL;
     if (!adminEmail) {
-      throw new EmailError('Missing ADMIN_EMAIL environment variable');
+      return NextResponse.json(
+        { message: 'Missing ADMIN_EMAIL environment variable' },
+        { status: 500 }
+      );
     }
 
     const adminSubject = `New NP application — ${legalName}`;
@@ -112,12 +120,20 @@ export async function POST(request: Request) {
       ...fileDetails,
     ].join('\n');
 
-    await sendEmail({
+    const adminResult = await sendEmailWithAttachments({
       to: adminEmail,
       subject: adminSubject,
       text: adminText,
+      html: plainTextToHtml(adminText),
       attachments: attachments.length ? attachments : undefined,
     });
+
+    if (!adminResult.ok) {
+      return NextResponse.json(
+        { message: 'Failed to send admin email.' },
+        { status: 502 }
+      );
+    }
 
     const userSubject = 'We received your Cardic Nexus NP application';
     const userText = [
@@ -137,28 +153,24 @@ export async function POST(request: Request) {
       '— Cardic Nexus Partnerships',
     ].join('\n');
 
-    await sendEmail({
+    const userResult = await sendEmail({
       to: email,
       subject: userSubject,
       text: userText,
+      html: plainTextToHtml(userText),
     });
+
+    if (!userResult.ok) {
+      return NextResponse.json(
+        { message: 'Failed to send confirmation email.' },
+        { status: 502 }
+      );
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    if (error instanceof EmailError && error.status === 429) {
-      return NextResponse.json(
-        { message: 'Too many attempts — try again shortly.' },
-        { status: 429 }
-      );
-    }
-
-    if (error instanceof EmailError) {
-      return NextResponse.json(
-        { message: 'Failed to send emails.' },
-        { status: 500 }
-      );
-    }
-
+    // eslint-disable-next-line no-console
+    console.error('Partner apply email error', error);
     return NextResponse.json({ message: 'Unexpected error.' }, { status: 500 });
   }
 }
