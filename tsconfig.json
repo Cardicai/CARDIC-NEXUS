@@ -17,7 +17,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "~/*": ["./public/*"],
-      "resend": ["./src/lib/resend"]
+      "resend": ["./src/lib/resend"],
+      "@studio-freight/lenis": ["./src/lib/lenis"]
     },
     "incremental": true,
     "plugins": [
