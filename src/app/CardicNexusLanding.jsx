@@ -225,6 +225,8 @@ export default function CardicNexusLanding() {
             View Dashboard Preview
           </Link>
         </div>
+        <CompetitionStatus />
+
         <div className='grid gap-6 text-left md:grid-cols-3 md:gap-8'>
           {highlightedPerks.map((perk) => (
             <div
