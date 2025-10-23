@@ -40,3 +40,110 @@
     font-size: 38px;
   }
 }
+
+.aurora-field {
+  position: absolute;
+  inset: -20% -30% -10%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.aurora-layer {
+  position: absolute;
+  inset: -10%;
+  background: radial-gradient(
+      ellipse at 20% 20%,
+      rgba(59, 130, 246, 0.5),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at 80% 15%,
+      rgba(236, 72, 153, 0.45),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at 50% 75%,
+      rgba(56, 189, 248, 0.35),
+      transparent 65%
+    );
+  filter: blur(120px);
+  opacity: 0.6;
+  mix-blend-mode: screen;
+  animation: auroraDrift 18s ease-in-out infinite;
+}
+
+.aurora-layer-2 {
+  animation: auroraDriftAlt 22s ease-in-out infinite;
+  opacity: 0.5;
+  background: radial-gradient(
+      ellipse at 15% 55%,
+      rgba(16, 185, 129, 0.35),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at 85% 25%,
+      rgba(129, 140, 248, 0.35),
+      transparent 65%
+    ),
+    radial-gradient(
+      ellipse at 55% 65%,
+      rgba(244, 114, 182, 0.3),
+      transparent 60%
+    );
+}
+
+.aurora-layer-3 {
+  animation: auroraDriftReverse 26s ease-in-out infinite;
+  opacity: 0.45;
+  background: radial-gradient(
+      ellipse at 20% 80%,
+      rgba(99, 102, 241, 0.35),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at 70% 70%,
+      rgba(14, 165, 233, 0.35),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at 40% 35%,
+      rgba(59, 130, 246, 0.25),
+      transparent 60%
+    );
+}
+
+@keyframes auroraDrift {
+  0% {
+    transform: translate3d(-12%, -8%, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(8%, 6%, 0) scale(1.05);
+  }
+  100% {
+    transform: translate3d(-10%, 4%, 0) scale(0.98);
+  }
+}
+
+@keyframes auroraDriftAlt {
+  0% {
+    transform: translate3d(10%, -6%, 0) scale(1.05) rotate(4deg);
+  }
+  50% {
+    transform: translate3d(-8%, 8%, 0) scale(0.95) rotate(-6deg);
+  }
+  100% {
+    transform: translate3d(12%, -4%, 0) scale(1.02) rotate(3deg);
+  }
+}
+
+@keyframes auroraDriftReverse {
+  0% {
+    transform: translate3d(-6%, 6%, 0) scale(0.98) rotate(-4deg);
+  }
+  50% {
+    transform: translate3d(6%, -6%, 0) scale(1.04) rotate(5deg);
+  }
+  100% {
+    transform: translate3d(-4%, 4%, 0) scale(1) rotate(-2deg);
+  }
+}
