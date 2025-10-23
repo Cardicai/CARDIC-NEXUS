@@ -32,6 +32,12 @@ importers:
       zod:
         specifier: ^3.24.1
         version: 3.25.76
+      framer-motion:
+        specifier: ^11.3.30
+        version: link:packages/framer-motion
+      '@studio-freight/lenis':
+        specifier: ^1.0.36
+        version: link:packages/@studio-freight/lenis
     devDependencies:
       '@commitlint/cli':
         specifier: ^16.3.0
@@ -116,6 +122,15 @@ importers:
         version: 5.8.3
 
 packages:
+
+  framer-motion@link:packages/framer-motion:
+    resolution: {directory: packages/framer-motion, type: directory}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@studio-freight/lenis@link:packages/@studio-freight/lenis':
+    resolution: {directory: packages/@studio-freight/lenis, type: directory}
 
   '@adobe/css-tools@4.4.3':
     resolution: {integrity: sha512-VQKMkwriZbaOgVCby1UDY/LDk5fIjhQicCvVPFqfe+69fWaPWydbWJ3wRt59/YzIwda1I81loas3oCoHxnqvdA==}
