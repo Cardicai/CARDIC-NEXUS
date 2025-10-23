@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { useMemo, useRef, useState } from 'react';
 
+import { submitRegistration } from '@/components/useSubmitRegistration';
+
 const createInitialFormState = () => ({
   name: '',
   email: '',
@@ -452,6 +454,7 @@ const validateForm = (formState) => {
 export default function CardicNexusLanding() {
   const [formState, setFormState] = useState(() => createInitialFormState());
   const [status, setStatus] = useState({ type: 'idle', message: '' });
+  const [fallbackNotice, setFallbackNotice] = useState('');
   const fileInputRef = useRef(null);
 
   const isSubmitting = status.type === 'loading';
@@ -485,12 +488,16 @@ export default function CardicNexusLanding() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setFallbackNotice('');
 
     const validationError = validateForm(formState);
     if (validationError) {
       setStatus({ type: 'error', message: validationError });
       return;
     }
+
+    const trimmedName = formState.name.trim();
+    const trimmedEmail = formState.email.trim();
 
     try {
       setStatus({ type: 'loading', message: 'Submitting your registration…' });
@@ -502,8 +509,8 @@ export default function CardicNexusLanding() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: formState.name.trim(),
-          email: formState.email.trim(),
+          name: trimmedName,
+          email: trimmedEmail,
           telegram: formState.telegram.trim(),
           country: formState.country.trim(),
           proof: formState.proof.trim(),
@@ -536,6 +543,25 @@ export default function CardicNexusLanding() {
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
+
+      let noticeMessage = '';
+
+      if (trimmedEmail) {
+        const confirmationResult = await submitRegistration({
+          email: trimmedEmail,
+          name: trimmedName,
+        });
+
+        if (!confirmationResult.ok) {
+          const errorCode = confirmationResult.error || 'unknown_error';
+          noticeMessage = `Confirmation email failed (${errorCode}). We will retry manually.`;
+        } else if (confirmationResult.warning) {
+          noticeMessage =
+            'Sent to fallback (testing inbox) because domain not verified.';
+        }
+      }
+
+      setFallbackNotice(noticeMessage);
     } catch (error) {
       setStatus({
         type: 'error',
@@ -544,6 +570,7 @@ export default function CardicNexusLanding() {
             ? error.message
             : 'Something went wrong while submitting the form. Please try again.',
       });
+      setFallbackNotice('');
     }
   };
 
@@ -783,6 +810,12 @@ export default function CardicNexusLanding() {
             >
               {status.message}
             </div>
+          )}
+
+          {fallbackNotice && (
+            <p className='rounded-xl border border-amber-400/40 bg-amber-500/10 px-4 py-2 text-xs text-amber-100'>
+              {fallbackNotice}
+            </p>
           )}
 
           <button

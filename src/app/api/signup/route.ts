@@ -84,22 +84,52 @@ export async function POST(req: NextRequest) {
         <p>Action for desk: Create MT4/MT5 account, link FXBlue, then POST /api/admin/activate.</p>
       </div>`;
 
-    await Promise.all([
-      sendMail({
+    let warning: string | undefined;
+    let emailSent = false;
+    let adminNotified = !ADMIN_EMAIL;
+
+    try {
+      const result = await sendMail({
         to: email,
         subject: 'Your Cardic Nexus Secret Token',
         html: userHtml,
-      }),
-      ADMIN_EMAIL
-        ? sendMail({
-            to: ADMIN_EMAIL,
-            subject: 'New Competition Signup (Pending)',
-            html: adminHtml,
-          })
-        : Promise.resolve(),
-    ]);
+      });
+      warning = result.warning;
+      emailSent = true;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(
+        'Participant email dispatch failed',
+        error instanceof Error ? error.message : error
+      );
+    }
 
-    return NextResponse.json({ ok: true, token, status: 'PENDING' });
+    if (ADMIN_EMAIL) {
+      try {
+        await sendMail({
+          to: ADMIN_EMAIL,
+          subject: 'New Competition Signup (Pending)',
+          html: adminHtml,
+        });
+        adminNotified = true;
+      } catch (error) {
+        adminNotified = false;
+        // eslint-disable-next-line no-console
+        console.error(
+          'Admin notification email dispatch failed',
+          error instanceof Error ? error.message : error
+        );
+      }
+    }
+
+    return NextResponse.json({
+      ok: true,
+      token,
+      status: 'PENDING',
+      emailSent,
+      adminNotified,
+      warning,
+    });
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : 'Signup error';
     return NextResponse.json({ ok: false, error: message }, { status: 500 });

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { sendMail } from '@/lib/mailer';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
   try {
@@ -35,7 +35,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    await sendMail({ to: to.trim(), subject: subject.trim(), html });
+    await sendMail({
+      to: to.trim(),
+      subject: subject.trim(),
+      html,
+      text: html,
+    });
 
     return NextResponse.json({ ok: true, message: 'Email sent successfully' });
   } catch (error: unknown) {

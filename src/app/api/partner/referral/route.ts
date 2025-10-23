@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
-import { EmailError, sendEmail } from '@/lib/email';
+import { sendEmail } from '@/lib/email';
+import { plainTextToHtml } from '@/lib/email-extras';
 
 export const runtime = 'nodejs';
 
@@ -54,7 +55,10 @@ export async function POST(request: Request) {
 
     const adminEmail = process.env.ADMIN_EMAIL;
     if (!adminEmail) {
-      throw new EmailError('Missing ADMIN_EMAIL environment variable');
+      return NextResponse.json(
+        { message: 'Missing ADMIN_EMAIL environment variable' },
+        { status: 500 }
+      );
     }
 
     const adminSubject = `New referral minted — ${name}`;
@@ -68,11 +72,19 @@ export async function POST(request: Request) {
       'Please log the referral and ensure tracking is active.',
     ].join('\n');
 
-    await sendEmail({
+    const adminResult = await sendEmail({
       to: adminEmail,
       subject: adminSubject,
       text: adminText,
+      html: plainTextToHtml(adminText),
     });
+
+    if (!adminResult.ok) {
+      return NextResponse.json(
+        { message: 'Failed to send admin email.' },
+        { status: 502 }
+      );
+    }
 
     const userSubject = 'Your Cardic Nexus referral code';
     const userText = [
@@ -89,28 +101,24 @@ export async function POST(request: Request) {
       '— Cardic Nexus Partnerships',
     ].join('\n');
 
-    await sendEmail({
+    const userResult = await sendEmail({
       to: email,
       subject: userSubject,
       text: userText,
+      html: plainTextToHtml(userText),
     });
+
+    if (!userResult.ok) {
+      return NextResponse.json(
+        { message: 'Failed to send confirmation email.' },
+        { status: 502 }
+      );
+    }
 
     return NextResponse.json({ code, link });
   } catch (error) {
-    if (error instanceof EmailError && error.status === 429) {
-      return NextResponse.json(
-        { message: 'Too many attempts — try again shortly.' },
-        { status: 429 }
-      );
-    }
-
-    if (error instanceof EmailError) {
-      return NextResponse.json(
-        { message: 'Failed to send emails.' },
-        { status: 500 }
-      );
-    }
-
+    // eslint-disable-next-line no-console
+    console.error('Partner referral email error', error);
     return NextResponse.json({ message: 'Unexpected error.' }, { status: 500 });
   }
 }
