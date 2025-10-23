@@ -1,7 +1,7 @@
 import { sendEmail } from '@/lib/email';
 
 export type MailPayload = {
-  to: string;
+  to: string | string[];
   subject: string;
   html: string;
   text?: string;

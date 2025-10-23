@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import {
+  findInvalidEmail,
+  formatEmailList,
+  parseEmailList,
+} from '@/lib/email-address';
 import { EmailAttachment, sendEmailWithAttachments } from '@/lib/email-extras';
 
 export const runtime = 'nodejs';
@@ -7,6 +12,7 @@ export const runtime = 'nodejs';
 type RegisterBody = {
   name?: unknown;
   email?: unknown;
+  emails?: unknown;
   telegram?: unknown;
   country?: unknown;
   proof?: unknown;
@@ -19,9 +25,6 @@ type ParsedScreenshot = {
   base64: string;
   size: number;
 };
-
-const isValidEmail = (value: string) =>
-  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
 const parseRequest = async (request: NextRequest) => {
   let body: RegisterBody;
@@ -38,7 +41,8 @@ const parseRequest = async (request: NextRequest) => {
   }
 
   const name = typeof body.name === 'string' ? body.name.trim() : '';
-  const email = typeof body.email === 'string' ? body.email.trim() : '';
+  const emailInput = body.emails ?? body.email;
+  const emails = parseEmailList(emailInput);
   const telegram =
     typeof body.telegram === 'string' ? body.telegram.trim() : '';
   const country = typeof body.country === 'string' ? body.country.trim() : '';
@@ -54,7 +58,7 @@ const parseRequest = async (request: NextRequest) => {
     } as const;
   }
 
-  if (!email) {
+  if (emails.length === 0) {
     return {
       error: NextResponse.json(
         { error: 'Email address is required.' },
@@ -63,10 +67,13 @@ const parseRequest = async (request: NextRequest) => {
     } as const;
   }
 
-  if (!isValidEmail(email)) {
+  const invalidEmail = findInvalidEmail(emails);
+  if (invalidEmail) {
     return {
       error: NextResponse.json(
-        { error: 'Please provide a valid email address.' },
+        {
+          error: `Please provide valid email addresses. “${invalidEmail}” is invalid.`,
+        },
         { status: 400 }
       ),
     } as const;
@@ -109,7 +116,7 @@ const parseRequest = async (request: NextRequest) => {
 
   return {
     name,
-    email,
+    emails,
     telegram,
     country,
     proof,
@@ -223,10 +230,12 @@ export async function POST(request: NextRequest) {
     return parsed.error;
   }
 
-  const { name, email, telegram, country, proof, screenshot } = parsed;
+  const { name, emails, telegram, country, proof, screenshot } = parsed;
+  const emailDisplay = formatEmailList(emails);
 
-  const adminEmail = process.env.ADMIN_EMAIL?.trim();
-  if (!adminEmail) {
+  const adminEmailInput = process.env.ADMIN_EMAIL;
+  const adminEmails = parseEmailList(adminEmailInput);
+  if (adminEmails.length === 0) {
     return NextResponse.json(
       { error: 'ADMIN_EMAIL environment variable is not set.' },
       { status: 500 }
@@ -243,12 +252,15 @@ export async function POST(request: NextRequest) {
     },
   ];
 
-  const adminText = `A new tournament registration has been submitted.\n\nName: ${name}\nEmail: ${email}\nTelegram: ${telegram}\nCountry: ${country}\nProof (links/details): ${proof}\nScreenshot: ${screenshot.name}\n`;
+  const adminText = `A new tournament registration has been submitted.\n\nName: ${name}\nEmail(s): ${emailDisplay}\nTelegram: ${telegram}\nCountry: ${country}\nProof (links/details): ${proof}\nScreenshot: ${screenshot.name}\n`;
+  const emailAnchors = emails
+    .map((value) => `<a href="mailto:${value}">${value}</a>`)
+    .join(', ');
   const adminHtml = `
     <h1 style="margin:0;font-size:18px;">New tournament registration</h1>
     <p style="margin:16px 0 0;font-size:14px;">
       <strong>Name:</strong> ${name}<br />
-      <strong>Email:</strong> <a href="mailto:${email}">${email}</a><br />
+      <strong>Email(s):</strong> ${emailAnchors}<br />
       <strong>Telegram:</strong> ${telegram}<br />
       <strong>Country:</strong> ${country}<br />
       <strong>Proof (links/details):</strong> ${proof}<br />
@@ -258,7 +270,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const adminResult = await sendEmailWithAttachments({
-      to: adminEmail,
+      to: adminEmails.length === 1 ? adminEmails[0] : adminEmails,
       subject: `New tournament registration — ${siteName}`,
       text: adminText,
       html: adminHtml,

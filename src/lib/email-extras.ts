@@ -40,7 +40,7 @@ export function plainTextToHtml(text: string) {
 }
 
 export async function sendEmailWithAttachments(opts: {
-  to: string;
+  to: string | string[];
   subject: string;
   html: string;
   text?: string;
@@ -52,7 +52,7 @@ export async function sendEmailWithAttachments(opts: {
   const fallback = getEmailFallback();
   const replyTo = process.env.EMAIL_REPLY_TO || undefined;
 
-  let finalTo = opts.to;
+  let finalTo: string | string[] = opts.to;
   let warning: string | undefined;
   if (!verified && fallback) {
     finalTo = fallback;
