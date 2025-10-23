@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useMemo, useRef, useState } from 'react';
 
-import EmailWarning from '@/components/EmailWarning';
 import { submitRegistration } from '@/components/useSubmitRegistration';
 
 const createInitialFormState = () => ({
@@ -684,8 +683,6 @@ export default function CardicNexusLanding() {
               required and will be tied to your tournament access.
             </p>
           </div>
-
-          <EmailWarning />
 
           <label className='space-y-2 text-left'>
             <span className='text-sm font-semibold uppercase tracking-wide text-slate-100'>
