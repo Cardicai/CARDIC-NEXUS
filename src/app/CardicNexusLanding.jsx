@@ -1,5 +1,7 @@
 import Link from 'next/link';
 
+import CompetitionStatus from '@/components/CompetitionStatus';
+
 const ruleSections = [
   {
     title: '1️⃣ Overview',
