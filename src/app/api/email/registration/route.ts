@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { sendEmail } from '@/lib/email';
+import { findInvalidEmail, parseEmailList } from '@/lib/email-address';
 
 export const runtime = 'nodejs'; // force Node (Edge can break SMTP/TLS)
 export const dynamic = 'force-dynamic';
@@ -9,10 +10,13 @@ export const revalidate = 0;
 export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}));
-    const to = (body?.to || '').trim();
+    const toRaw = body?.to;
     const name = (body?.name || '').trim();
 
-    if (!to || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to)) {
+    const recipients = parseEmailList(toRaw);
+    const invalidRecipient = findInvalidEmail(recipients);
+
+    if (recipients.length === 0 || invalidRecipient) {
       return NextResponse.json(
         { ok: false, error: 'invalid_to' },
         { status: 400 }
@@ -29,7 +33,11 @@ export async function POST(req: Request) {
       </div>
     `;
 
-    const result = await sendEmail({ to, subject, html });
+    const result = await sendEmail({
+      to: recipients.length === 1 ? recipients[0] : recipients,
+      subject,
+      html,
+    });
     if (!result.ok) {
       return NextResponse.json(
         { ok: false, error: result.error },

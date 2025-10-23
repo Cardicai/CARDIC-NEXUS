@@ -2,6 +2,8 @@
 
 import { ChangeEvent, FormEvent, useRef, useState } from 'react';
 
+import { findInvalidEmail, parseEmailList } from '@/lib/email-address';
+
 import { submitRegistration } from '@/components/useSubmitRegistration';
 
 type RegistrationFormProps = {
@@ -252,11 +254,13 @@ const validateForm = (formState: FormState): string | null => {
   if (!formState.name.trim()) {
     return 'Full name is required.';
   }
-  if (!formState.email.trim()) {
+  const emailList = parseEmailList(formState.email);
+  if (emailList.length === 0) {
     return 'Email address is required.';
   }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formState.email.trim())) {
-    return 'Please provide a valid email address.';
+  const invalidEmail = findInvalidEmail(emailList);
+  if (invalidEmail) {
+    return `“${invalidEmail}” is not a valid email address.`;
   }
   if (!formState.telegram.trim()) {
     return 'Your Telegram handle is required.';
@@ -344,7 +348,7 @@ export default function RegistrationForm({
     }
 
     const trimmedName = formState.name.trim();
-    const trimmedEmail = formState.email.trim();
+    const emailList = parseEmailList(formState.email);
 
     try {
       setStatus({ type: 'loading', message: 'Submitting your registration…' });
@@ -358,7 +362,8 @@ export default function RegistrationForm({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: trimmedName,
-          email: trimmedEmail,
+          emails: emailList,
+          email: emailList[0] ?? '',
           telegram: formState.telegram.trim(),
           country: formState.country.trim(),
           proof: formState.proof.trim(),
@@ -394,9 +399,9 @@ export default function RegistrationForm({
 
       let noticeMessage = '';
 
-      if (trimmedEmail) {
+      if (emailList.length > 0) {
         const confirmationResult = await submitRegistration({
-          email: trimmedEmail,
+          emails: emailList,
           name: trimmedName,
         });
 
@@ -462,12 +467,16 @@ export default function RegistrationForm({
           className='w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/40'
           name='email'
           type='email'
+          multiple
           required
           value={formState.email}
           onChange={handleChange}
-          placeholder='name@example.com'
+          placeholder='name@example.com, teammate@example.com'
           autoComplete='email'
         />
+        <p className='text-xs text-slate-400'>
+          Separate multiple emails with commas, spaces, or new lines.
+        </p>
       </label>
 
       <label className='space-y-2 text-left'>

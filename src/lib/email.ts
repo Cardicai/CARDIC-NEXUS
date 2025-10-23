@@ -8,7 +8,7 @@ import {
 } from '@/lib/env';
 
 export async function sendEmail(opts: {
-  to: string;
+  to: string | string[];
   subject: string;
   html: string;
   text?: string;
@@ -18,7 +18,7 @@ export async function sendEmail(opts: {
   const verified = isEmailDomainVerified();
   const fallback = getEmailFallback();
 
-  let finalTo = opts.to;
+  let finalTo: string | string[] = opts.to;
   let warning: string | undefined;
   if (!verified && fallback) {
     finalTo = fallback;
