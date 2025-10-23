@@ -10,7 +10,12 @@ type ParticipantStats = {
   drawdown?: number;
   balance?: number;
   equity?: number;
+  roiPct?: number;
+  winRatePct?: number;
+  drawdownPct?: number;
+  trades?: number;
   updatedAt?: string;
+  lastSyncAt?: string;
 };
 
 type Participant = {
@@ -19,7 +24,7 @@ type Participant = {
   email: string;
   status: 'PENDING' | 'ACTIVE';
   createdAt: string;
-  fx?: { username?: string };
+  fx?: { username?: string; csvUrl?: string };
   stats?: ParticipantStats;
 };
 

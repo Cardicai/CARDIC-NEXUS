@@ -12,14 +12,19 @@ export type ParticipantStats = {
   drawdown?: number;
   balance?: number;
   equity?: number;
+  roiPct?: number;
+  winRatePct?: number;
+  drawdownPct?: number;
+  trades?: number;
   updatedAt?: string;
+  lastSyncAt?: string;
 };
 
 export type Participant = {
   id: string;
   name: string;
   email: string;
-  fx?: { username?: string };
+  fx?: { username?: string; csvUrl?: string };
   status: 'PENDING' | 'ACTIVE';
   createdAt: string;
   meta?: {
@@ -93,7 +98,7 @@ export function activateParticipant(token: string, username?: string) {
   if (!p) return;
   p.status = 'ACTIVE';
   if (username) {
-    p.fx = { username };
+    p.fx = { ...(p.fx || {}), username };
   }
   writeDB(db);
 }
