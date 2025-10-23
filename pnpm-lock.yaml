@@ -32,6 +32,12 @@ importers:
       zod:
         specifier: ^3.24.1
         version: 3.25.76
+      framer-motion:
+        specifier: ^11.3.30
+        version: 11.3.30(react@19.1.0)
+      '@studio-freight/lenis':
+        specifier: ^1.0.36
+        version: 1.0.36
     devDependencies:
       '@commitlint/cli':
         specifier: ^16.3.0
