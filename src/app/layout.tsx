@@ -5,6 +5,8 @@ import './globals.css';
 
 import { siteConfig } from '@/constant/config';
 
+import { siteConfig } from '@/constant/config';
+
 export const metadata = {
   metadataBase: new URL('https://www.cardicnex.us'),
   title: 'Cardic Nexus Tournament Portal',
