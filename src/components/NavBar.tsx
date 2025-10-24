@@ -124,6 +124,9 @@ export default function NavBar() {
           <a href='#pricing' onClick={onNavClick}>
             Pricing
           </a>
+          <Link href='/competition' prefetch={false}>
+            Competition
+          </Link>
           <a href={TELEGRAM_DM} target='_blank' rel='noreferrer'>
             Contact
           </a>
@@ -173,6 +176,13 @@ export default function NavBar() {
           <a href='#pricing' onClick={onMobileNavClick}>
             Pricing
           </a>
+          <Link
+            href='/competition'
+            prefetch={false}
+            onClick={() => setOpen(false)}
+          >
+            Competition
+          </Link>
           <a
             href={TELEGRAM_DM}
             target='_blank'
