@@ -10,10 +10,50 @@ const TELEGRAM_DM = 'https://t.me/realcardic1';
 
 export default function NavBar() {
   const [open, setOpen] = useState(false);
+  const [quickOpen, setQuickOpen] = useState(false);
   const [welcomeVisible, setWelcomeVisible] = useState(false);
   const welcomeUrl = useRef<string | null>(null);
   const welcomeWin = useRef<Window | null>(null);
   const welcomeTimer = useRef<number | null>(null);
+
+  const quickLinks = [
+    {
+      label: 'Add Bots',
+      description: 'Sync automation suites with prop-safe risk controls.',
+      href: '#bots',
+      type: 'anchor' as const,
+    },
+    {
+      label: 'Competition HQ',
+      description: 'Timeline, rules, and live status in one command center.',
+      href: '/competition',
+      type: 'link' as const,
+    },
+    {
+      label: 'Join Trading Hub',
+      description: 'Enter the social terminals and accountability pods.',
+      href: '#trading-hub',
+      type: 'anchor' as const,
+    },
+    {
+      label: 'Premium Indicators',
+      description: 'Request Nexus Pulse access and upgrade your charts.',
+      href: '#indicator',
+      type: 'anchor' as const,
+    },
+    {
+      label: 'Partnership Program',
+      description: 'Scale revenue by representing Cardic Nexus globally.',
+      href: '/partner',
+      type: 'link' as const,
+    },
+    {
+      label: 'Contact Support',
+      description: 'Direct line to the Nexus desk for verification & help.',
+      href: TELEGRAM_DM,
+      type: 'external' as const,
+    },
+  ];
 
   const onNavClick = (e: MouseEvent<HTMLAnchorElement>) => {
     const href = (e.currentTarget.getAttribute('href') || '').trim();
@@ -29,6 +69,11 @@ export default function NavBar() {
   const onMobileNavClick = (e: MouseEvent<HTMLAnchorElement>) => {
     onNavClick(e);
     setOpen(false);
+  };
+
+  const onQuickAnchorClick = (e: MouseEvent<HTMLAnchorElement>) => {
+    onNavClick(e);
+    setQuickOpen(false);
   };
 
   const onWebLinkClick = (e: MouseEvent<HTMLAnchorElement>) => {
@@ -105,9 +150,22 @@ export default function NavBar() {
   return (
     <header className='cnx-nav'>
       <div className='cnx-nav-inner'>
-        <Link href='/' className='brand' aria-label='Cardic Nexus – Home'>
-          <BrandLogo size='md' />
-        </Link>
+        <div className='cnx-nav-left'>
+          <button
+            type='button'
+            className='quickLaunch'
+            aria-label='Open quick access menu'
+            aria-expanded={quickOpen}
+            onClick={() => setQuickOpen(true)}
+          >
+            <span className='quickLaunchBar' />
+            <span className='quickLaunchBar' />
+            <span className='quickLaunchDot' />
+          </button>
+          <Link href='/' className='brand' aria-label='Cardic Nexus – Home'>
+            <BrandLogo size='md' />
+          </Link>
+        </div>
 
         <nav className='cnx-links'>
           <a
@@ -124,6 +182,9 @@ export default function NavBar() {
           <a href='#pricing' onClick={onNavClick}>
             Pricing
           </a>
+          <Link href='/competition' prefetch={false}>
+            Competition
+          </Link>
           <a href={TELEGRAM_DM} target='_blank' rel='noreferrer'>
             Contact
           </a>
@@ -146,6 +207,89 @@ export default function NavBar() {
             <span />
           </button>
         </div>
+      </div>
+
+      <div
+        className={`quickPanel ${quickOpen ? 'open' : ''}`}
+        role='dialog'
+        aria-modal='true'
+        aria-label='Cardic Nexus quick access menu'
+        onClick={(event) => {
+          if (event.target === event.currentTarget) {
+            setQuickOpen(false);
+          }
+        }}
+      >
+        <aside className='quickTray'>
+          <div className='quickTrayHeader'>
+            <div>
+              <span className='quickTrayEyebrow'>Navigate Fast</span>
+              <h2 className='quickTrayTitle'>Nexus Shortcuts</h2>
+            </div>
+            <button
+              type='button'
+              className='quickTrayClose'
+              onClick={() => setQuickOpen(false)}
+              aria-label='Close quick access menu'
+            >
+              Close
+            </button>
+          </div>
+          <p className='quickTrayCopy'>
+            Jump directly to bots, competitions, trading lounges, and premium
+            support without leaving your current page.
+          </p>
+          <nav className='quickTrayLinks'>
+            {quickLinks.map((item) => {
+              const content = (
+                <>
+                  <span className='quickLinkLabel'>{item.label}</span>
+                  <span className='quickLinkDesc'>{item.description}</span>
+                </>
+              );
+
+              if (item.type === 'anchor') {
+                return (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    onClick={onQuickAnchorClick}
+                    className='quickLink'
+                  >
+                    {content}
+                  </a>
+                );
+              }
+
+              if (item.type === 'external') {
+                return (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    target='_blank'
+                    rel='noreferrer'
+                    onClick={() => setQuickOpen(false)}
+                    className='quickLink'
+                  >
+                    {content}
+                  </a>
+                );
+              }
+
+              return (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  prefetch={false}
+                  onClick={() => setQuickOpen(false)}
+                  className='quickLink'
+                >
+                  {content}
+                </Link>
+              );
+            })}
+          </nav>
+        </aside>
       </div>
 
       {/* Mobile sheet */}
@@ -173,6 +317,13 @@ export default function NavBar() {
           <a href='#pricing' onClick={onMobileNavClick}>
             Pricing
           </a>
+          <Link
+            href='/competition'
+            prefetch={false}
+            onClick={() => setOpen(false)}
+          >
+            Competition
+          </Link>
           <a
             href={TELEGRAM_DM}
             target='_blank'
@@ -335,6 +486,55 @@ export default function NavBar() {
           justify-content: space-between;
           gap: 16px;
         }
+        .cnx-nav-left {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+        }
+        .quickLaunch {
+          position: relative;
+          display: inline-flex;
+          flex-direction: column;
+          justify-content: center;
+          gap: 5px;
+          width: 42px;
+          height: 42px;
+          border-radius: 14px;
+          border: 1px solid rgba(245, 199, 107, 0.35);
+          background: rgba(10, 12, 22, 0.72);
+          box-shadow: 0 18px 50px rgba(59, 130, 246, 0.25);
+          cursor: pointer;
+          transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
+        .quickLaunch:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 22px 60px rgba(59, 130, 246, 0.35);
+        }
+        .quickLaunch:focus-visible {
+          outline: 2px solid rgba(59, 130, 246, 0.6);
+          outline-offset: 2px;
+        }
+        .quickLaunchBar {
+          display: block;
+          height: 3px;
+          width: 18px;
+          margin-left: 12px;
+          border-radius: 999px;
+          background: linear-gradient(
+            90deg,
+            rgba(245, 199, 107, 0.9),
+            rgba(59, 130, 246, 0.8)
+          );
+        }
+        .quickLaunchDot {
+          display: block;
+          width: 10px;
+          height: 10px;
+          margin-left: 26px;
+          border-radius: 999px;
+          background: rgba(59, 130, 246, 0.8);
+          box-shadow: 0 0 12px rgba(59, 130, 246, 0.55);
+        }
         .cnx-links {
           display: flex;
           gap: 16px;
@@ -400,12 +600,123 @@ export default function NavBar() {
           background: #e7ecf5;
         }
 
+        .quickPanel {
+          position: fixed;
+          inset: 0;
+          z-index: 80;
+          display: flex;
+          justify-content: flex-start;
+          background: rgba(3, 5, 12, 0.78);
+          backdrop-filter: blur(22px);
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.2s ease;
+        }
+        .quickPanel.open {
+          opacity: 1;
+          pointer-events: auto;
+        }
+        .quickTray {
+          width: min(420px, 86vw);
+          background: linear-gradient(
+            160deg,
+            rgba(12, 14, 24, 0.95),
+            rgba(7, 6, 16, 0.92)
+          );
+          border-right: 1px solid rgba(245, 199, 107, 0.2);
+          padding: 28px 28px 32px;
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+          box-shadow: 0 45px 140px rgba(15, 23, 42, 0.45);
+        }
+        .quickTrayHeader {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 18px;
+        }
+        .quickTrayEyebrow {
+          display: block;
+          font-size: 11px;
+          letter-spacing: 0.38em;
+          text-transform: uppercase;
+          color: rgba(245, 199, 107, 0.75);
+        }
+        .quickTrayTitle {
+          margin-top: 6px;
+          font-size: 26px;
+          font-weight: 800;
+          letter-spacing: 0.16em;
+          color: #f8fafc;
+        }
+        .quickTrayClose {
+          background: rgba(59, 130, 246, 0.12);
+          color: #e2e8f0;
+          border: 1px solid rgba(59, 130, 246, 0.32);
+          border-radius: 999px;
+          padding: 8px 16px;
+          font-size: 12px;
+          text-transform: uppercase;
+          letter-spacing: 0.24em;
+          cursor: pointer;
+          transition: background 0.2s ease, color 0.2s ease;
+        }
+        .quickTrayClose:hover {
+          background: rgba(59, 130, 246, 0.22);
+          color: #fff;
+        }
+        .quickTrayClose:focus-visible {
+          outline: 2px solid rgba(245, 199, 107, 0.6);
+          outline-offset: 2px;
+        }
+        .quickTrayCopy {
+          font-size: 13px;
+          line-height: 1.6;
+          color: rgba(203, 213, 225, 0.85);
+        }
+        .quickTrayLinks {
+          display: grid;
+          gap: 14px;
+        }
+        .quickLink {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          padding: 16px 18px;
+          border-radius: 20px;
+          text-decoration: none;
+          background: rgba(15, 18, 32, 0.82);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          color: #e2e8f0;
+          transition: border-color 0.2s ease, transform 0.2s ease,
+            background 0.2s ease;
+        }
+        .quickLink:hover {
+          transform: translateY(-2px);
+          border-color: rgba(245, 199, 107, 0.45);
+          background: rgba(10, 12, 22, 0.92);
+        }
+        .quickLinkLabel {
+          font-size: 15px;
+          font-weight: 600;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+        .quickLinkDesc {
+          font-size: 13px;
+          color: rgba(148, 163, 184, 0.9);
+        }
+
         @media (max-width: 900px) {
           .cnx-links {
             display: none;
           }
           .burger {
             display: block;
+          }
+          .quickTray {
+            width: min(360px, 90vw);
           }
         }
 
