@@ -1,6 +1,6 @@
 'use client';
 
-import { ChangeEvent, FormEvent, useRef, useState } from 'react';
+import { ChangeEvent, FormEvent, useState } from 'react';
 
 import { findInvalidEmail, parseEmailList } from '@/lib/email-address';
 
@@ -15,8 +15,6 @@ type FormState = {
   email: string;
   telegram: string;
   country: string;
-  proof: string;
-  screenshot: File | null;
   agree: boolean;
 };
 
@@ -29,8 +27,6 @@ const createInitialFormState = (): FormState => ({
   email: '',
   telegram: '',
   country: '',
-  proof: '',
-  screenshot: null,
   agree: false,
 });
 
@@ -232,24 +228,6 @@ const countryOptions = [
   'Zimbabwe',
 ];
 
-const convertFileToBase64 = (file: File): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result;
-      if (typeof result === 'string') {
-        const base64 = result.includes(',') ? result.split(',').pop() : result;
-        resolve(base64 || '');
-      } else {
-        reject(new Error('Unable to process the uploaded file.'));
-      }
-    };
-    reader.onerror = () => {
-      reject(new Error('Failed to read the uploaded file.'));
-    };
-    reader.readAsDataURL(file);
-  });
-
 const validateForm = (formState: FormState): string | null => {
   if (!formState.name.trim()) {
     return 'Full name is required.';
@@ -267,12 +245,6 @@ const validateForm = (formState: FormState): string | null => {
   }
   if (!formState.country.trim()) {
     return 'Please select your country.';
-  }
-  if (!formState.proof.trim()) {
-    return 'Please provide proof that you followed at least 2 Cardic Nexus social pages.';
-  }
-  if (!formState.screenshot) {
-    return 'Please upload a screenshot showing you follow the required Cardic Nexus social pages.';
   }
   if (!formState.agree) {
     return 'You must agree to the official rules and terms.';
@@ -292,7 +264,6 @@ export default function RegistrationForm({
     message: '',
   });
   const [fallbackNotice, setFallbackNotice] = useState('');
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const isSubmitting = status.type === 'loading';
 
@@ -318,25 +289,6 @@ export default function RegistrationForm({
     }));
   };
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0] ?? null;
-
-    if (file && file.size > 5 * 1024 * 1024) {
-      setStatus({
-        type: 'error',
-        message:
-          'Screenshot must be 5MB or smaller. Please compress the image and try again.',
-      });
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-      setFormState((previous) => ({ ...previous, screenshot: null }));
-      return;
-    }
-
-    setFormState((previous) => ({ ...previous, screenshot: file }));
-  };
-
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setFallbackNotice('');
@@ -352,11 +304,6 @@ export default function RegistrationForm({
 
     try {
       setStatus({ type: 'loading', message: 'Submitting your registration…' });
-      const screenshotFile = formState.screenshot;
-      const screenshotBase64 = screenshotFile
-        ? await convertFileToBase64(screenshotFile)
-        : '';
-
       const response = await fetch('/api/tournament/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -366,15 +313,6 @@ export default function RegistrationForm({
           email: emailList[0] ?? '',
           telegram: formState.telegram.trim(),
           country: formState.country.trim(),
-          proof: formState.proof.trim(),
-          screenshot: screenshotFile
-            ? {
-                name: screenshotFile.name,
-                type: screenshotFile.type,
-                size: screenshotFile.size,
-                base64: screenshotBase64,
-              }
-            : null,
         }),
       });
 
@@ -393,9 +331,6 @@ export default function RegistrationForm({
           'Registration received! Check your inbox for confirmation and look out for your credentials within 24 hours.',
       });
       setFormState(createInitialFormState());
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
 
       let noticeMessage = '';
 
@@ -518,37 +453,6 @@ export default function RegistrationForm({
         </select>
       </label>
 
-      <label className='space-y-2 text-left'>
-        <span className='text-sm font-semibold uppercase tracking-wide text-slate-100'>
-          Proof of 2 social follows
-        </span>
-        <textarea
-          className='min-h-[120px] w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-300/40'
-          name='proof'
-          value={formState.proof}
-          onChange={handleChange}
-          placeholder='Paste screenshot links or profile URLs showing you follow at least 2 Cardic Nexus pages.'
-        />
-      </label>
-
-      <label className='space-y-2 text-left'>
-        <span className='text-sm font-semibold uppercase tracking-wide text-slate-100'>
-          Upload screenshot proof
-        </span>
-        <input
-          ref={fileInputRef}
-          className='block w-full cursor-pointer rounded-xl border border-dashed border-white/20 bg-white/5 px-4 py-3 text-sm text-slate-200 file:mr-4 file:rounded-lg file:border-0 file:bg-gradient-to-r file:from-cyan-500 file:to-purple-500 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:border-cyan-400 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/40'
-          type='file'
-          accept='image/*'
-          onChange={handleFileChange}
-        />
-        <p className='text-xs text-slate-400'>
-          {formState.screenshot
-            ? `Selected file: ${formState.screenshot.name}`
-            : 'Accepted formats: JPG, PNG, WEBP (max 5MB).'}
-        </p>
-      </label>
-
       <label className='flex items-start gap-3 text-left'>
         <input
           type='checkbox'
@@ -590,6 +494,18 @@ export default function RegistrationForm({
       >
         {isSubmitting ? 'Submitting…' : 'Submit Registration'}
       </button>
+      <div className='text-center text-xs text-slate-400'>
+        Need assistance?{' '}
+        <a
+          className='font-semibold text-sky-200 underline-offset-4 hover:underline'
+          href='https://t.me/REALCARDIC'
+          target='_blank'
+          rel='noreferrer'
+        >
+          Chat with support
+        </a>
+        .
+      </div>
       <p className='text-center text-xs text-slate-400'>
         Confirmation email arrives immediately. Credentials follow within 24
         hours of approval.
