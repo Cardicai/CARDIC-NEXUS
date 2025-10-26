@@ -5,8 +5,10 @@ import { sendEmail } from '@/lib/email';
 export const runtime = 'nodejs';
 
 type ClaimTrialBody = {
+  name?: unknown;
   tradingview?: unknown;
   email?: unknown;
+  indicators?: unknown;
 };
 
 const isGmail = (value: string) => /@gmail\.com$/i.test(value);
@@ -34,14 +36,38 @@ const parseRequest = async (request: NextRequest) => {
     } as const;
   }
 
+  const nameRaw = typeof body.name === 'string' ? body.name.trim() : '';
   const tradingviewRaw =
     typeof body.tradingview === 'string' ? body.tradingview.trim() : '';
   const emailRaw = typeof body.email === 'string' ? body.email.trim() : '';
+  const indicatorsRaw = Array.isArray(body.indicators)
+    ? body.indicators
+        .map((value) => (typeof value === 'string' ? value.trim() : ''))
+        .filter((value) => value.length > 0)
+    : [];
+
+  if (!nameRaw) {
+    return {
+      error: NextResponse.json(
+        { error: 'Full name is required.' },
+        { status: 400 }
+      ),
+    } as const;
+  }
 
   if (!tradingviewRaw) {
     return {
       error: NextResponse.json(
         { error: 'TradingView username is required.' },
+        { status: 400 }
+      ),
+    } as const;
+  }
+
+  if (!indicatorsRaw.length) {
+    return {
+      error: NextResponse.json(
+        { error: 'Select at least one indicator.' },
         { status: 400 }
       ),
     } as const;
@@ -66,8 +92,10 @@ const parseRequest = async (request: NextRequest) => {
   }
 
   return {
+    name: nameRaw,
     tradingview: tradingviewRaw,
     email: emailRaw,
+    indicators: indicatorsRaw,
   } as const;
 };
 
@@ -78,7 +106,7 @@ export async function POST(request: NextRequest) {
     return parsed.error;
   }
 
-  const { tradingview, email } = parsed;
+  const { name, tradingview, email, indicators } = parsed;
 
   const adminEmail = process.env.ADMIN_EMAIL?.trim();
   if (!adminEmail) {
@@ -91,28 +119,40 @@ export async function POST(request: NextRequest) {
   const siteName = process.env.NEXT_PUBLIC_SITE_NAME?.trim() || 'CARDIC Nexus';
 
   const adminSubject = `New free trial request – ${siteName}`;
-  const adminText = `A new free trial was requested.\n\nTradingView username: ${tradingview}\nEmail: ${email}\n`;
+  const adminText = `A new free trial was requested.\n\nName: ${name}\nTradingView username: ${tradingview}\nEmail: ${email}\nIndicators: ${indicators.join(
+    ', '
+  )}\n`;
   const adminHtml = `
     <h1 style="margin:0;font-size:18px;">New free trial request</h1>
     <p style="margin:16px 0 0;font-size:14px;">
+      <strong>Name:</strong> ${escapeHtml(name)}<br />
       <strong>TradingView username:</strong> ${escapeHtml(tradingview)}<br />
-      <strong>Email:</strong> ${escapeHtml(email)}
+      <strong>Email:</strong> ${escapeHtml(email)}<br />
+      <strong>Indicators:</strong> ${indicators
+        .map((indicator) => escapeHtml(indicator))
+        .join(', ')}
     </p>
   `;
 
   const userSubject = `${siteName} Free Trial Request Received`;
-  const userText = `Thanks for reaching out to ${siteName}. We received your free trial request and will be in touch shortly.\n\nTradingView username: ${tradingview}\nEmail: ${email}\n`;
+  const userText = `Thanks for reaching out to ${siteName}. We received your free trial request and will be in touch shortly.\n\nName: ${name}\nTradingView username: ${tradingview}\nEmail: ${email}\nIndicators: ${indicators.join(
+    ', '
+  )}\n`;
   const userHtml = `
     <div style="font-size:15px;line-height:1.6;">
-      <p>Hey ${escapeHtml(tradingview)},</p>
+      <p>Hey ${escapeHtml(name)},</p>
       <p>
         Thanks for requesting a free trial with <strong>${escapeHtml(
           siteName
         )}</strong>. Our team will review your details and send your access instructions to this Gmail address shortly.
       </p>
       <p style="margin:16px 0 0;font-size:14px;">
+        <strong>Name:</strong> ${escapeHtml(name)}<br />
         <strong>TradingView username:</strong> ${escapeHtml(tradingview)}<br />
-        <strong>Email:</strong> ${escapeHtml(email)}
+        <strong>Email:</strong> ${escapeHtml(email)}<br />
+        <strong>Indicators:</strong> ${indicators
+          .map((indicator) => escapeHtml(indicator))
+          .join(', ')}
       </p>
       <p style="margin:24px 0 0;">Stay tuned — we&apos;ll reach out soon!</p>
     </div>

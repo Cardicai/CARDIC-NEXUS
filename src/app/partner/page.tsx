@@ -488,7 +488,7 @@ export default function PartnerPage() {
           Submit NP application
         </a>
         <a
-          href='https://t.me/realcardic1'
+          href='https://t.me/REALCARDIC'
           target='_blank'
           rel='noreferrer'
           className='cta tertiary'
