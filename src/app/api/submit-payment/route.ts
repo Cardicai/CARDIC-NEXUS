@@ -32,7 +32,7 @@ export async function POST(request: Request) {
     }
 
     const adminResult = await sendEmailWithAttachments({
-      to: process.env.ADMIN_EMAIL?.trim() || 'realcardic1@gmail.com',
+      to: process.env.ADMIN_EMAIL?.trim() || 'support@cardicnex.us',
       subject: 'Crypto Payment Submission',
       text: fieldsText,
       html: plainTextToHtml(fieldsText),

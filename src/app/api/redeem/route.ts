@@ -18,7 +18,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const adminEmail = process.env.ADMIN_EMAIL || 'realcardic1@gmail.com';
+    const adminEmail = process.env.ADMIN_EMAIL || 'support@cardicnex.us';
     const bodyText = `Redeem code submission\n\nCode: ${code}\nTradingView: ${tradingview}`;
 
     const emailResult = await sendEmail({
