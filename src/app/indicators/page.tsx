@@ -94,19 +94,19 @@ const packages = [
 
 const faqs = [
   {
-    question: 'Do the indicators work on funded accounts?',
+    question: 'Which platforms are supported?',
     answer:
-      'Yes. Nexus Pulse is built for prop firms. Risk layers prevent over-leverage and the Guardian module enforces drawdown compliance.',
+      'Nexus Pulse connects to TradingView and the Cardic Trading Hub. Provide your TradingView username when submitting the trial form so the desk can authorise access.',
   },
   {
-    question: 'Can I request custom settings?',
+    question: 'Do I need a Gmail address?',
     answer:
-      'Every subscription includes a calibration call. Enterprise clients receive bespoke logic and private routing.',
+      'Yes. The desk issues activation keys and admin confirmations through Gmail so delivery is instant. Requests without a Gmail address are automatically rejected.',
   },
   {
-    question: 'How fast is onboarding?',
+    question: 'How do I get calibration help?',
     answer:
-      'Pulse Core and Elite activate within 24 hours. Enterprise deployments are scheduled with the desk to handle complex routing.',
+      'Every subscription includes desk-admin support. Submit tweaks through the payment modal or support card and the admin team will follow up with tailored settings.',
   },
 ];
 
