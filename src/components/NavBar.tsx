@@ -116,7 +116,7 @@ export default function NavBar() {
   }, [hubOpen]);
 
   return (
-    <header className='cnx-nav'>
+    <header className='cnx-nav fixed inset-x-0 top-0 z-50 h-16 border-b border-[#1a2230] bg-[#0a0d13]/80 backdrop-blur md:h-20'>
       <div className='cnx-nav-inner'>
         <div className='cnx-nav-left'>
           <Link href='/' className='brand' aria-label='Cardic Nexus – Home'>
@@ -343,16 +343,7 @@ export default function NavBar() {
 
       <style jsx>{`
         .cnx-nav {
-          position: sticky;
-          top: 0;
-          z-index: 50;
           width: 100%;
-          background: linear-gradient(
-            120deg,
-            rgba(4, 6, 16, 0.72),
-            rgba(8, 12, 26, 0.55)
-          );
-          border-bottom: 1px solid rgba(245, 199, 107, 0.24);
           box-shadow: 0 30px 70px rgba(2, 6, 18, 0.55);
           backdrop-filter: blur(18px);
           -webkit-backdrop-filter: blur(18px);
@@ -361,7 +352,8 @@ export default function NavBar() {
         .cnx-nav-inner {
           width: 100%;
           margin: 0;
-          padding: 12px clamp(18px, 5vw, 40px);
+          padding: 0 clamp(18px, 5vw, 40px);
+          height: 100%;
           display: grid;
           grid-template-columns: auto minmax(0, 1fr) auto;
           align-items: center;
@@ -608,7 +600,7 @@ export default function NavBar() {
         }
         .navHubPanel {
           position: fixed;
-          top: 80px;
+          top: calc(var(--nav-h) + 16px);
           right: 24px;
           width: min(420px, calc(100vw - 32px));
           border-radius: 28px;
@@ -800,7 +792,7 @@ export default function NavBar() {
           }
           .navHubPanel {
             right: 16px;
-            top: 72px;
+            top: calc(var(--nav-h) + 8px);
             width: min(360px, calc(100vw - 24px));
           }
         }
@@ -827,7 +819,7 @@ export default function NavBar() {
         }
         .sheetNav {
           position: absolute;
-          top: 76px;
+          top: calc(var(--nav-h) + 12px);
           left: 50%;
           transform: translateX(-50%);
           width: 86%;
@@ -894,7 +886,7 @@ export default function NavBar() {
         }
 
         :global(section[id]) {
-          scroll-margin-top: 84px;
+          scroll-margin-top: calc(var(--nav-h) + 20px);
         }
       `}</style>
     </header>

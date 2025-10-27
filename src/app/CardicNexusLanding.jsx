@@ -287,8 +287,8 @@ export default function CardicNexusLanding() {
         <BrandLogo size='lg' />
       </div>
 
-      <section className='relative mx-auto flex max-w-6xl flex-col gap-12 px-6 pb-20 pt-24 md:pt-28'>
-        <div className='space-y-10 text-center'>
+      <section className='relative mx-auto flex min-h-[calc(100vh-var(--nav-h))] max-w-6xl flex-col gap-10 px-6 pb-20 pt-[max(env(safe-area-inset-top),1rem)] md:gap-12 md:pt-6 lg:pt-8'>
+        <div className='space-y-8 text-center md:space-y-10'>
           <div className='mx-auto w-fit rounded-full border border-white/10 bg-white/5 px-5 py-2 text-xs font-semibold uppercase tracking-[0.38em] text-slate-200'>
             Trading • Funding • Community
           </div>
