@@ -1,12 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import {
-  type MouseEvent as ReactMouseEvent,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { type MouseEvent as ReactMouseEvent, useState } from 'react';
 
 import BrandLogo from './BrandLogo';
 
@@ -16,12 +11,6 @@ const navDestinations = [
     description:
       'Deploy Nexus-managed bots with disciplined risk routing and oversight.',
     href: '/bots',
-  },
-  {
-    label: 'Competition HQ',
-    description:
-      'Review schedules, prize pools, and verification status in one arena.',
-    href: '/competition',
   },
   {
     label: 'Trading Hub',
@@ -42,12 +31,6 @@ const navDestinations = [
     href: '/desk',
   },
   {
-    label: 'Partnership Program',
-    description:
-      'Scale revenue by representing Cardic Nexus with full media support.',
-    href: '/partner',
-  },
-  {
     label: 'Support Desk',
     description:
       'Talk with the Nexus team, verify accounts, or request onboarding help.',
@@ -56,17 +39,14 @@ const navDestinations = [
 ];
 
 const primaryLinks = [
-  { label: 'Competition', href: '/competition' },
   { label: 'Trading Hub', href: '/trading-hub' },
+  { label: 'Premium Indicators', href: '/indicators' },
   { label: 'Support', href: '/support' },
 ];
 
 export default function NavBar() {
   const [open, setOpen] = useState(false);
   const [quickOpen, setQuickOpen] = useState(false);
-  const [hubOpen, setHubOpen] = useState(false);
-  const hubButtonRef = useRef<HTMLButtonElement | null>(null);
-  const hubPanelRef = useRef<HTMLDivElement | null>(null);
 
   const onNavClick = (e: ReactMouseEvent<HTMLAnchorElement>) => {
     const href = (e.currentTarget.getAttribute('href') || '').trim();
@@ -84,39 +64,8 @@ export default function NavBar() {
     setOpen(false);
   };
 
-  useEffect(() => {
-    if (!hubOpen) {
-      return;
-    }
-
-    const onDocumentClick = (event: globalThis.MouseEvent) => {
-      const target = event.target as Node;
-      if (
-        hubPanelRef.current?.contains(target) ||
-        hubButtonRef.current?.contains(target)
-      ) {
-        return;
-      }
-      setHubOpen(false);
-    };
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setHubOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', onDocumentClick);
-    document.addEventListener('keydown', onKeyDown);
-
-    return () => {
-      document.removeEventListener('mousedown', onDocumentClick);
-      document.removeEventListener('keydown', onKeyDown);
-    };
-  }, [hubOpen]);
-
   return (
-    <header className='cnx-nav'>
+    <header className='cnx-nav fixed inset-x-0 top-0 z-50 h-16 border-b border-[#1a2230] bg-[#0a0d13]/80 backdrop-blur md:h-20'>
       <div className='cnx-nav-inner'>
         <div className='cnx-nav-left'>
           <Link href='/' className='brand' aria-label='Cardic Nexus – Home'>
@@ -129,7 +78,6 @@ export default function NavBar() {
             aria-expanded={quickOpen}
             onClick={() => {
               setQuickOpen(true);
-              setHubOpen(false);
             }}
           >
             <span className='quickLaunchBar' />
@@ -155,20 +103,8 @@ export default function NavBar() {
           </nav>
 
           <div className='cnx-nav-actions'>
-            <button
-              ref={hubButtonRef}
-              type='button'
-              className={`navigator ${hubOpen ? 'active' : ''}`}
-              onClick={() => {
-                setHubOpen((value) => !value);
-                setQuickOpen(false);
-                setOpen(false);
-              }}
-            >
-              Navigator
-            </button>
-            <Link href='/partner' className='cnx-btn cnx-btn-amber'>
-              NP (NEXUS PARTNER)
+            <Link href='/indicators' className='cnx-btn cnx-btn-amber'>
+              View Indicators
             </Link>
             <a
               href='#pay'
@@ -182,7 +118,6 @@ export default function NavBar() {
               aria-label='Open menu'
               onClick={() => {
                 setOpen(true);
-                setHubOpen(false);
               }}
             >
               <span />
@@ -191,46 +126,6 @@ export default function NavBar() {
             </button>
           </div>
         </div>
-      </div>
-
-      <div
-        ref={hubPanelRef}
-        className={`navHubPanel ${hubOpen ? 'open' : ''}`}
-        role='dialog'
-        aria-modal='false'
-        aria-label='Nexus navigation map'
-      >
-        <div className='navHubHeader'>
-          <div>
-            <span className='navHubEyebrow'>Cardic Nexus</span>
-            <h2 className='navHubTitle'>Navigator Control Room</h2>
-          </div>
-          <button
-            type='button'
-            className='navHubClose'
-            onClick={() => setHubOpen(false)}
-          >
-            Close
-          </button>
-        </div>
-        <p className='navHubCopy'>
-          Jump straight into automation bots, competition intel, trading hubs,
-          premium indicators, partner desks, or support when you need it.
-        </p>
-        <nav className='navHubLinks'>
-          {navDestinations.map((item) => (
-            <Link
-              key={`nav-map-${item.label}`}
-              href={item.href}
-              prefetch={false}
-              className='navHubLink'
-              onClick={() => setHubOpen(false)}
-            >
-              <span className='navHubLinkLabel'>{item.label}</span>
-              <span className='navHubLinkDesc'>{item.description}</span>
-            </Link>
-          ))}
-        </nav>
       </div>
 
       <div
@@ -260,8 +155,8 @@ export default function NavBar() {
             </button>
           </div>
           <p className='quickTrayCopy'>
-            Launch bots, review competition intel, enter the trading hub, or
-            reach partnership and support desks without leaving this page.
+            Launch bots, enter the trading hub, explore premium indicators, or
+            reach the support desk without leaving this page.
           </p>
           <nav className='quickTrayLinks'>
             {navDestinations.map((item) => (
@@ -271,7 +166,6 @@ export default function NavBar() {
                 prefetch={false}
                 onClick={() => {
                   setQuickOpen(false);
-                  setHubOpen(false);
                 }}
                 className='quickLink'
               >
@@ -302,11 +196,11 @@ export default function NavBar() {
             </Link>
           ))}
           <Link
-            href='/partner'
+            href='/indicators'
             className='cnx-btn cnx-btn-amber'
             onClick={() => setOpen(false)}
           >
-            NP (NEXUS PARTNER)
+            View Indicators
           </Link>
           <a
             href='#pay'
@@ -315,16 +209,6 @@ export default function NavBar() {
           >
             Join Premium
           </a>
-          <button
-            type='button'
-            className='sheetNavigator'
-            onClick={() => {
-              setHubOpen(true);
-              setOpen(false);
-            }}
-          >
-            Open Navigator
-          </button>
           <div className='sheetDivider' />
           {navDestinations.map((item) => (
             <Link
@@ -343,16 +227,7 @@ export default function NavBar() {
 
       <style jsx>{`
         .cnx-nav {
-          position: sticky;
-          top: 0;
-          z-index: 50;
           width: 100%;
-          background: linear-gradient(
-            120deg,
-            rgba(4, 6, 16, 0.72),
-            rgba(8, 12, 26, 0.55)
-          );
-          border-bottom: 1px solid rgba(245, 199, 107, 0.24);
           box-shadow: 0 30px 70px rgba(2, 6, 18, 0.55);
           backdrop-filter: blur(18px);
           -webkit-backdrop-filter: blur(18px);
@@ -361,7 +236,8 @@ export default function NavBar() {
         .cnx-nav-inner {
           width: 100%;
           margin: 0;
-          padding: 12px clamp(18px, 5vw, 40px);
+          padding: 0 clamp(18px, 5vw, 40px);
+          height: 100%;
           display: grid;
           grid-template-columns: auto minmax(0, 1fr) auto;
           align-items: center;
@@ -471,34 +347,6 @@ export default function NavBar() {
             background-position: 0% 50%;
           }
         }
-        .navigator {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          padding: 10px 14px;
-          border-radius: 12px;
-          border: 1px solid rgba(148, 163, 184, 0.35);
-          background: rgba(15, 23, 42, 0.65);
-          color: #e2e8f0;
-          font-weight: 600;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          cursor: pointer;
-          transition: border-color 0.2s ease, background 0.2s ease,
-            transform 0.2s ease, color 0.2s ease;
-        }
-        .navigator:hover,
-        .navigator:focus-visible,
-        .navigator.active {
-          border-color: rgba(245, 199, 107, 0.65);
-          background: rgba(30, 41, 59, 0.85);
-          color: #f5c76b;
-          transform: translateY(-1px);
-          outline: none;
-        }
-        .navigator:focus-visible {
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.35);
-        }
         .cnx-links {
           display: flex;
           gap: clamp(12px, 2vw, 24px);
@@ -606,101 +454,6 @@ export default function NavBar() {
           gap: 24px;
           box-shadow: 0 45px 140px rgba(15, 23, 42, 0.45);
         }
-        .navHubPanel {
-          position: fixed;
-          top: 80px;
-          right: 24px;
-          width: min(420px, calc(100vw - 32px));
-          border-radius: 28px;
-          border: 1px solid rgba(245, 199, 107, 0.22);
-          background: linear-gradient(
-            160deg,
-            rgba(10, 12, 24, 0.92),
-            rgba(2, 6, 18, 0.94)
-          );
-          box-shadow: 0 36px 120px rgba(15, 23, 42, 0.5);
-          padding: 28px;
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-          opacity: 0;
-          pointer-events: none;
-          transform: translateY(-12px);
-          transition: opacity 0.2s ease, transform 0.2s ease;
-          z-index: 90;
-        }
-        .navHubPanel.open {
-          opacity: 1;
-          pointer-events: auto;
-          transform: translateY(0);
-        }
-        .navHubHeader {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 18px;
-        }
-        .navHubEyebrow {
-          display: block;
-          font-size: 10px;
-          text-transform: uppercase;
-          letter-spacing: 0.42em;
-          color: rgba(245, 199, 107, 0.7);
-          margin-bottom: 6px;
-        }
-        .navHubTitle {
-          font-size: 20px;
-          font-weight: 700;
-          color: #f8fafc;
-        }
-        .navHubClose {
-          background: rgba(59, 130, 246, 0.14);
-          border: 1px solid rgba(59, 130, 246, 0.4);
-          color: #dbeafe;
-          border-radius: 999px;
-          padding: 6px 14px;
-          cursor: pointer;
-          transition: background 0.18s ease;
-        }
-        .navHubClose:hover {
-          background: rgba(59, 130, 246, 0.22);
-        }
-        .navHubCopy {
-          font-size: 13px;
-          color: rgba(203, 213, 225, 0.85);
-          line-height: 1.6;
-        }
-        .navHubLinks {
-          display: flex;
-          flex-direction: column;
-          gap: 14px;
-        }
-        .navHubLink {
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-          padding: 14px 16px;
-          border-radius: 18px;
-          border: 1px solid rgba(59, 130, 246, 0.18);
-          background: rgba(3, 7, 18, 0.72);
-          text-decoration: none;
-          transition: border-color 0.18s ease, transform 0.18s ease,
-            background 0.18s ease;
-        }
-        .navHubLink:hover {
-          border-color: rgba(245, 199, 107, 0.4);
-          background: rgba(10, 15, 28, 0.9);
-          transform: translateY(-1px);
-        }
-        .navHubLinkLabel {
-          font-size: 15px;
-          font-weight: 600;
-          color: #e2e8f0;
-        }
-        .navHubLinkDesc {
-          font-size: 13px;
-          color: rgba(148, 163, 184, 0.9);
-        }
         .quickTrayHeader {
           display: flex;
           align-items: center;
@@ -789,25 +542,11 @@ export default function NavBar() {
           .cnx-links {
             display: none;
           }
-          .navigator {
-            display: none;
-          }
           .burger {
             display: block;
           }
           .quickTray {
             width: min(360px, 90vw);
-          }
-          .navHubPanel {
-            right: 16px;
-            top: 72px;
-            width: min(360px, calc(100vw - 24px));
-          }
-        }
-
-        @media (max-width: 720px) {
-          .navHubPanel {
-            width: min(320px, calc(100vw - 20px));
           }
         }
 
@@ -827,7 +566,7 @@ export default function NavBar() {
         }
         .sheetNav {
           position: absolute;
-          top: 76px;
+          top: calc(var(--nav-h) + 12px);
           left: 50%;
           transform: translateX(-50%);
           width: 86%;
@@ -848,21 +587,6 @@ export default function NavBar() {
           border: 1px solid rgba(255, 255, 255, 0.12);
           text-decoration: none;
           color: #e7ecf5;
-        }
-        .sheetNavigator {
-          text-transform: uppercase;
-          letter-spacing: 0.14em;
-          font-weight: 600;
-          padding: 14px 16px;
-          border-radius: 14px;
-          border: 1px solid rgba(148, 163, 184, 0.38);
-          background: rgba(17, 24, 39, 0.85);
-          color: #f8fafc;
-        }
-        .sheetNavigator:active {
-          transform: scale(0.98);
-          background: rgba(59, 130, 246, 0.18);
-          border-color: rgba(59, 130, 246, 0.35);
         }
         .sheetDivider {
           margin: 8px 0 2px;
@@ -894,7 +618,7 @@ export default function NavBar() {
         }
 
         :global(section[id]) {
-          scroll-margin-top: 84px;
+          scroll-margin-top: calc(var(--nav-h) + 20px);
         }
       `}</style>
     </header>

@@ -141,6 +141,11 @@ export default function IndicatorPageClient({
       return;
     }
 
+    if (!email.toLowerCase().endsWith('@gmail.com')) {
+      setTrialError('A Gmail address is required for trial access.');
+      return;
+    }
+
     setTrialError(null);
     setTrialSubmitting(true);
 
@@ -489,7 +494,7 @@ export default function IndicatorPageClient({
                   <input
                     type='email'
                     name='email'
-                    placeholder='Email'
+                    placeholder='Gmail Address'
                     required
                     className='w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:border-amber-300 focus:outline-none'
                   />

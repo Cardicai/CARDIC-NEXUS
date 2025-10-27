@@ -62,6 +62,27 @@
 }
 
 @layer base {
+  :root {
+    --nav-h: 64px;
+  }
+
+  @media (min-width: 768px) {
+    :root {
+      --nav-h: 80px;
+    }
+  }
+
+  html,
+  body,
+  #__next,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+  }
+
   html {
     scroll-behavior: smooth;
   }
