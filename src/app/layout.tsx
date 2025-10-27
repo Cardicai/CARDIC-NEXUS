@@ -3,6 +3,8 @@ import type { ReactNode } from 'react';
 
 import './globals.css';
 
+import NavBar from '@/components/NavBar';
+
 import { siteConfig } from '@/constant/config';
 
 export const metadata = {
@@ -53,7 +55,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <meta name='twitter:card' content={siteConfig.twitterCard} />
       </Head>
       <body className='min-h-screen bg-[#05030f] bg-[radial-gradient(circle_at_20%_20%,rgba(76,29,149,0.55),transparent_55%),_radial-gradient(circle_at_80%_0%,rgba(14,116,175,0.45),transparent_55%),_linear-gradient(180deg,#05030f,#090b1b)] text-white antialiased'>
-        <div className='min-h-screen bg-white/5 backdrop-blur-md'>
+        <NavBar />
+        {/* Reserve space below fixed navbar */}
+        <div className='h-16 md:h-20' aria-hidden />
+        <div className='min-h-[calc(100vh-var(--nav-h))] bg-white/5 backdrop-blur-md'>
           <main className='relative z-[1]'>{children}</main>
         </div>
       </body>
