@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 
 import BrandLogo from '@/components/BrandLogo';
 const welcomeMessages = [
@@ -145,6 +145,9 @@ const testimonialQuotes = [
 ];
 
 export default function CardicNexusLanding() {
+  // Injected to fix undefined state/handler
+  const [mentorDocOpen, setMentorDocOpen] = useState(false);
+  const closeMentorDoc = useCallback(() => setMentorDocOpen(false), []);
   const [assetStream, setAssetStream] = useState(assetSeeds);
   const [welcomeIndex, setWelcomeIndex] = useState(0);
 
