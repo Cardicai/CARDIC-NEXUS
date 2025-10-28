@@ -118,12 +118,12 @@ export async function POST(request: NextRequest) {
 
   const siteName = process.env.NEXT_PUBLIC_SITE_NAME?.trim() || 'CARDIC Nexus';
 
-  const adminSubject = `New free trial request – ${siteName}`;
-  const adminText = `A new free trial was requested.\n\nName: ${name}\nTradingView username: ${tradingview}\nEmail: ${email}\nIndicators: ${indicators.join(
+  const adminSubject = `7-day free trial claimed — ${siteName}`;
+  const adminText = `A new 7-day free trial was claimed.\n\nName: ${name}\nTradingView username: ${tradingview}\nEmail: ${email}\nIndicators: ${indicators.join(
     ', '
   )}\n`;
   const adminHtml = `
-    <h1 style="margin:0;font-size:18px;">New free trial request</h1>
+    <h1 style="margin:0;font-size:18px;">New 7-day free trial claim</h1>
     <p style="margin:16px 0 0;font-size:14px;">
       <strong>Name:</strong> ${escapeHtml(name)}<br />
       <strong>TradingView username:</strong> ${escapeHtml(tradingview)}<br />
@@ -134,15 +134,15 @@ export async function POST(request: NextRequest) {
     </p>
   `;
 
-  const userSubject = `${siteName} Free Trial Request Received`;
-  const userText = `Thanks for reaching out to ${siteName}. We received your free trial request and will be in touch shortly.\n\nName: ${name}\nTradingView username: ${tradingview}\nEmail: ${email}\nIndicators: ${indicators.join(
+  const userSubject = `${siteName} 7-day trial confirmed`;
+  const userText = `Thanks for reaching out to ${siteName}. Your 7-day free trial claim is locked in — we will send setup details shortly.\n\nName: ${name}\nTradingView username: ${tradingview}\nEmail: ${email}\nIndicators: ${indicators.join(
     ', '
   )}\n`;
   const userHtml = `
     <div style="font-size:15px;line-height:1.6;">
       <p>Hey ${escapeHtml(name)},</p>
       <p>
-        Thanks for requesting a free trial with <strong>${escapeHtml(
+        Thanks for claiming a 7-day free trial with <strong>${escapeHtml(
           siteName
         )}</strong>. Our team will review your details and send your access instructions to this Gmail address shortly.
       </p>
