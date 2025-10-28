@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import BrandLogo from '@/components/BrandLogo';
 const welcomeMessages = [
@@ -148,14 +148,6 @@ export default function CardicNexusLanding() {
   const [assetStream, setAssetStream] = useState(assetSeeds);
   const [welcomeIndex, setWelcomeIndex] = useState(0);
   const [mentorDocOpen, setMentorDocOpen] = useState(false);
-
-  const handleOpenMentorDock = useCallback(() => {
-    setMentorDocOpen(true);
-  }, []);
-
-  const closeMentorDoc = useCallback(() => {
-    setMentorDocOpen(false);
-  }, []);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -356,13 +348,15 @@ export default function CardicNexusLanding() {
             >
               Register Free →
             </Link>
-            <button
-              type='button'
-              onClick={handleOpenMentorDock}
+            <Link
+              href='https://cardicworld.vercel.app/'
+              target='_blank'
+              rel='noopener noreferrer'
+              prefetch={false}
               className='hidden items-center justify-center rounded-full border border-purple-400/60 bg-purple-500/10 px-8 py-3 text-base font-semibold text-purple-200 shadow-[0_0_35px_rgba(168,85,247,0.25)] transition hover:bg-purple-500/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-300 sm:inline-flex'
             >
               Learn how to trade with the world’s first AI mentor
-            </button>
+            </Link>
             <Link
               href='/indicators'
               prefetch={false}

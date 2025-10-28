@@ -1,9 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { useState } from 'react';
 
-import PaymentSheet, { type PaymentPlan } from '@/components/PaymentSheet';
+import CheckoutModal from '@/components/modals/CheckoutModal';
+import TrialFormModal from '@/components/modals/TrialFormModal';
+import type { PaymentPlan } from '@/components/PaymentSheet';
 
 type IndicatorStack = {
   id: string;
@@ -35,173 +37,23 @@ export default function IndicatorPageClient({
   packages,
   faqs,
 }: IndicatorPageClientProps) {
-  const [paymentOpen, setPaymentOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<PaymentPlan | null>(null);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [checkoutPlan, setCheckoutPlan] = useState<PaymentPlan | null>(null);
   const [trialOpen, setTrialOpen] = useState(false);
-  const [trialSubmitting, setTrialSubmitting] = useState(false);
-  const [trialSelection, setTrialSelection] = useState<string[]>([]);
-  const [trialError, setTrialError] = useState<string | null>(null);
-  const [banner, setBanner] = useState<{
-    tone: 'success' | 'info' | 'error';
-    message: string;
-  } | null>(null);
-  const bannerTimer = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (bannerTimer.current) {
-        clearTimeout(bannerTimer.current);
-      }
-    };
-  }, []);
-
-  const showBanner = (
-    tone: 'success' | 'info' | 'error',
-    message: string,
-    duration = 5200
-  ) => {
-    if (bannerTimer.current) {
-      clearTimeout(bannerTimer.current);
-    }
-    setBanner({ tone, message });
-    bannerTimer.current = setTimeout(() => {
-      setBanner(null);
-      bannerTimer.current = null;
-    }, duration);
+  const trialIndicators = indicatorStacks.map((indicator) => indicator.title);
+  const openCheckout = (plan: PaymentPlan) => {
+    setCheckoutPlan(plan);
+    setCheckoutOpen(true);
   };
-
-  const bannerToneClasses: Record<'success' | 'info' | 'error', string> = {
-    success: 'border-emerald-400/40 bg-emerald-500/10 text-emerald-200',
-    info: 'border-sky-400/40 bg-sky-500/10 text-sky-200',
-    error: 'border-rose-400/40 bg-rose-500/10 text-rose-200',
-  };
-
-  const defaultPlan = useMemo<PaymentPlan | null>(() => {
-    if (!packages.length) {
-      return null;
-    }
-
-    const first = packages[0];
-    return {
-      id: first.id,
-      title: first.name,
-      price: first.price,
-    };
-  }, [packages]);
-
-  const openPayment = (plan?: PaymentPlan | null) => {
-    setSelectedPlan(plan ?? defaultPlan);
-    setPaymentOpen(true);
-  };
-
-  const closePayment = () => {
-    setPaymentOpen(false);
-  };
-
-  const indicatorOptions = useMemo(
-    () => indicatorStacks.map((item) => item.title),
-    [indicatorStacks]
-  );
 
   const openTrial = () => {
-    setTrialSelection([]);
-    setTrialError(null);
     setTrialOpen(true);
-  };
-
-  const closeTrial = () => {
-    if (trialSubmitting) {
-      return;
-    }
-    setTrialOpen(false);
-  };
-
-  const toggleTrialSelection = (value: string) => {
-    setTrialSelection((prev) =>
-      prev.includes(value)
-        ? prev.filter((item) => item !== value)
-        : [...prev, value]
-    );
-  };
-
-  const handleTrialSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!trialSelection.length) {
-      setTrialError('Select at least one indicator you want to test.');
-      return;
-    }
-
-    const formData = new FormData(event.currentTarget);
-    const name = (formData.get('name') as string)?.trim();
-    const tradingview = (formData.get('tradingview') as string)?.trim();
-    const email = (formData.get('email') as string)?.trim();
-
-    if (!name || !tradingview || !email) {
-      setTrialError('All fields are required.');
-      return;
-    }
-
-    if (!email.toLowerCase().endsWith('@gmail.com')) {
-      setTrialError('A Gmail address is required for trial access.');
-      return;
-    }
-
-    setTrialError(null);
-    setTrialSubmitting(true);
-
-    try {
-      const response = await fetch('/api/claim-trial', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name,
-          tradingview,
-          email,
-          indicators: trialSelection,
-        }),
-      });
-
-      const result = await response.json().catch(() => ({}));
-
-      if (!response.ok || !result.success) {
-        throw new Error(result?.error || 'Unable to submit your request.');
-      }
-
-      (event.currentTarget as HTMLFormElement).reset();
-      setTrialSelection([]);
-      setTrialOpen(false);
-      showBanner(
-        'success',
-        'CardicNex says: Trial request received. Check your email for confirmation.'
-      );
-    } catch (error) {
-      setTrialError(
-        error instanceof Error
-          ? error.message
-          : 'Unable to submit your request.'
-      );
-    } finally {
-      setTrialSubmitting(false);
-    }
   };
 
   return (
     <div className='relative min-h-screen overflow-hidden bg-[#06040f] text-slate-100'>
       <div className='pointer-events-none absolute inset-0 -z-[1] bg-[radial-gradient(circle_at_12%_15%,rgba(245,199,107,0.22),transparent_55%),radial-gradient(circle_at_88%_18%,rgba(56,189,248,0.3),transparent_58%),radial-gradient(circle_at_50%_90%,rgba(139,92,246,0.22),transparent_60%)]' />
       <main className='mx-auto flex max-w-6xl flex-col gap-16 px-6 pb-24 pt-28 md:gap-20 md:pb-32'>
-        {banner ? (
-          <div
-            role='status'
-            aria-live='polite'
-            className={`mx-auto w-full max-w-3xl rounded-full border px-4 py-3 text-center text-sm font-semibold tracking-wide shadow-[0_24px_60px_rgba(8,11,20,0.55)] ${
-              bannerToneClasses[banner.tone]
-            }`}
-          >
-            {banner.message}
-          </div>
-        ) : null}
         <header className='space-y-6 text-center md:text-left'>
           <span className='inline-flex items-center justify-center rounded-full border border-white/10 bg-white/10 px-4 py-1 text-[11px] font-semibold uppercase tracking-[0.38em] text-amber-200'>
             Premium Indicators
@@ -253,7 +105,7 @@ export default function IndicatorPageClient({
               <button
                 type='button'
                 onClick={() =>
-                  openPayment({
+                  openCheckout({
                     id: indicator.id,
                     title: indicator.title,
                     price: indicator.price,
@@ -291,7 +143,7 @@ export default function IndicatorPageClient({
                 <button
                   type='button'
                   onClick={() =>
-                    openPayment({
+                    openCheckout({
                       id: pkg.id,
                       title: pkg.name,
                       price: pkg.price,
@@ -416,118 +268,20 @@ export default function IndicatorPageClient({
         </section>
       </main>
 
-      {trialOpen ? (
-        <div
-          className='fixed inset-0 z-[60] flex items-center justify-center px-4 py-8'
-          role='dialog'
-          aria-modal='true'
-          onClick={closeTrial}
-        >
-          <div className='absolute inset-0 bg-black/70 backdrop-blur-md' />
-          <div
-            className='relative z-[61] w-full max-w-xl rounded-3xl border border-white/10 bg-[#0d101a]/95 p-6 shadow-[0_40px_120px_rgba(15,23,42,0.65)]'
-            onClick={(event) => event.stopPropagation()}
-          >
-            <button
-              type='button'
-              onClick={closeTrial}
-              className='absolute right-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/10 text-lg font-semibold text-white transition hover:bg-white/20 disabled:opacity-50'
-              aria-label='Close trial form'
-              disabled={trialSubmitting}
-            >
-              ×
-            </button>
-            <div className='space-y-2 pb-4 pr-8'>
-              <h2 className='text-xl font-semibold text-white'>
-                Claim Your Nexus Pulse Trial
-              </h2>
-              <p className='text-sm text-slate-300'>
-                Choose the indicators you want to explore for 7 days and share
-                your TradingView details.
-              </p>
-            </div>
-            <form className='space-y-6' onSubmit={handleTrialSubmit}>
-              <fieldset className='space-y-3'>
-                <legend className='text-xs uppercase tracking-[0.28em] text-amber-200'>
-                  Select indicators
-                </legend>
-                <div className='grid gap-2 sm:grid-cols-2'>
-                  {indicatorOptions.map((option) => (
-                    <label
-                      key={option}
-                      className='flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200 transition hover:border-white/20'
-                    >
-                      <input
-                        type='checkbox'
-                        name='indicators'
-                        value={option}
-                        checked={trialSelection.includes(option)}
-                        onChange={() => toggleTrialSelection(option)}
-                        className='h-4 w-4 rounded border-slate-400/60 bg-transparent text-amber-300 focus:ring-amber-300'
-                      />
-                      <span>{option}</span>
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
-
-              <div className='grid gap-3 sm:grid-cols-2'>
-                <div className='sm:col-span-2'>
-                  <input
-                    type='text'
-                    name='name'
-                    placeholder='Full Name'
-                    required
-                    className='w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:border-amber-300 focus:outline-none'
-                  />
-                </div>
-                <div>
-                  <input
-                    type='text'
-                    name='tradingview'
-                    placeholder='TradingView Username'
-                    required
-                    className='w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:border-amber-300 focus:outline-none'
-                  />
-                </div>
-                <div>
-                  <input
-                    type='email'
-                    name='email'
-                    placeholder='Gmail Address'
-                    required
-                    className='w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:border-amber-300 focus:outline-none'
-                  />
-                </div>
-              </div>
-
-              {trialError ? (
-                <p className='rounded-2xl border border-red-500/40 bg-red-500/10 px-4 py-2 text-sm text-red-200'>
-                  {trialError}
-                </p>
-              ) : null}
-
-              <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
-                <span className='text-xs uppercase tracking-[0.3em] text-slate-400'>
-                  Confirmation sent to you and the admin desk
-                </span>
-                <button
-                  type='submit'
-                  disabled={trialSubmitting}
-                  className='inline-flex items-center justify-center rounded-full bg-amber-300 px-6 py-3 text-sm font-semibold text-black transition hover:bg-amber-200 disabled:cursor-not-allowed disabled:opacity-70'
-                >
-                  {trialSubmitting ? 'Submitting…' : 'Submit Request'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      ) : null}
-
-      <PaymentSheet
-        open={paymentOpen}
-        onClose={closePayment}
-        plan={selectedPlan ?? defaultPlan}
+      <TrialFormModal
+        open={trialOpen}
+        onOpenChange={setTrialOpen}
+        indicators={trialIndicators}
+      />
+      <CheckoutModal
+        open={checkoutOpen && Boolean(checkoutPlan)}
+        onOpenChange={(next) => {
+          setCheckoutOpen(next);
+          if (!next) {
+            setCheckoutPlan(null);
+          }
+        }}
+        plan={checkoutPlan}
       />
     </div>
   );
