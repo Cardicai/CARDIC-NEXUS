@@ -13,17 +13,37 @@ import {
   type IndicatorStack,
 } from './data';
 
+
 type IndicatorPageClientProps = {
   indicatorStacks: IndicatorStack[];
   packages: IndicatorPackage[];
   faqs: IndicatorFaq[];
 };
 
-export default function IndicatorPageClient({
+export default function IndicatorsPageClient({
   indicatorStacks,
   packages,
   faqs,
 }: IndicatorPageClientProps) {
+// state
+const [checkoutOpen, setCheckoutOpen] = useState(false);
+const [checkoutPlan, setCheckoutPlan] = useState<PaymentPlan | null>(null);
+const [trialOpen, setTrialOpen] = useState(false);
+
+// derived
+const trialIndicators = indicatorStacks.map((indicator) => indicator.title);
+
+// keep if used for links elsewhere; remove if unused
+const checkoutBaseUrl = '/checkout';
+
+// actions
+const openCheckout = (plan: PaymentPlan) => {
+  setCheckoutPlan(plan);
+  setCheckoutOpen(true);
+};
+  const [trialOpen, setTrialOpen] = useState(false);
+  const trialIndicators = indicatorStacks.map((indicator) => indicator.title);
+  const checkoutBaseUrl = '/checkout';
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [checkoutPlan, setCheckoutPlan] = useState<PaymentPlan | null>(null);
   const [trialOpen, setTrialOpen] = useState(false);
@@ -89,15 +109,17 @@ export default function IndicatorPageClient({
               <span className='text-sm font-semibold text-amber-200'>
                 TradingView overlays & Exchange API plugins
               </span>
-              <button
-                type='button'
-                onClick={() =>
-                  openCheckout({
-                    id: indicator.id,
-                    title: indicator.title,
-                    price: indicator.price,
-                  })
-                }
+<button
+  type="button"
+  onClick={() =>
+    openCheckout({
+      id: indicator.id,
+      title: indicator.title,
+      price: indicator.price,
+    })
+  }
+>
+>>>>> main
                 className='mt-2 inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-2.5 text-sm font-semibold text-slate-200 transition hover:border-white/40'
               >
                 Subscribe

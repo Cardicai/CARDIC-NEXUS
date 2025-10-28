@@ -46,7 +46,9 @@ const primaryLinks = [
 
 export default function NavBar() {
   const [open, setOpen] = useState(false);
-  const [quickOpen, setQuickOpen] = useState(false);
+const [open, setOpen] = useState(false);
+const [quickOpen, setQuickOpen] = useState(false);
+
 
   const onNavClick = (e: ReactMouseEvent<HTMLAnchorElement>) => {
     const href = (e.currentTarget.getAttribute('href') || '').trim();
@@ -70,11 +72,26 @@ export default function NavBar() {
         <div className='cnx-nav-left'>
           <button
             type='button'
-            className='quickLaunch hidden sm:inline-flex'
-            aria-label='Open quick access menu'
-            aria-expanded={quickOpen}
-            onClick={() => {
-              setQuickOpen(true);
+<button
+  className="menuToggle"
+  aria-label="Open navigation menu"
+  aria-expanded={open}
+  onClick={() => {
+    setOpen(true);
+  }}
+>
+</button>
+
+<button
+  className="quickLaunch hidden sm:inline-flex"
+  aria-label="Open quick access menu"
+  aria-expanded={quickOpen}
+  onClick={() => {
+    setQuickOpen(true);
+  }}
+>
+</button>
+
             }}
           >
             <span />

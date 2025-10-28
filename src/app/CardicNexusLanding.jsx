@@ -147,7 +147,6 @@ const testimonialQuotes = [
 export default function CardicNexusLanding() {
   const [assetStream, setAssetStream] = useState(assetSeeds);
   const [welcomeIndex, setWelcomeIndex] = useState(0);
-  const [mentorDocOpen, setMentorDocOpen] = useState(false);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -353,9 +352,9 @@ export default function CardicNexusLanding() {
               target='_blank'
               rel='noopener noreferrer'
               prefetch={false}
-              className='hidden items-center justify-center rounded-full border border-purple-400/60 bg-purple-500/10 px-8 py-3 text-base font-semibold text-purple-200 shadow-[0_0_35px_rgba(168,85,247,0.25)] transition hover:bg-purple-500/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-300 sm:inline-flex'
+              className='ctaBuzz inline-flex items-center justify-center rounded-full bg-gradient-to-r from-amber-400 via-fuchsia-500 to-purple-600 px-8 py-3 text-sm font-medium text-white transition hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-fuchsia-400'
             >
-              Learn how to trade with the world’s first AI mentor
+              Open Mentor →
             </Link>
             <Link
               href='/indicators'

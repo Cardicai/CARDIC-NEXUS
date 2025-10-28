@@ -117,7 +117,7 @@ import IndicatorPageClient from './IndicatorPageClient';
 
 export default function IndicatorsPage() {
   return (
-    <IndicatorPageClient
+    <IndicatorsPageClient
       indicatorStacks={indicatorStacks}
       packages={indicatorPackages}
       faqs={indicatorFaqs}
