@@ -7,24 +7,11 @@ import CheckoutModal from '@/components/modals/CheckoutModal';
 import TrialFormModal from '@/components/modals/TrialFormModal';
 import type { PaymentPlan } from '@/components/PaymentSheet';
 
-type IndicatorStack = {
-  id: string;
-  title: string;
-  description: string;
-  price: string;
-};
-
-type IndicatorPackage = {
-  id: string;
-  name: string;
-  price: string;
-  perks: string[];
-};
-
-type IndicatorFaq = {
-  question: string;
-  answer: string;
-};
+import {
+  type IndicatorFaq,
+  type IndicatorPackage,
+  type IndicatorStack,
+} from './data';
 
 type IndicatorPageClientProps = {
   indicatorStacks: IndicatorStack[];
@@ -114,7 +101,7 @@ export default function IndicatorPageClient({
                 className='mt-2 inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-2.5 text-sm font-semibold text-slate-200 transition hover:border-white/40'
               >
                 Subscribe
-              </button>
+              </Link>
             </div>
           ))}
         </section>
@@ -152,7 +139,7 @@ export default function IndicatorPageClient({
                   className='inline-flex items-center justify-center rounded-full bg-amber-300 px-5 py-3 font-semibold text-black transition hover:bg-amber-200'
                 >
                   Subscribe
-                </button>
+                </Link>
                 <Link
                   href='/support'
                   prefetch={false}

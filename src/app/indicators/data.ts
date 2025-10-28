@@ -1,13 +1,29 @@
-import { indicatorFaqs, indicatorPackages, indicatorStacks } from './data';
-import IndicatorPageClient from './IndicatorPageClient';
-
-export const metadata = {
-  title: 'Premium Indicators | Cardic Nexus',
-  description:
-    'Unlock the Nexus Pulse indicator suite with order-flow overlays, liquidity heat, and automated confluence scoring.',
+export type IndicatorStack = {
+  id: string;
+  title: string;
+  description: string;
+  price: string;
 };
 
-const indicatorStacks = [
+export type IndicatorPackage = {
+  id: string;
+  name: string;
+  price: string;
+  perks: string[];
+};
+
+export type IndicatorFaq = {
+  question: string;
+  answer: string;
+};
+
+export type PlanSummary = {
+  id: string;
+  title: string;
+  price: string;
+};
+
+export const indicatorStacks: IndicatorStack[] = [
   {
     id: 'cardicheat-21',
     title: 'CardicHeat 2.1',
@@ -59,7 +75,7 @@ const indicatorStacks = [
   },
 ];
 
-const packages = [
+export const indicatorPackages: IndicatorPackage[] = [
   {
     id: 'cardicheat-21-plan',
     name: 'CardicHeat 2.1 Access',
@@ -95,7 +111,7 @@ const packages = [
   },
 ];
 
-const faqs = [
+export const indicatorFaqs: IndicatorFaq[] = [
   {
     question: 'Which platforms are supported?',
     answer:
@@ -113,14 +129,25 @@ const faqs = [
   },
 ];
 
-import IndicatorPageClient from './IndicatorPageClient';
+const planCatalog: PlanSummary[] = [
+  ...indicatorStacks.map((stack) => ({
+    id: stack.id,
+    title: stack.title,
+    price: stack.price,
+  })),
+  ...indicatorPackages.map((pkg) => ({
+    id: pkg.id,
+    title: pkg.name,
+    price: pkg.price,
+  })),
+];
 
-export default function IndicatorsPage() {
-  return (
-    <IndicatorPageClient
-      indicatorStacks={indicatorStacks}
-      packages={indicatorPackages}
-      faqs={indicatorFaqs}
-    />
-  );
+export function resolvePlan(planId?: string | null): PlanSummary | null {
+  if (!planId) {
+    return null;
+  }
+
+  return planCatalog.find((plan) => plan.id === planId) ?? null;
 }
+
+export const allPlanSummaries = planCatalog;

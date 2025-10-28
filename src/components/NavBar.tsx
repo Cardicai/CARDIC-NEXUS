@@ -68,9 +68,6 @@ export default function NavBar() {
     <header className='cnx-nav fixed inset-x-0 top-0 z-50 h-16 border-b border-[#1a2230] bg-[#0a0d13]/80 backdrop-blur md:h-20'>
       <div className='cnx-nav-inner'>
         <div className='cnx-nav-left'>
-          <Link href='/' className='brand' aria-label='Cardic Nexus – Home'>
-            <BrandLogo size='md' />
-          </Link>
           <button
             type='button'
             className='quickLaunch hidden sm:inline-flex'
@@ -80,10 +77,13 @@ export default function NavBar() {
               setQuickOpen(true);
             }}
           >
-            <span className='quickLaunchBar' />
-            <span className='quickLaunchBar' />
-            <span className='quickLaunchDot' />
+            <span />
+            <span />
+            <span />
           </button>
+          <Link href='/' className='brand' aria-label='Cardic Nexus – Home'>
+            <BrandLogo size='md' />
+          </Link>
         </div>
 
         <div className='cnx-nav-center' aria-hidden='true'>
@@ -112,7 +112,7 @@ export default function NavBar() {
             <a
               href='#pay'
               onClick={onNavClick}
-              className='cnx-btn cnx-btn-blue'
+              className='cnx-btn cnx-btn-blue hidden sm:inline-flex'
             >
               Join Premium
             </a>
@@ -295,50 +295,6 @@ export default function NavBar() {
           justify-content: flex-end;
           gap: clamp(12px, 2vw, 26px);
         }
-        .quickLaunch {
-          position: relative;
-          display: inline-flex;
-          flex-direction: column;
-          justify-content: center;
-          gap: 5px;
-          width: 42px;
-          height: 42px;
-          border-radius: 14px;
-          border: 1px solid rgba(245, 199, 107, 0.35);
-          background: rgba(10, 12, 22, 0.72);
-          box-shadow: 0 18px 50px rgba(59, 130, 246, 0.25);
-          cursor: pointer;
-          transition: transform 0.18s ease, box-shadow 0.18s ease;
-        }
-        .quickLaunch:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 22px 60px rgba(59, 130, 246, 0.35);
-        }
-        .quickLaunch:focus-visible {
-          outline: 2px solid rgba(59, 130, 246, 0.6);
-          outline-offset: 2px;
-        }
-        .quickLaunchBar {
-          display: block;
-          height: 3px;
-          width: 18px;
-          margin-left: 12px;
-          border-radius: 999px;
-          background: linear-gradient(
-            90deg,
-            rgba(245, 199, 107, 0.9),
-            rgba(59, 130, 246, 0.8)
-          );
-        }
-        .quickLaunchDot {
-          display: block;
-          width: 10px;
-          height: 10px;
-          margin-left: 26px;
-          border-radius: 999px;
-          background: rgba(59, 130, 246, 0.8);
-          box-shadow: 0 0 12px rgba(59, 130, 246, 0.55);
-        }
         @keyframes navTitleShift {
           0% {
             background-position: 0% 50%;
@@ -410,18 +366,22 @@ export default function NavBar() {
           box-shadow: 0 0 32px rgba(59, 130, 246, 0.45);
         }
 
-        .burger {
+        .menuToggle {
           display: none;
+          align-items: center;
+          justify-content: center;
           width: 38px;
-          height: 34px;
-          border-radius: 10px;
-          border: 1px solid rgba(255, 255, 255, 0.18);
-          background: rgba(255, 255, 255, 0.06);
+          height: 36px;
+          border-radius: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          background: rgba(2, 6, 18, 0.92);
           cursor: pointer;
           -webkit-tap-highlight-color: transparent;
+          transition: transform 0.18s ease, border-color 0.18s ease;
         }
-        .burger span {
+        .menuToggle span {
           display: block;
+          width: 16px;
           height: 2px;
           margin: 6px 8px;
           background: #e7ecf5;
@@ -482,57 +442,15 @@ export default function NavBar() {
           color: #e2e8f0;
           border: 1px solid rgba(59, 130, 246, 0.32);
           border-radius: 999px;
-          padding: 8px 16px;
-          font-size: 12px;
-          text-transform: uppercase;
-          letter-spacing: 0.24em;
-          cursor: pointer;
-          transition: background 0.2s ease, color 0.2s ease;
+          background: rgba(231, 236, 245, 0.9);
         }
-        .quickTrayClose:hover {
-          background: rgba(59, 130, 246, 0.22);
-          color: #fff;
-        }
-        .quickTrayClose:focus-visible {
-          outline: 2px solid rgba(245, 199, 107, 0.6);
+        .menuToggle:focus-visible {
+          outline: 2px solid rgba(59, 130, 246, 0.6);
           outline-offset: 2px;
         }
-        .quickTrayCopy {
-          font-size: 13px;
-          line-height: 1.6;
-          color: rgba(203, 213, 225, 0.85);
-        }
-        .quickTrayLinks {
-          display: grid;
-          gap: 14px;
-        }
-        .quickLink {
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-          padding: 16px 18px;
-          border-radius: 20px;
-          text-decoration: none;
-          background: rgba(15, 18, 32, 0.82);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          color: #e2e8f0;
-          transition: border-color 0.2s ease, transform 0.2s ease,
-            background 0.2s ease;
-        }
-        .quickLink:hover {
-          transform: translateY(-2px);
-          border-color: rgba(245, 199, 107, 0.45);
-          background: rgba(10, 12, 22, 0.92);
-        }
-        .quickLinkLabel {
-          font-size: 15px;
-          font-weight: 600;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-        }
-        .quickLinkDesc {
-          font-size: 13px;
-          color: rgba(148, 163, 184, 0.9);
+        .menuToggle:hover {
+          transform: translateY(-1px);
+          border-color: rgba(245, 199, 107, 0.4);
         }
 
         @media (max-width: 900px) {
@@ -548,8 +466,8 @@ export default function NavBar() {
           .burger {
             display: block;
           }
-          .quickTray {
-            width: min(360px, 90vw);
+          .cnx-nav-right {
+            gap: 0;
           }
         }
 
@@ -595,7 +513,7 @@ export default function NavBar() {
           position: fixed;
           inset: 0;
           z-index: 9999;
-          background: rgba(0, 0, 0, 0.55);
+          background: rgba(2, 6, 14, 1);
           opacity: 0;
           pointer-events: none;
           transition: opacity 0.2s ease;
@@ -614,8 +532,8 @@ export default function NavBar() {
           display: flex;
           flex-direction: column;
           gap: 14px;
-          background: rgba(15, 15, 19, 0.92);
-          border: 1px solid rgba(255, 255, 255, 0.14);
+          background: rgba(4, 6, 12, 1);
+          border: 1px solid rgba(255, 255, 255, 0.16);
           border-radius: 20px;
           padding: 14px;
         }
