@@ -3,7 +3,9 @@
 import Link from 'next/link';
 import { useState } from 'react';
 
+import CheckoutModal from '@/components/modals/CheckoutModal';
 import TrialFormModal from '@/components/modals/TrialFormModal';
+import type { PaymentPlan } from '@/components/PaymentSheet';
 
 import {
   type IndicatorFaq,
@@ -22,9 +24,14 @@ export default function IndicatorPageClient({
   packages,
   faqs,
 }: IndicatorPageClientProps) {
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [checkoutPlan, setCheckoutPlan] = useState<PaymentPlan | null>(null);
   const [trialOpen, setTrialOpen] = useState(false);
   const trialIndicators = indicatorStacks.map((indicator) => indicator.title);
-  const checkoutBaseUrl = '/checkout';
+  const openCheckout = (plan: PaymentPlan) => {
+    setCheckoutPlan(plan);
+    setCheckoutOpen(true);
+  };
 
   const openTrial = () => {
     setTrialOpen(true);
@@ -82,13 +89,15 @@ export default function IndicatorPageClient({
               <span className='text-sm font-semibold text-amber-200'>
                 TradingView overlays & Exchange API plugins
               </span>
-              <Link
-                href={`${checkoutBaseUrl}?plan=${encodeURIComponent(
-                  indicator.id
-                )}`}
-                target='_blank'
-                rel='noopener noreferrer'
-                prefetch={false}
+              <button
+                type='button'
+                onClick={() =>
+                  openCheckout({
+                    id: indicator.id,
+                    title: indicator.title,
+                    price: indicator.price,
+                  })
+                }
                 className='mt-2 inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-2.5 text-sm font-semibold text-slate-200 transition hover:border-white/40'
               >
                 Subscribe
@@ -118,11 +127,15 @@ export default function IndicatorPageClient({
                 ))}
               </ul>
               <div className='flex flex-col gap-2 text-sm'>
-                <Link
-                  href={`${checkoutBaseUrl}?plan=${encodeURIComponent(pkg.id)}`}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  prefetch={false}
+                <button
+                  type='button'
+                  onClick={() =>
+                    openCheckout({
+                      id: pkg.id,
+                      title: pkg.name,
+                      price: pkg.price,
+                    })
+                  }
                   className='inline-flex items-center justify-center rounded-full bg-amber-300 px-5 py-3 font-semibold text-black transition hover:bg-amber-200'
                 >
                   Subscribe
@@ -246,6 +259,16 @@ export default function IndicatorPageClient({
         open={trialOpen}
         onOpenChange={setTrialOpen}
         indicators={trialIndicators}
+      />
+      <CheckoutModal
+        open={checkoutOpen && Boolean(checkoutPlan)}
+        onOpenChange={(next) => {
+          setCheckoutOpen(next);
+          if (!next) {
+            setCheckoutPlan(null);
+          }
+        }}
+        plan={checkoutPlan}
       />
     </div>
   );
