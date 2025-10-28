@@ -108,6 +108,21 @@ const quickLaunchLinks = [
   },
 ];
 
+const mentorDocSections = [
+  {
+    heading: 'AI Mentor Overview',
+    copy: 'The Nexus Mentor overlays your TradingView layouts with calibrated execution prompts, alerting you when liquidity shifts or order-flow momentum demands attention.',
+  },
+  {
+    heading: 'Session Workflow',
+    copy: '1. Prep with the indicator stack. 2. Follow the Mentor checklist for bias confirmation. 3. Log outcomes in the Trading Hub so the desk can refine your playbook.',
+  },
+  {
+    heading: 'Desk Notes',
+    copy: 'Mentor access is provisioned after verification. Keep your Gmail inbox monitored — the desk sends activation keys and admin confirmations immediately after submission.',
+  },
+];
+
 const testimonialQuotes = [
   {
     quote:
@@ -132,6 +147,7 @@ const testimonialQuotes = [
 export default function CardicNexusLanding() {
   const [assetStream, setAssetStream] = useState(assetSeeds);
   const [welcomeIndex, setWelcomeIndex] = useState(0);
+  const [mentorDocOpen, setMentorDocOpen] = useState(false);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -479,6 +495,59 @@ export default function CardicNexusLanding() {
           ))}
         </div>
       </section>
+
+      {mentorDocOpen ? (
+        <div
+          className='fixed inset-0 z-50 flex items-center justify-center px-4 py-8'
+          role='dialog'
+          aria-modal='true'
+          aria-label='AI mentor playbook'
+          onClick={closeMentorDoc}
+        >
+          <div className='absolute inset-0 bg-black/70 backdrop-blur-md' />
+          <article
+            className='relative z-10 w-full max-w-3xl overflow-hidden rounded-3xl border border-white/10 bg-[#0c0f1a]/95 shadow-[0_40px_140px_rgba(8,12,24,0.75)]'
+            onClick={(event) => event.stopPropagation()}
+          >
+            <header className='flex items-start justify-between gap-4 border-b border-white/10 px-6 py-5'>
+              <div className='space-y-1'>
+                <p className='text-xs uppercase tracking-[0.32em] text-amber-200'>
+                  Nexus Mentor Document
+                </p>
+                <h2 className='text-2xl font-semibold text-white'>
+                  Trade with the world’s first AI mentor
+                </h2>
+              </div>
+              <button
+                type='button'
+                onClick={closeMentorDoc}
+                className='inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/10 text-lg font-semibold text-white transition hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-200'
+                aria-label='Close mentor document'
+              >
+                ×
+              </button>
+            </header>
+            <div className='max-h-[70vh] space-y-6 overflow-y-auto px-6 py-6 text-left'>
+              {mentorDocSections.map((section) => (
+                <section
+                  key={section.heading}
+                  className='space-y-3 rounded-2xl border border-white/5 bg-white/5 p-5'
+                >
+                  <h3 className='text-lg font-semibold text-white'>
+                    {section.heading}
+                  </h3>
+                  <p className='text-sm leading-relaxed text-slate-300'>
+                    {section.copy}
+                  </p>
+                </section>
+              ))}
+              <p className='rounded-2xl border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-amber-100'>
+                Admin desk receives a copy of every mentor request.
+              </p>
+            </div>
+          </article>
+        </div>
+      ) : null}
 
       <style jsx>{`
         .heroCornerLogo {
