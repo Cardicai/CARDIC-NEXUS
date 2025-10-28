@@ -72,17 +72,17 @@ const [quickOpen, setQuickOpen] = useState(false);
         <div className='cnx-nav-left'>
           <button
             type='button'
-<button
-  className="menuToggle"
-  aria-label="Open navigation menu"
-  aria-expanded={open}
-  onClick={() => {
-    setOpen(true);
-  }}
->
-</button>
+  <button
+    type="button"
+    className="menuToggle"
+    aria-label="Open navigation menu"
+    aria-expanded={open}
+    onClick={() => setOpen(true)}>
+    <span />
+    <span />
+    <span />
+  </button>
 
-<button
   className="quickLaunch hidden sm:inline-flex"
   aria-label="Open quick access menu"
   aria-expanded={quickOpen}
