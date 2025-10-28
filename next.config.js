@@ -6,6 +6,15 @@ const nextConfig = {
 
   reactStrictMode: true,
 
+  async rewrites() {
+    return [
+      {
+        source: '/dock/:path*',
+        destination: 'https://cardicworld.vercel.app/:path*',
+      },
+    ];
+  },
+
   // Uncoment to add domain whitelist
   // images: {
   //   remotePatterns: [

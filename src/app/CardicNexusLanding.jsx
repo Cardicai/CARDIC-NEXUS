@@ -1,14 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import BrandLogo from '@/components/BrandLogo';
 const welcomeMessages = [
   'Welcome back to the Nexus. Your execution room is live.',
   'Precision trading never sleeps — see what the desk prepared for you.',
   'Every session counts. Let Cardic Nexus sharpen your next move.',
-  'Compete, automate, and scale. The Nexus team is standing by.',
+  'Automate, monitor, and scale. The Nexus team is standing by.',
 ];
 
 const assetSeeds = [
@@ -77,11 +77,6 @@ const ecosystemStats = [
 
 const quickLaunchLinks = [
   {
-    label: 'Join the Competition',
-    description: 'Battle for instant funding and leaderboard glory.',
-    href: '/competition',
-  },
-  {
     label: 'Automation Bots',
     description: 'Deploy Sentinel, Nebula, and Hydra to live markets.',
     href: '/bots',
@@ -95,6 +90,11 @@ const quickLaunchLinks = [
     label: 'Premium Indicators',
     description: 'Unlock liquidity maps and institutional-grade signals.',
     href: '/indicators',
+  },
+  {
+    label: 'Indicator Docs',
+    description: 'Review strategy briefs and setup guides curated by the desk.',
+    href: '/docs/indicators',
   },
   {
     label: 'Priority Support',
@@ -132,18 +132,6 @@ const testimonialQuotes = [
 export default function CardicNexusLanding() {
   const [assetStream, setAssetStream] = useState(assetSeeds);
   const [welcomeIndex, setWelcomeIndex] = useState(0);
-
-  const handleOpenMentorDock = useCallback(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-
-    window.open(
-      'https://cardicworld.vercel.app/',
-      'cardic-ai-mentor',
-      'noopener,noreferrer'
-    );
-  }, []);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -287,8 +275,8 @@ export default function CardicNexusLanding() {
         <BrandLogo size='lg' />
       </div>
 
-      <section className='relative mx-auto flex max-w-6xl flex-col gap-12 px-6 pb-20 pt-24 md:pt-28'>
-        <div className='space-y-10 text-center'>
+      <section className='relative mx-auto flex min-h-[calc(100vh-var(--nav-h))] max-w-6xl flex-col gap-10 px-6 pb-20 pt-[max(env(safe-area-inset-top),1rem)] md:gap-12 md:pt-6 lg:pt-8'>
+        <div className='space-y-8 text-center md:space-y-10'>
           <div className='mx-auto w-fit rounded-full border border-white/10 bg-white/5 px-5 py-2 text-xs font-semibold uppercase tracking-[0.38em] text-slate-200'>
             Trading • Funding • Community
           </div>
@@ -331,8 +319,8 @@ export default function CardicNexusLanding() {
           </div>
           <p className='heroIntro'>
             The full Cardic Nexus ecosystem is live again. Deploy advanced
-            indicators, join our elite IB collective, and test your discipline
-            in the official Cardic Nexus competition.
+            indicators, collaborate directly with the desk, and execute with
+            institutional precision every session.
           </p>
           <div className='flex flex-wrap items-center justify-center gap-4'>
             <Link
@@ -344,31 +332,33 @@ export default function CardicNexusLanding() {
             >
               Register Free →
             </Link>
-            <button
-              type='button'
-              onClick={handleOpenMentorDock}
-              className='inline-flex items-center justify-center rounded-full border border-purple-400/60 bg-purple-500/10 px-8 py-3 text-base font-semibold text-purple-200 shadow-[0_0_35px_rgba(168,85,247,0.25)] transition hover:bg-purple-500/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-300'
-            >
-              Learn how to trade with the world’s first AI mentor
-            </button>
             <Link
-              href='/competition'
+              href='https://cardicworld.vercel.app/'
+              target='_blank'
+              rel='noopener noreferrer'
+              prefetch={false}
+              className='ctaBuzz inline-flex items-center justify-center rounded-full bg-gradient-to-r from-amber-400 via-fuchsia-500 to-purple-600 px-8 py-3 text-sm font-medium text-white transition hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-fuchsia-400'
+            >
+              Open Mentor →
+            </Link>
+            <Link
+              href='/indicators'
               prefetch={false}
               className='inline-flex items-center justify-center rounded-full border border-sky-400/60 bg-sky-500/10 px-8 py-3 text-base font-semibold text-sky-200 shadow-[0_0_35px_rgba(56,189,248,0.28)] transition hover:bg-sky-500/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300'
             >
-              Enter Competition Hub
+              Explore Indicators
             </Link>
             <Link
-              href='/partner'
+              href='/support'
               prefetch={false}
-              className='inline-flex items-center justify-center rounded-full border border-amber-400/60 bg-amber-500/10 px-8 py-3 text-base font-semibold text-amber-200 shadow-[0_0_35px_rgba(245,199,107,0.28)] transition hover:bg-amber-400/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300'
+              className='hidden items-center justify-center rounded-full border border-amber-400/60 bg-amber-500/10 px-8 py-3 text-base font-semibold text-amber-200 shadow-[0_0_35px_rgba(245,199,107,0.28)] transition hover:bg-amber-400/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300 sm:inline-flex'
             >
-              Become an IB
+              Talk to Support
             </Link>
             <Link
               href='/desk'
               prefetch={false}
-              className='inline-flex items-center justify-center rounded-full border border-emerald-400/60 bg-emerald-500/10 px-8 py-3 text-base font-semibold text-emerald-200 shadow-[0_0_35px_rgba(16,185,129,0.28)] transition hover:bg-emerald-500/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-300'
+              className='hidden items-center justify-center rounded-full border border-emerald-400/60 bg-emerald-500/10 px-8 py-3 text-base font-semibold text-emerald-200 shadow-[0_0_35px_rgba(16,185,129,0.28)] transition hover:bg-emerald-500/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-300 md:inline-flex'
             >
               Visit Operations Desk
             </Link>
@@ -791,6 +781,25 @@ export default function CardicNexusLanding() {
           }
           .feedbackTickerTrack {
             gap: 22px;
+          }
+        }
+        @media (max-width: 640px) {
+          .heroCornerLogo {
+            display: none;
+          }
+          .heroHeading {
+            gap: 12px;
+          }
+          .heroTopRail {
+            padding: 8px 10px;
+            gap: 10px;
+          }
+          .heroBroadcastWrap .heroBroadcast {
+            padding: 18px;
+          }
+          .heroIntro {
+            font-size: 15px;
+            line-height: 1.65;
           }
         }
         @media (max-width: 560px) {
