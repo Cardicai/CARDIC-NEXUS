@@ -46,6 +46,9 @@ const primaryLinks = [
 
 export default function NavBar() {
   const [open, setOpen] = useState(false);
+const [open, setOpen] = useState(false);
+const [quickOpen, setQuickOpen] = useState(false);
+
 
   const onNavClick = (e: ReactMouseEvent<HTMLAnchorElement>) => {
     const href = (e.currentTarget.getAttribute('href') || '').trim();
@@ -69,11 +72,26 @@ export default function NavBar() {
         <div className='cnx-nav-left'>
           <button
             type='button'
-            className='menuToggle'
-            aria-label='Open navigation menu'
-            aria-expanded={open}
-            onClick={() => {
-              setOpen(true);
+<button
+  className="menuToggle"
+  aria-label="Open navigation menu"
+  aria-expanded={open}
+  onClick={() => {
+    setOpen(true);
+  }}
+>
+</button>
+
+<button
+  className="quickLaunch hidden sm:inline-flex"
+  aria-label="Open quick access menu"
+  aria-expanded={quickOpen}
+  onClick={() => {
+    setQuickOpen(true);
+  }}
+>
+</button>
+
             }}
           >
             <span />
@@ -115,8 +133,68 @@ export default function NavBar() {
             >
               Join Premium
             </a>
+            <button
+              className='burger'
+              aria-label='Open menu'
+              onClick={() => {
+                setOpen(true);
+              }}
+            >
+              <span />
+              <span />
+              <span />
+            </button>
           </div>
         </div>
+      </div>
+
+      <div
+        className={`quickPanel ${quickOpen ? 'open' : ''}`}
+        role='dialog'
+        aria-modal='true'
+        aria-label='Cardic Nexus quick access menu'
+        onClick={(event) => {
+          if (event.target === event.currentTarget) {
+            setQuickOpen(false);
+          }
+        }}
+      >
+        <aside className='quickTray'>
+          <div className='quickTrayHeader'>
+            <div>
+              <span className='quickTrayEyebrow'>Navigate Fast</span>
+              <h2 className='quickTrayTitle'>Nexus Shortcuts</h2>
+            </div>
+            <button
+              type='button'
+              className='quickTrayClose'
+              onClick={() => setQuickOpen(false)}
+              aria-label='Close quick access menu'
+            >
+              Close
+            </button>
+          </div>
+          <p className='quickTrayCopy'>
+            Launch bots, enter the trading hub, explore premium indicators, or
+            reach the support desk without leaving this page.
+          </p>
+          <nav className='quickTrayLinks'>
+            {navDestinations.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                prefetch={false}
+                onClick={() => {
+                  setQuickOpen(false);
+                }}
+                className='quickLink'
+              >
+                <span className='quickLinkLabel'>{item.label}</span>
+                <span className='quickLinkDesc'>{item.description}</span>
+              </Link>
+            ))}
+          </nav>
+        </aside>
       </div>
 
       {/* Mobile sheet */}
@@ -322,7 +400,64 @@ export default function NavBar() {
           display: block;
           width: 16px;
           height: 2px;
-          margin: 3px 0;
+          margin: 6px 8px;
+          background: #e7ecf5;
+        }
+
+        .quickPanel {
+          position: fixed;
+          inset: 0;
+          z-index: 80;
+          display: flex;
+          justify-content: flex-start;
+          background: rgba(3, 5, 12, 0.78);
+          backdrop-filter: blur(22px);
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.2s ease;
+        }
+        .quickPanel.open {
+          opacity: 1;
+          pointer-events: auto;
+        }
+        .quickTray {
+          width: min(420px, 86vw);
+          background: linear-gradient(
+            160deg,
+            rgba(12, 14, 24, 0.95),
+            rgba(7, 6, 16, 0.92)
+          );
+          border-right: 1px solid rgba(245, 199, 107, 0.2);
+          padding: 28px 28px 32px;
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+          box-shadow: 0 45px 140px rgba(15, 23, 42, 0.45);
+        }
+        .quickTrayHeader {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 18px;
+        }
+        .quickTrayEyebrow {
+          display: block;
+          font-size: 11px;
+          letter-spacing: 0.38em;
+          text-transform: uppercase;
+          color: rgba(245, 199, 107, 0.75);
+        }
+        .quickTrayTitle {
+          margin-top: 6px;
+          font-size: 26px;
+          font-weight: 800;
+          letter-spacing: 0.16em;
+          color: #f8fafc;
+        }
+        .quickTrayClose {
+          background: rgba(59, 130, 246, 0.12);
+          color: #e2e8f0;
+          border: 1px solid rgba(59, 130, 246, 0.32);
           border-radius: 999px;
           background: rgba(231, 236, 245, 0.9);
         }
@@ -345,29 +480,48 @@ export default function NavBar() {
           .cnx-links {
             display: none;
           }
-          .menuToggle {
-            display: inline-flex;
+          .burger {
+            display: block;
+          }
+          .cnx-nav-right {
+            gap: 0;
           }
         }
 
         @media (max-width: 640px) {
           .cnx-nav-inner {
-            grid-template-columns: auto 1fr;
+            grid-template-columns: 1fr auto;
             padding: 0 clamp(14px, 6vw, 18px);
           }
           .cnx-nav-left {
-            gap: 12px;
+            gap: 10px;
           }
           .cnx-nav-right {
-            gap: 0;
+            gap: 10px;
           }
           .cnx-nav-actions {
-            gap: 0;
+            gap: 8px;
+            flex-wrap: nowrap;
           }
           .cnx-btn {
             padding: 8px 12px;
             font-size: 13px;
             border-radius: 12px;
+          }
+          .cnx-btn.cnx-btn-blue {
+            font-weight: 700;
+            box-shadow: 0 14px 38px rgba(16, 165, 255, 0.28);
+          }
+          .burger {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.08);
+          }
+          .burger span {
+            margin: 4px 8px;
           }
         }
 
@@ -408,12 +562,6 @@ export default function NavBar() {
           border: 1px solid rgba(255, 255, 255, 0.12);
           text-decoration: none;
           color: #e7ecf5;
-        }
-        @media (max-width: 640px) {
-          .sheetNav {
-            width: calc(100% - 28px);
-            max-width: none;
-          }
         }
         .sheetDivider {
           margin: 8px 0 2px;
