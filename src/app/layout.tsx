@@ -9,14 +9,14 @@ import { siteConfig } from '@/constant/config';
 
 export const metadata = {
   metadataBase: new URL('https://www.cardicnex.us'),
-  title: 'Cardic Nexus Tournament Portal',
+  title: 'Cardic Nexus — Where Smart Trades Evolve',
   description:
-    'Register for the official Cardic Nexus Tournament and access the competition dashboard.',
+    'Discover advanced trading intelligence, premium indicators, and Cardic Nexus resources built to elevate disciplined traders.',
   openGraph: {
     type: 'website',
-    title: 'Cardic Nexus Tournament Portal',
+    title: 'Cardic Nexus — Where Smart Trades Evolve',
     description:
-      'Register for the official Cardic Nexus Tournament and access the competition dashboard.',
+      'Discover advanced trading intelligence, premium indicators, and Cardic Nexus resources built to elevate disciplined traders.',
     url: 'https://www.cardicnex.us',
     images: [
       {
@@ -29,9 +29,9 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Cardic Nexus Tournament Portal',
+    title: 'Cardic Nexus — Where Smart Trades Evolve',
     description:
-      'Register for the official Cardic Nexus Tournament and access the competition dashboard.',
+      'Discover advanced trading intelligence, premium indicators, and Cardic Nexus resources built to elevate disciplined traders.',
     images: ['/og-cardic.png'],
     creator: '@CARDICNEXUS',
   },

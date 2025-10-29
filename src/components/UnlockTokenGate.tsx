@@ -8,7 +8,7 @@ type UnlockTokenGateProps = {
   token?: string;
 };
 
-const DEFAULT_TOKEN = 'Cardic2025';
+const DEFAULT_TOKEN = 'CARDIC NEXUS';
 
 export default function UnlockTokenGate({
   children,
