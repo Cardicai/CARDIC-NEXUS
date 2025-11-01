@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import BrandLogo from '@/components/BrandLogo';
 const welcomeMessages = [
@@ -285,6 +285,17 @@ export default function CardicNexusLanding() {
     [feedbackTicker]
   );
 
+  const halloweenEmbers = useMemo(
+    () =>
+      Array.from({ length: 14 }, (_, index) => ({
+        id: index,
+        left: Math.random() * 100,
+        delay: Math.random() * 4,
+        duration: 12 + Math.random() * 10,
+      })),
+    []
+  );
+
   return (
     <div className='relative overflow-hidden bg-[#03040c] text-slate-200'>
       <div className='pointer-events-none absolute inset-0 -z-[1] bg-[radial-gradient(circle_at_10%_10%,rgba(245,199,107,0.18),transparent_60%),_radial-gradient(circle_at_85%_0%,rgba(59,130,246,0.22),transparent_55%),_radial-gradient(circle_at_50%_80%,rgba(56,189,248,0.16),transparent_65%)]' />
@@ -294,6 +305,51 @@ export default function CardicNexusLanding() {
       </div>
 
       <section className='relative mx-auto flex min-h-[calc(100vh-var(--nav-h))] max-w-6xl flex-col gap-10 px-6 pb-20 pt-[max(env(safe-area-inset-top),1rem)] md:gap-12 md:pt-6 lg:pt-8'>
+        <div className='halloweenGate'>
+          <div className='halloweenGlow' />
+          <div className='halloweenPumpkins' aria-hidden='true'>
+            {halloweenEmbers.map((ember) => (
+              <span
+                key={ember.id}
+                className='halloweenEmber'
+                style={{
+                  left: `${ember.left}%`,
+                  animationDelay: `${ember.delay}s`,
+                  animationDuration: `${ember.duration}s`,
+                }}
+              />
+            ))}
+          </div>
+          <div className='halloweenCopy'>
+            <span className='halloweenBadge'>Limited Halloween Broadcast</span>
+            <h2 className='halloweenTitle'>
+              Happy Halloween from <strong>Cardic Nexus</strong>
+            </h2>
+            <p className='halloweenSubtitle'>
+              The desk dressed the command center in pumpkin neon so you can
+              plan the next session with a little seasonal mischief. Enjoy a
+              glowing walkthrough and unlock a spectral batch of automation
+              templates.
+            </p>
+            <div className='halloweenCtas'>
+              <Link
+                href='/register'
+                className='halloweenPrimary'
+                prefetch={false}
+              >
+                Claim the Halloween Playbook
+              </Link>
+              <Link
+                href='/trading-hub'
+                className='halloweenSecondary'
+                prefetch={false}
+              >
+                Visit the Haunted Hub →
+              </Link>
+            </div>
+          </div>
+        </div>
+
         <div className='space-y-8 text-center md:space-y-10'>
           <div className='mx-auto w-fit rounded-full border border-white/10 bg-white/5 px-5 py-2 text-xs font-semibold uppercase tracking-[0.38em] text-slate-200'>
             Trading • Funding • Community
@@ -552,6 +608,142 @@ export default function CardicNexusLanding() {
       ) : null}
 
       <style jsx>{`
+        .halloweenGate {
+          position: relative;
+          overflow: hidden;
+          border-radius: 34px;
+          padding: clamp(28px, 5vw, 48px);
+          background: linear-gradient(
+              160deg,
+              rgba(112, 26, 117, 0.82),
+              rgba(30, 64, 175, 0.75)
+            ),
+            radial-gradient(
+              circle at 20% 20%,
+              rgba(255, 128, 0, 0.45),
+              transparent 60%
+            );
+          border: 1px solid rgba(251, 191, 36, 0.32);
+          box-shadow: 0 28px 90px rgba(59, 7, 24, 0.55);
+          text-align: center;
+        }
+        .halloweenGlow {
+          position: absolute;
+          inset: -40%;
+          background: radial-gradient(
+            circle at 50% 50%,
+            rgba(252, 211, 77, 0.65),
+            rgba(30, 27, 75, 0.05)
+          );
+          filter: blur(42px);
+          opacity: 0.55;
+        }
+        .halloweenPumpkins {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          overflow: hidden;
+        }
+        .halloweenEmber {
+          position: absolute;
+          bottom: -18%;
+          width: 16px;
+          height: 16px;
+          border-radius: 999px;
+          background: radial-gradient(circle at 30% 30%, #f97316, #9a3412 72%);
+          box-shadow: 0 0 18px rgba(251, 146, 60, 0.65),
+            0 0 34px rgba(249, 115, 22, 0.4);
+          animation-name: emberFloat;
+          animation-iteration-count: infinite;
+          animation-timing-function: ease-in;
+        }
+        .halloweenCopy {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          gap: 18px;
+          align-items: center;
+          text-align: center;
+        }
+        .halloweenBadge {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px 18px;
+          border-radius: 999px;
+          font-size: 12px;
+          letter-spacing: 0.28em;
+          text-transform: uppercase;
+          font-weight: 600;
+          background: rgba(30, 27, 75, 0.65);
+          color: rgba(254, 249, 195, 0.92);
+          border: 1px solid rgba(254, 215, 170, 0.4);
+          box-shadow: 0 12px 32px rgba(79, 70, 229, 0.45);
+        }
+        .halloweenTitle {
+          margin: 0;
+          font-size: clamp(2rem, 4vw, 2.8rem);
+          font-weight: 800;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: #f8fafc;
+          text-shadow: 0 0 28px rgba(248, 250, 252, 0.35);
+        }
+        .halloweenTitle strong {
+          color: #fbbf24;
+          text-shadow: 0 0 18px rgba(249, 115, 22, 0.65),
+            0 0 40px rgba(249, 115, 22, 0.35);
+        }
+        .halloweenSubtitle {
+          max-width: 720px;
+          margin: 0 auto;
+          font-size: 16px;
+          line-height: 1.75;
+          color: rgba(226, 232, 240, 0.88);
+        }
+        .halloweenCtas {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: center;
+          gap: 14px;
+        }
+        .halloweenPrimary,
+        .halloweenSecondary {
+          position: relative;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 12px 24px;
+          border-radius: 999px;
+          font-weight: 600;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          transition: transform 0.2s ease, box-shadow 0.2s ease,
+            background 0.2s ease;
+          white-space: nowrap;
+        }
+        .halloweenPrimary {
+          background: linear-gradient(120deg, #f59e0b, #fb7185, #f97316);
+          box-shadow: 0 18px 45px rgba(248, 113, 113, 0.35),
+            0 0 45px rgba(245, 158, 11, 0.42);
+          color: #0f172a;
+        }
+        .halloweenPrimary:hover {
+          transform: translateY(-3px) scale(1.02);
+          box-shadow: 0 20px 55px rgba(248, 113, 113, 0.45),
+            0 0 55px rgba(251, 191, 36, 0.48);
+        }
+        .halloweenSecondary {
+          background: rgba(30, 64, 175, 0.55);
+          color: rgba(226, 232, 240, 0.95);
+          border: 1px solid rgba(191, 219, 254, 0.35);
+          box-shadow: 0 16px 45px rgba(30, 64, 175, 0.35);
+        }
+        .halloweenSecondary:hover {
+          transform: translateY(-3px);
+          background: rgba(59, 130, 246, 0.65);
+        }
         .heroCornerLogo {
           position: absolute;
           top: clamp(16px, 4vw, 48px);
@@ -774,6 +966,22 @@ export default function CardicNexusLanding() {
         .welcomePhrase {
           animation: welcomeFade 0.6s ease;
         }
+        @keyframes emberFloat {
+          0% {
+            transform: translateY(0) scale(0.8);
+            opacity: 0;
+          }
+          25% {
+            opacity: 0.75;
+          }
+          60% {
+            opacity: 0.85;
+          }
+          100% {
+            transform: translateY(-160%) scale(1.1);
+            opacity: 0;
+          }
+        }
         @keyframes tickerScroll {
           from {
             transform: translateX(0);
@@ -804,6 +1012,9 @@ export default function CardicNexusLanding() {
           }
         }
         @media (prefers-reduced-motion: reduce) {
+          .halloweenEmber,
+          .halloweenPrimary,
+          .halloweenSecondary,
           .heroRailLink,
           .heroBroadcast,
           .marketBoard,
@@ -834,6 +1045,12 @@ export default function CardicNexusLanding() {
           }
         }
         @media (max-width: 768px) {
+          .halloweenGate {
+            padding: clamp(24px, 8vw, 38px);
+          }
+          .halloweenSubtitle {
+            font-size: 15px;
+          }
           .heroIntro {
             font-size: 16px;
           }
@@ -855,6 +1072,20 @@ export default function CardicNexusLanding() {
           }
         }
         @media (max-width: 640px) {
+          .halloweenGate {
+            border-radius: 28px;
+          }
+          .halloweenTitle {
+            font-size: clamp(1.8rem, 6vw, 2.3rem);
+          }
+          .halloweenCtas {
+            gap: 10px;
+          }
+          .halloweenPrimary,
+          .halloweenSecondary {
+            width: 100%;
+            text-align: center;
+          }
           .heroCornerLogo {
             display: none;
           }
